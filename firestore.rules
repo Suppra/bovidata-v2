@@ -1,0 +1,50 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Usuarios - Solo pueden leer/escribir su propio documento
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Bovinos - Acceso según rol y propietario
+    match /bovines/{bovineId} {
+      allow read: if request.auth != null;
+      allow create, update: if request.auth != null && 
+        (getUserRole() == 'Ganadero' || getUserRole() == 'Empleado');
+      allow delete: if request.auth != null && getUserRole() == 'Ganadero';
+    }
+    
+    // Tratamientos - Acceso según rol
+    match /treatments/{treatmentId} {
+      allow read: if request.auth != null;
+      allow create, update: if request.auth != null && 
+        (getUserRole() == 'Veterinario' || getUserRole() == 'Ganadero');
+      allow delete: if request.auth != null && getUserRole() == 'Ganadero';
+    }
+    
+    // Inventario - Acceso según rol
+    match /inventory/{itemId} {
+      allow read: if request.auth != null;
+      allow create, update, delete: if request.auth != null && 
+        (getUserRole() == 'Ganadero' || getUserRole() == 'Empleado');
+    }
+    
+    // Reportes - Solo lectura para roles autorizados
+    match /reports/{reportId} {
+      allow read: if request.auth != null;
+      allow create, update, delete: if request.auth != null && 
+        getUserRole() == 'Ganadero';
+    }
+    
+    // Notificaciones - Acceso personal
+    match /notifications/{notificationId} {
+      allow read, write: if request.auth != null && 
+        resource.data.userId == request.auth.uid;
+    }
+    
+    // Función auxiliar para obtener el rol del usuario
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.rol;
+    }
+  }
+}
