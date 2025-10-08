@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "900212600285",
+    "project_id": "bovidata-v2",
+    "storage_bucket": "bovidata-v2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:900212600285:android:95282b3ce25295d07d5a34",
+        "android_client_info": {
+          "package_name": "com.example.bovidata_new"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMrb3Vd-O-NpqIbMWUgjFkiqEZLLvTjSE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
