@@ -23,10 +23,15 @@ class InventoryService {
     return _firestore
         .collection(AppConstants.inventoryCollection)
         .where('activo', isEqualTo: true)
-        .orderBy('nombre')
         .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => InventoryModel.fromFirestore(doc)).toList());
+        .map((snapshot) {
+          List<InventoryModel> items = snapshot.docs
+              .map((doc) => InventoryModel.fromFirestore(doc))
+              .toList();
+          // Ordenar en el cliente para evitar índices compuestos
+          items.sort((a, b) => a.nombre.compareTo(b.nombre));
+          return items;
+        });
   }
 
   // Get inventory items by category
@@ -35,10 +40,15 @@ class InventoryService {
         .collection(AppConstants.inventoryCollection)
         .where('categoria', isEqualTo: categoria)
         .where('activo', isEqualTo: true)
-        .orderBy('nombre')
         .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => InventoryModel.fromFirestore(doc)).toList());
+        .map((snapshot) {
+          List<InventoryModel> items = snapshot.docs
+              .map((doc) => InventoryModel.fromFirestore(doc))
+              .toList();
+          // Ordenar en el cliente
+          items.sort((a, b) => a.nombre.compareTo(b.nombre));
+          return items;
+        });
   }
 
   // Get inventory items by type

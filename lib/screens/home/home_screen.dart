@@ -6,6 +6,7 @@ import '../../controllers/treatment_controller.dart';
 import '../../controllers/inventory_controller.dart';
 import '../../constants/app_styles.dart';
 import '../../constants/app_constants.dart';
+import '../bovines/bovine_list_screen.dart';
 import '../treatments/treatment_list_screen.dart';
 import '../inventory/inventory_list_screen.dart';
 import '../reports/reports_screen.dart';
@@ -316,9 +317,9 @@ class _HomeScreenState extends State<HomeScreen> {
       crossAxisCount: 2,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      mainAxisSpacing: AppDimensions.marginM,
-      crossAxisSpacing: AppDimensions.marginM,
-      childAspectRatio: 1.5,
+      mainAxisSpacing: AppDimensions.marginS,
+      crossAxisSpacing: AppDimensions.marginS,
+      childAspectRatio: 1.2,
       children: [
         _buildStatCard(
           'Total Bovinos',
@@ -351,21 +352,31 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildStatCard(String title, String value, IconData icon, Color color) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(AppDimensions.paddingM),
+        padding: const EdgeInsets.all(AppDimensions.paddingS),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: AppDimensions.iconL, color: color),
-            const SizedBox(height: AppDimensions.marginS),
-            Text(
-              value,
-              style: AppTextStyles.h3.copyWith(color: color),
+            Icon(icon, size: AppDimensions.iconM, color: color),
+            const SizedBox(height: 4),
+            FittedBox(
+              child: Text(
+                value,
+                style: AppTextStyles.h4.copyWith(
+                  color: color, 
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
-            const SizedBox(height: AppDimensions.marginXS),
-            Text(
-              title,
-              style: AppTextStyles.caption,
-              textAlign: TextAlign.center,
+            const SizedBox(height: 2),
+            FittedBox(
+              child: Text(
+                title,
+                style: AppTextStyles.caption.copyWith(fontSize: 11),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ),
@@ -403,9 +414,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildBovinesView() {
-    return const Center(
-      child: Text('Vista de Bovinos - En desarrollo'),
-    );
+    return const BovineListScreen();
   }
 
   Widget _buildTreatmentsView() {
