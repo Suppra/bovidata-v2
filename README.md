@@ -63,15 +63,56 @@ BoviData es una aplicación Flutter moderna para la gestión integral de ganado 
    ```
 
 2. **Configurar Firebase**
+   - Instalar Node.js desde [nodejs.org](https://nodejs.org/)
+   - Instalar Firebase CLI: `npm install -g firebase-tools`
    - Crear un proyecto en [Firebase Console](https://console.firebase.google.com)
    - Habilitar Authentication, Firestore y Storage
-   - Descargar `google-services.json` para Android
-   - Actualizar `lib/firebase_options.dart` con la configuración real
+   - Configurar Flutter con Firebase: `dart pub global activate flutterfire_cli`
+   - Ejecutar: `flutterfire configure --project=tu-proyecto-id`
+   - Esto generará automáticamente `firebase_options.dart` y `google-services.json`
+   - **Alternativamente**, ejecutar `setup_firebase.bat` para automatizar el proceso
+   - Ver `FIREBASE_SETUP.md` para instrucciones detalladas
 
 3. **Ejecutar la aplicación**
    ```bash
    flutter run
    ```
+
+## 🔥 Configuración de Firebase
+
+### Método Automatizado (Recomendado)
+```bash
+# En Windows, ejecutar:
+setup_firebase.bat
+
+# En otros sistemas:
+chmod +x setup_firebase.sh && ./setup_firebase.sh
+```
+
+### Método Manual
+1. **Instalar herramientas necesarias**
+   ```bash
+   # Instalar Node.js desde https://nodejs.org/
+   npm install -g firebase-tools
+   dart pub global activate flutterfire_cli
+   ```
+
+2. **Crear proyecto Firebase**
+   - Ir a [Firebase Console](https://console.firebase.google.com)
+   - Crear nuevo proyecto (ej: "bovidata-v2-production")
+   - Habilitar Authentication, Firestore Database, Storage
+
+3. **Configurar Flutter**
+   ```bash
+   flutterfire configure --project=tu-proyecto-id
+   ```
+
+4. **Desplegar reglas de seguridad**
+   ```bash
+   firebase deploy --only firestore:rules,storage:rules,firestore:indexes
+   ```
+
+Ver `FIREBASE_SETUP.md` para instrucciones completas paso a paso.
 
 ## Compilación para Producción
 
