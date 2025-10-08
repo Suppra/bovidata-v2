@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user_model.dart';
 import '../constants/app_constants.dart';
+import 'notification_service.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -244,5 +245,49 @@ class AuthService {
     if (userData == null) return false;
 
     return roles.contains(userData.rol);
+  }
+
+  // Update user role (only for admin operations)
+  Future<void> updateUserRole(String userId, String newRole, String changedByUserId) async {
+    try {
+      // Get current user data to compare roles
+      final userDoc = await _firestore
+          .collection(AppConstants.usersCollection)
+          .doc(userId)
+          .get();
+      
+      if (!userDoc.exists) throw 'Usuario no encontrado';
+      
+      final currentUserData = UserModel.fromFirestore(userDoc);
+      final oldRole = currentUserData.rol;
+      
+      // Update the role
+      await _firestore
+          .collection(AppConstants.usersCollection)
+          .doc(userId)
+          .update({
+        'rol': newRole,
+        'fechaActualizacion': Timestamp.now(),
+      });
+      
+      // Get information about who made the change
+      final changedByDoc = await _firestore
+          .collection(AppConstants.usersCollection)
+          .doc(changedByUserId)
+          .get();
+      
+      final changedByName = changedByDoc.data()?['nombre'] ?? 'Administrador';
+      
+      // Send notification to the user whose role was changed
+      await NotificationService.notifyRoleChange(
+        userId: userId,
+        newRole: newRole,
+        oldRole: oldRole,
+        changedBy: changedByName,
+      );
+      
+    } catch (e) {
+      throw 'Error actualizando rol de usuario: $e';
+    }
   }
 }

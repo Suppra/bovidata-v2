@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../models/inventory_model.dart';
 import '../constants/app_constants.dart';
 import 'activity_service.dart';
+import 'notification_service.dart';
+import 'user_service.dart';
 
 class InventoryService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -355,5 +357,95 @@ class InventoryService {
         .snapshots()
         .map((snapshot) =>
             snapshot.docs.map((doc) => InventoryModel.fromFirestore(doc)).toList());
+  }
+
+  // Check and send notifications for low stock and expiring items
+  static Future<void> checkInventoryNotifications() async {
+    try {
+      final snapshot = await _firestore
+          .collection(AppConstants.inventoryCollection)
+          .where('activo', isEqualTo: true)
+          .get();
+
+      final items = snapshot.docs
+          .map((doc) => InventoryModel.fromFirestore(doc))
+          .toList();
+
+      final now = DateTime.now();
+      final notificationUsers = await UserService.getInventoryNotificationUsers();
+
+      for (final item in items) {
+        // Check for low stock
+        if (item.cantidadActual <= item.cantidadMinima && notificationUsers.isNotEmpty) {
+          await NotificationService.notifyLowInventory(
+            itemId: item.id,
+            itemName: item.nombre,
+            currentQuantity: item.cantidadActual,
+            unit: item.unidad,
+            userId: notificationUsers.first, // Send to first user, could be improved
+          );
+        }
+
+        // Check for expiring items
+        if (item.fechaVencimiento != null && notificationUsers.isNotEmpty) {
+          final daysUntilExpiry = item.fechaVencimiento!.difference(now).inDays;
+          
+          if (daysUntilExpiry <= 30) { // Notify if expiring within 30 days
+            await NotificationService.notifyInventoryExpiring(
+              itemId: item.id,
+              itemName: item.nombre,
+              expirationDate: item.fechaVencimiento!,
+              daysUntilExpiry: daysUntilExpiry,
+              notifyUsers: notificationUsers,
+            );
+          }
+        }
+      }
+    } catch (e) {
+      print('Error checking inventory notifications: $e');
+    }
+  }
+
+  // Update stock and check for notifications
+  static Future<bool> updateStockWithNotifications(String itemId, int newQuantity) async {
+    try {
+      final doc = await _firestore
+          .collection(AppConstants.inventoryCollection)
+          .doc(itemId)
+          .get();
+      
+      if (doc.exists) {
+        final item = InventoryModel.fromFirestore(doc);
+        
+        await _firestore
+            .collection(AppConstants.inventoryCollection)
+            .doc(itemId)
+            .update({
+          'cantidadActual': newQuantity,
+          'fechaActualizacion': Timestamp.now(),
+        });
+
+        // Check if stock is now low and send notification
+        if (newQuantity <= item.cantidadMinima) {
+          final notificationUsers = await UserService.getInventoryNotificationUsers();
+          
+          for (final userId in notificationUsers) {
+            await NotificationService.notifyLowInventory(
+              itemId: itemId,
+              itemName: item.nombre,
+              currentQuantity: newQuantity,
+              unit: item.unidad,
+              userId: userId,
+            );
+          }
+        }
+
+        return true;
+      }
+      return false;
+    } catch (e) {
+      print('Error updating stock with notifications: $e');
+      return false;
+    }
   }
 }

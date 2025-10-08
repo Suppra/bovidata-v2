@@ -6,6 +6,8 @@ import 'controllers/auth_controller.dart';
 import 'controllers/bovine_controller.dart';
 import 'controllers/treatment_controller.dart';
 import 'controllers/inventory_controller.dart';
+import 'controllers/notification_controller.dart';
+import 'services/scheduler_service.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/home/home_screen.dart';
 import 'constants/app_styles.dart';
@@ -16,6 +18,10 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  
+  // Initialize scheduled notifications
+  SchedulerService.initializeScheduler();
+  
   runApp(const BoviDataApp());
 }
 
@@ -30,6 +36,7 @@ class BoviDataApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => BovineController()),
         ChangeNotifierProvider(create: (_) => TreatmentController()),
         ChangeNotifierProvider(create: (_) => InventoryController()),
+        ChangeNotifierProvider(create: (_) => NotificationController()),
       ],
       child: MaterialApp(
         title: 'BoviData',

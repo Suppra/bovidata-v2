@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../models/bovine_model.dart';
 import '../constants/app_constants.dart';
 import 'activity_service.dart';
+import 'notification_service.dart';
+import 'user_service.dart';
 
 class BovineService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -19,13 +21,35 @@ class BovineService {
           .collection(AppConstants.bovinesCollection)
           .add(bovine.toFirestore());
       
-      // Log activity
+      // Log activity and send notifications
       if (_currentUserId != null) {
+        // Get current user information
+        final currentUserInfo = await UserService.getUserInfo(_currentUserId!);
+        final currentUserName = currentUserInfo?['nombre'] ?? 'Usuario';
+        final currentUserRole = currentUserInfo?['rol'] ?? '';
+        
+        // Log activity
         await _activityService.logBovineCreated(
           docRef.id,
           bovine.nombre,
           _currentUserId!,
         );
+        
+        // Send notifications to relevant users (except current user)
+        if (currentUserRole == AppConstants.roleEmpleado) {
+          // If employee registered the bovine, notify ganaderos and veterinarios
+          final notificationUsers = await UserService.getBovineNotificationUsers();
+          notificationUsers.removeWhere((id) => id == _currentUserId);
+          
+          if (notificationUsers.isNotEmpty) {
+            await NotificationService.notifyBovineRegistered(
+              bovineId: docRef.id,
+              bovineName: bovine.nombre,
+              registeredBy: '$currentUserName ($currentUserRole)',
+              notifyUsers: notificationUsers,
+            );
+          }
+        }
       }
       
       return docRef.id;
@@ -35,7 +59,7 @@ class BovineService {
   }
 
   // Update bovine
-  Future<void> updateBovine(String id, BovineModel bovine) async {
+  Future<void> updateBovine(String id, BovineModel bovine, {BovineModel? previousBovine}) async {
     try {
       await _firestore
           .collection(AppConstants.bovinesCollection)
@@ -44,13 +68,36 @@ class BovineService {
             fechaActualizacion: DateTime.now(),
           ).toFirestore());
       
-      // Log activity
+      // Log activity and send notifications
       if (_currentUserId != null) {
+        // Get current user information
+        final currentUserInfo = await UserService.getUserInfo(_currentUserId!);
+        final currentUserName = currentUserInfo?['nombre'] ?? 'Usuario';
+        final currentUserRole = currentUserInfo?['rol'] ?? '';
+        
+        // Log activity
         await _activityService.logBovineUpdated(
           id,
           bovine.nombre,
           _currentUserId!,
         );
+        
+        // Check if health status changed and notify owner if veterinarian made the change
+        if (previousBovine != null && 
+            previousBovine.estado != bovine.estado && 
+            currentUserRole == AppConstants.roleVeterinario) {
+          
+          final bovineOwnerId = bovine.propietarioId;
+          if (bovineOwnerId != _currentUserId) {
+            await NotificationService.notifyBovineHealthChange(
+              bovineId: id,
+              bovineName: bovine.nombre,
+              newStatus: bovine.estado,
+              userId: bovineOwnerId,
+              veterinarioNombre: currentUserName,
+            );
+          }
+        }
       }
     } catch (e) {
       throw 'Error actualizando bovino: $e';
@@ -60,7 +107,7 @@ class BovineService {
   // Delete bovine (soft delete)
   Future<void> deleteBovine(String id) async {
     try {
-      // Get bovine name before deletion for logging
+      // Get bovine information before deletion
       final bovineDoc = await _firestore
           .collection(AppConstants.bovinesCollection)
           .doc(id)
@@ -76,13 +123,31 @@ class BovineService {
             'fechaActualizacion': Timestamp.now(),
           });
       
-      // Log activity
+      // Log activity and send notifications
       if (_currentUserId != null) {
+        // Get current user information
+        final currentUserInfo = await UserService.getUserInfo(_currentUserId!);
+        final currentUserName = currentUserInfo?['nombre'] ?? 'Usuario';
+        final currentUserRole = currentUserInfo?['rol'] ?? '';
+        
+        // Log activity
         await _activityService.logBovineDeleted(
           id,
           bovineName,
           _currentUserId!,
         );
+        
+        // Notify relevant users about deletion (only if not ganadero deleting their own bovine)
+        final notificationUsers = await UserService.getBovineNotificationUsers();
+        notificationUsers.removeWhere((userId) => userId == _currentUserId);
+        
+        if (notificationUsers.isNotEmpty) {
+          await NotificationService.notifyBovineDeleted(
+            bovineName: bovineName,
+            deletedBy: '$currentUserName ($currentUserRole)',
+            notifyUsers: notificationUsers,
+          );
+        }
       }
     } catch (e) {
       throw 'Error eliminando bovino: $e';

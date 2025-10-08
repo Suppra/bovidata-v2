@@ -4,10 +4,13 @@ import 'package:intl/intl.dart';
 import '../../controllers/bovine_controller.dart';
 import '../../controllers/treatment_controller.dart';
 import '../../controllers/inventory_controller.dart';
+import '../../controllers/auth_controller.dart';
+import '../../controllers/notification_controller.dart';
 
 import '../../models/bovine_model.dart';
 import '../../models/treatment_model.dart';
 import '../../models/inventory_model.dart';
+import '../../models/notification_model.dart';
 import '../../constants/app_styles.dart';
 import '../../constants/app_constants.dart';
 import '../treatments/treatment_detail_screen.dart';
@@ -45,7 +48,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     _loadData();
   }
 
@@ -54,6 +57,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
       context.read<BovineController>().loadBovines();
       context.read<TreatmentController>().loadTreatments();
       context.read<InventoryController>().loadInventoryItems();
+      
+      // Cargar notificaciones del usuario actual
+      final authController = context.read<AuthController>();
+      final currentUser = authController.currentUser;
+      if (currentUser != null) {
+        context.read<NotificationController>().loadNotifications(currentUser.id);
+      }
     });
   }
 
@@ -70,8 +80,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
           unselectedLabelColor: AppColors.white.withOpacity(0.7),
           indicatorColor: AppColors.white,
           tabs: const [
-            Tab(icon: Icon(Icons.notifications), text: 'Todas'),
+            Tab(icon: Icon(Icons.notifications), text: 'Alertas'),
             Tab(icon: Icon(Icons.warning), text: 'Urgentes'),
+            Tab(icon: Icon(Icons.message), text: 'Mensajes'),
             Tab(icon: Icon(Icons.settings), text: 'Configuración'),
           ],
         ),
@@ -116,6 +127,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
         children: [
           _buildAllNotificationsTab(),
           _buildUrgentNotificationsTab(),
+          _buildMessagesTab(),
           _buildSettingsTab(),
         ],
       ),
@@ -173,6 +185,99 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
           itemBuilder: (context, index) {
             final notification = urgentNotifications[index];
             return _buildNotificationCard(notification);
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildMessagesTab() {
+    return Consumer2<AuthController, NotificationController>(
+      builder: (context, authController, notificationController, child) {
+        final currentUser = authController.currentUser;
+        
+        if (currentUser == null) {
+          return const Center(
+            child: Text('Usuario no autenticado'),
+          );
+        }
+
+        return StreamBuilder<List<NotificationModel>>(
+          stream: notificationController.getNotificationsStream(currentUser.id),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            if (snapshot.hasError) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      size: 64,
+                      color: AppColors.error,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Error al cargar mensajes',
+                      style: AppTextStyles.h6,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${snapshot.error}',
+                      style: AppTextStyles.caption,
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            final notifications = snapshot.data ?? [];
+
+            if (notifications.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.message_outlined,
+                      size: 64,
+                      color: AppColors.grey400,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'No hay mensajes',
+                      style: AppTextStyles.h6.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Aquí aparecerán las notificaciones del sistema',
+                      style: AppTextStyles.caption,
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            return RefreshIndicator(
+              onRefresh: () => notificationController.refresh(currentUser.id),
+              child: ListView.builder(
+                padding: const EdgeInsets.all(AppDimensions.paddingM),
+                itemCount: notifications.length,
+                itemBuilder: (context, index) {
+                  final notification = notifications[index];
+                  return _buildSystemNotificationCard(notification);
+                },
+              ),
+            );
           },
         );
       },
@@ -439,6 +544,116 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
           ],
         ),
         onTap: () => _handleNotificationTap(notification),
+      ),
+    );
+  }
+
+  Widget _buildSystemNotificationCard(NotificationModel notification) {
+    Color priorityColor;
+    IconData iconData;
+    
+    // Determinar color según prioridad
+    switch (notification.prioridad.toLowerCase()) {
+      case 'urgente':
+        priorityColor = AppColors.error;
+        break;
+      case 'alta':
+        priorityColor = AppColors.warning;
+        break;
+      case 'normal':
+        priorityColor = AppColors.info;
+        break;
+      default:
+        priorityColor = AppColors.textSecondary;
+    }
+
+    // Determinar icono según tipo
+    switch (notification.tipo.toLowerCase()) {
+      case 'tratamiento':
+        iconData = Icons.medical_services;
+        break;
+      case 'inventario':
+        iconData = Icons.inventory;
+        break;
+      case 'bovino':
+        iconData = Icons.pets;
+        break;
+      default:
+        iconData = Icons.notifications;
+    }
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: AppDimensions.marginM),
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: priorityColor,
+          child: Icon(
+            iconData,
+            color: AppColors.white,
+            size: 20,
+          ),
+        ),
+        title: Text(
+          notification.titulo,
+          style: AppTextStyles.body1.copyWith(
+            fontWeight: notification.leida ? FontWeight.normal : FontWeight.bold,
+          ),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(notification.mensaje),
+            const SizedBox(height: 4),
+            Text(
+              notification.tiempoTranscurrido,
+              style: AppTextStyles.caption.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
+        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (!notification.leida)
+              Container(
+                width: 8,
+                height: 8,
+                decoration: const BoxDecoration(
+                  color: AppColors.primary,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            const SizedBox(width: 8),
+            PopupMenuButton<String>(
+              onSelected: (value) => _handleSystemNotificationAction(value, notification),
+              itemBuilder: (context) => [
+                if (!notification.leida)
+                  const PopupMenuItem(
+                    value: 'mark_read',
+                    child: Row(
+                      children: [
+                        Icon(Icons.mark_email_read),
+                        SizedBox(width: 8),
+                        Text('Marcar como leída'),
+                      ],
+                    ),
+                  ),
+                const PopupMenuItem(
+                  value: 'delete',
+                  child: Row(
+                    children: [
+                      Icon(Icons.delete),
+                      SizedBox(width: 8),
+                      Text('Eliminar'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        onTap: () => _handleSystemNotificationTap(notification),
       ),
     );
   }
@@ -778,13 +993,31 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
   }
 
   void _markAllAsRead() {
-    // TODO: Implement marking all notifications as read
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Todas las notificaciones marcadas como leídas'),
-        backgroundColor: AppColors.success,
-      ),
-    );
+    final authController = context.read<AuthController>();
+    final notificationController = context.read<NotificationController>();
+    final currentUser = authController.currentUser;
+    
+    if (currentUser != null) {
+      notificationController.markAllAsRead(currentUser.id).then((_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Todas las notificaciones marcadas como leídas'),
+              backgroundColor: AppColors.success,
+            ),
+          );
+        }
+      }).catchError((error) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error: $error'),
+              backgroundColor: AppColors.error,
+            ),
+          );
+        }
+      });
+    }
   }
 
   void _dismissNotification(AppNotification notification) {
@@ -792,6 +1025,110 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Notificación descartada'),
+      ),
+    );
+  }
+
+  // Métodos para manejar notificaciones del sistema
+  void _handleSystemNotificationAction(String action, NotificationModel notification) {
+    final notificationController = context.read<NotificationController>();
+    
+    switch (action) {
+      case 'mark_read':
+        notificationController.markAsRead(notification.id);
+        break;
+      case 'delete':
+        _showDeleteConfirmation(notification);
+        break;
+    }
+  }
+
+  void _handleSystemNotificationTap(NotificationModel notification) {
+    final notificationController = context.read<NotificationController>();
+    
+    // Marcar como leída si no está leída
+    if (!notification.leida) {
+      notificationController.markAsRead(notification.id);
+    }
+
+    // Si tiene datos adicionales, mostrar detalles
+    if (notification.datos != null) {
+      _showNotificationDetails(notification);
+    }
+  }
+
+  void _showDeleteConfirmation(NotificationModel notification) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Eliminar Notificación'),
+        content: const Text('¿Está seguro de que desea eliminar esta notificación?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              context.read<NotificationController>().deleteNotification(notification.id);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Notificación eliminada'),
+                  backgroundColor: AppColors.success,
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              foregroundColor: AppColors.white,
+            ),
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showNotificationDetails(NotificationModel notification) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(notification.titulo),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(notification.mensaje),
+            const SizedBox(height: 16),
+            if (notification.datos != null) ...[
+              const Text(
+                'Detalles:',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              ...notification.datos!.entries.map((entry) => 
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 2),
+                  child: Text('${entry.key}: ${entry.value}'),
+                ),
+              ),
+            ],
+            const SizedBox(height: 8),
+            Text(
+              'Recibido: ${notification.tiempoTranscurrido}',
+              style: AppTextStyles.caption.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cerrar'),
+          ),
+        ],
       ),
     );
   }

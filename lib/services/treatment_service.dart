@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../models/treatment_model.dart';
 import '../constants/app_constants.dart';
 import 'activity_service.dart';
+import 'notification_service.dart';
 
 class TreatmentService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -16,17 +17,27 @@ class TreatmentService {
           .collection(AppConstants.treatmentsCollection)
           .add(treatment.toFirestore());
       
-      // Log activity - get bovine name for better description
+      // Log activity and send notifications
       final currentUserId = _auth.currentUser?.uid;
       if (currentUserId != null && treatment.bovineId.isNotEmpty) {
         try {
+          // Get bovine and user information
           final bovineDoc = await _firestore
               .collection(AppConstants.bovinesCollection)
               .doc(treatment.bovineId)
               .get();
           
-          final bovineName = bovineDoc.data()?['nombre'] ?? 'Desconocido';
+          final currentUserDoc = await _firestore
+              .collection('users')
+              .doc(currentUserId)
+              .get();
           
+          final bovineName = bovineDoc.data()?['nombre'] ?? 'Desconocido';
+          final bovineOwnerId = bovineDoc.data()?['propietarioId'];
+          final currentUserName = currentUserDoc.data()?['nombre'] ?? 'Usuario';
+          final currentUserRole = currentUserDoc.data()?['rol'];
+          
+          // Log activity
           await _activityService.logTreatmentCreated(
             docRef.id,
             treatment.tipo,
@@ -34,8 +45,21 @@ class TreatmentService {
             bovineName,
             currentUserId,
           );
+          
+          // If current user is veterinarian and bovine has different owner, send notification
+          if (currentUserRole == 'Veterinario' && 
+              bovineOwnerId != null && 
+              bovineOwnerId != currentUserId) {
+            await NotificationService.notifyTreatmentAdded(
+              bovineId: treatment.bovineId,
+              bovineName: bovineName,
+              treatmentType: treatment.tipo,
+              veterinarioNombre: currentUserName,
+              ganaderoId: bovineOwnerId,
+            );
+          }
         } catch (e) {
-          print('Error logging treatment activity: $e');
+          print('Error logging treatment activity or sending notification: $e');
         }
       }
       
@@ -151,12 +175,56 @@ class TreatmentService {
   // Mark treatment as completed
   static Future<bool> markTreatmentCompleted(String treatmentId) async {
     try {
+      // Get treatment and bovine information before updating
+      final treatmentDoc = await _firestore
+          .collection(AppConstants.treatmentsCollection)
+          .doc(treatmentId)
+          .get();
+      
+      if (!treatmentDoc.exists) return false;
+      
+      final treatmentData = treatmentDoc.data()!;
+      final bovineId = treatmentData['bovineId'];
+      final treatmentType = treatmentData['tipo'];
+      
+      // Get bovine information
+      final bovineDoc = await _firestore
+          .collection(AppConstants.bovinesCollection)
+          .doc(bovineId)
+          .get();
+      
+      final bovineName = bovineDoc.data()?['nombre'] ?? 'Desconocido';
+      final ganaderoId = bovineDoc.data()?['propietarioId'];
+      
+      // Update treatment as completed
       await _firestore
           .collection(AppConstants.treatmentsCollection)
           .doc(treatmentId)
           .update({
         'completado': true,
+        'fechaCompletado': Timestamp.now(),
       });
+      
+      // Send notification to ganadero if completed by veterinarian or employee
+      final currentUserId = _auth.currentUser?.uid;
+      if (currentUserId != null && ganaderoId != null && currentUserId != ganaderoId) {
+        final currentUserDoc = await _firestore
+            .collection('users')
+            .doc(currentUserId)
+            .get();
+        
+        final currentUserName = currentUserDoc.data()?['nombre'] ?? 'Usuario';
+        final currentUserRole = currentUserDoc.data()?['rol'] ?? '';
+        
+        await NotificationService.notifyTreatmentCompleted(
+          treatmentId: treatmentId,
+          treatmentType: treatmentType,
+          bovineName: bovineName,
+          completedBy: '$currentUserName ($currentUserRole)',
+          ganaderoId: ganaderoId,
+        );
+      }
+      
       return true;
     } catch (e) {
       print('Error marking treatment as completed: $e');
