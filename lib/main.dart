@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'controllers/auth_controller.dart';
 import 'controllers/bovine_controller.dart';
 import 'controllers/treatment_controller.dart';
@@ -33,6 +34,17 @@ class BoviDataApp extends StatelessWidget {
       child: MaterialApp(
         title: 'BoviData',
         debugShowCheckedModeBanner: false,
+        // Configuración de localizaciones
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale('es', 'ES'), // Español
+          Locale('en', 'US'), // Inglés (fallback)
+        ],
+        locale: const Locale('es', 'ES'),
         theme: ThemeData(
           primarySwatch: Colors.green,
           primaryColor: AppColors.primary,
@@ -96,9 +108,10 @@ class BoviDataApp extends StatelessWidget {
           ),
           bottomNavigationBarTheme: const BottomNavigationBarThemeData(
             selectedItemColor: AppColors.primary,
-            unselectedItemColor: AppColors.grey500,
+            unselectedItemColor: AppColors.grey700,
             backgroundColor: AppColors.white,
             type: BottomNavigationBarType.fixed,
+            elevation: 8,
           ),
           colorScheme: ColorScheme.fromSwatch().copyWith(
             primary: AppColors.primary,

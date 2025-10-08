@@ -66,6 +66,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
         foregroundColor: AppColors.white,
         bottom: TabBar(
           controller: _tabController,
+          labelColor: AppColors.white,
+          unselectedLabelColor: AppColors.white.withOpacity(0.7),
+          indicatorColor: AppColors.white,
           tabs: const [
             Tab(icon: Icon(Icons.notifications), text: 'Todas'),
             Tab(icon: Icon(Icons.warning), text: 'Urgentes'),

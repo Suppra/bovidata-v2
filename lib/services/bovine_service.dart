@@ -2,10 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/bovine_model.dart';
 import '../constants/app_constants.dart';
+import 'activity_service.dart';
 
 class BovineService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final ActivityService _activityService = ActivityService();
 
   // Get current user ID
   String? get _currentUserId => _auth.currentUser?.uid;
@@ -16,6 +18,16 @@ class BovineService {
       final docRef = await _firestore
           .collection(AppConstants.bovinesCollection)
           .add(bovine.toFirestore());
+      
+      // Log activity
+      if (_currentUserId != null) {
+        await _activityService.logBovineCreated(
+          docRef.id,
+          bovine.nombre,
+          _currentUserId!,
+        );
+      }
+      
       return docRef.id;
     } catch (e) {
       throw 'Error agregando bovino: $e';
@@ -31,6 +43,15 @@ class BovineService {
           .update(bovine.copyWith(
             fechaActualizacion: DateTime.now(),
           ).toFirestore());
+      
+      // Log activity
+      if (_currentUserId != null) {
+        await _activityService.logBovineUpdated(
+          id,
+          bovine.nombre,
+          _currentUserId!,
+        );
+      }
     } catch (e) {
       throw 'Error actualizando bovino: $e';
     }
@@ -39,6 +60,14 @@ class BovineService {
   // Delete bovine (soft delete)
   Future<void> deleteBovine(String id) async {
     try {
+      // Get bovine name before deletion for logging
+      final bovineDoc = await _firestore
+          .collection(AppConstants.bovinesCollection)
+          .doc(id)
+          .get();
+      
+      final bovineName = bovineDoc.data()?['nombre'] ?? 'Desconocido';
+      
       await _firestore
           .collection(AppConstants.bovinesCollection)
           .doc(id)
@@ -46,6 +75,15 @@ class BovineService {
             'activo': false,
             'fechaActualizacion': Timestamp.now(),
           });
+      
+      // Log activity
+      if (_currentUserId != null) {
+        await _activityService.logBovineDeleted(
+          id,
+          bovineName,
+          _currentUserId!,
+        );
+      }
     } catch (e) {
       throw 'Error eliminando bovino: $e';
     }
@@ -78,11 +116,15 @@ class BovineService {
         .collection(AppConstants.bovinesCollection)
         .where('propietarioId', isEqualTo: _currentUserId)
         .where('activo', isEqualTo: true)
-        .orderBy('fechaCreacion', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => BovineModel.fromFirestore(doc))
-            .toList());
+        .map((snapshot) {
+          List<BovineModel> bovines = snapshot.docs
+              .map((doc) => BovineModel.fromFirestore(doc))
+              .toList();
+          // Ordenar en el cliente para evitar índices compuestos
+          bovines.sort((a, b) => b.fechaCreacion.compareTo(a.fechaCreacion));
+          return bovines;
+        });
   }
 
   // Get bovines by status
@@ -96,11 +138,15 @@ class BovineService {
         .where('propietarioId', isEqualTo: _currentUserId)
         .where('estado', isEqualTo: status)
         .where('activo', isEqualTo: true)
-        .orderBy('fechaCreacion', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => BovineModel.fromFirestore(doc))
-            .toList());
+        .map((snapshot) {
+          List<BovineModel> bovines = snapshot.docs
+              .map((doc) => BovineModel.fromFirestore(doc))
+              .toList();
+          // Ordenar en el cliente
+          bovines.sort((a, b) => b.fechaCreacion.compareTo(a.fechaCreacion));
+          return bovines;
+        });
   }
 
   // Get bovines by race
@@ -114,11 +160,15 @@ class BovineService {
         .where('propietarioId', isEqualTo: _currentUserId)
         .where('raza', isEqualTo: race)
         .where('activo', isEqualTo: true)
-        .orderBy('fechaCreacion', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => BovineModel.fromFirestore(doc))
-            .toList());
+        .map((snapshot) {
+          List<BovineModel> bovines = snapshot.docs
+              .map((doc) => BovineModel.fromFirestore(doc))
+              .toList();
+          // Ordenar en el cliente
+          bovines.sort((a, b) => b.fechaCreacion.compareTo(a.fechaCreacion));
+          return bovines;
+        });
   }
 
   // Get bovines by sex
@@ -132,11 +182,15 @@ class BovineService {
         .where('propietarioId', isEqualTo: _currentUserId)
         .where('sexo', isEqualTo: sex)
         .where('activo', isEqualTo: true)
-        .orderBy('fechaCreacion', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => BovineModel.fromFirestore(doc))
-            .toList());
+        .map((snapshot) {
+          List<BovineModel> bovines = snapshot.docs
+              .map((doc) => BovineModel.fromFirestore(doc))
+              .toList();
+          // Ordenar en el cliente
+          bovines.sort((a, b) => b.fechaCreacion.compareTo(a.fechaCreacion));
+          return bovines;
+        });
   }
 
   // Search bovines by name or identification
@@ -290,11 +344,15 @@ class BovineService {
     return _firestore
         .collection(AppConstants.bovinesCollection)
         .where('activo', isEqualTo: true)
-        .orderBy('fechaCreacion', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => BovineModel.fromFirestore(doc))
-            .toList());
+        .map((snapshot) {
+          List<BovineModel> bovines = snapshot.docs
+              .map((doc) => BovineModel.fromFirestore(doc))
+              .toList();
+          // Ordenar en el cliente
+          bovines.sort((a, b) => b.fechaCreacion.compareTo(a.fechaCreacion));
+          return bovines;
+        });
   }
 
   // Get bovines statistics

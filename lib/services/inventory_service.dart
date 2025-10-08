@@ -1,9 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/inventory_model.dart';
 import '../constants/app_constants.dart';
+import 'activity_service.dart';
 
 class InventoryService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  static final FirebaseAuth _auth = FirebaseAuth.instance;
+  static final ActivityService _activityService = ActivityService();
 
   // Create a new inventory item
   static Future<String?> createInventoryItem(InventoryModel item) async {
@@ -11,6 +15,21 @@ class InventoryService {
       final docRef = await _firestore
           .collection(AppConstants.inventoryCollection)
           .add(item.toFirestore());
+      
+      // Log activity
+      final currentUserId = _auth.currentUser?.uid;
+      if (currentUserId != null) {
+        try {
+          await _activityService.logInventoryAdded(
+            docRef.id,
+            item.nombre,
+            currentUserId,
+          );
+        } catch (e) {
+          print('Error logging inventory activity: $e');
+        }
+      }
+      
       return docRef.id;
     } catch (e) {
       print('Error creating inventory item: $e');

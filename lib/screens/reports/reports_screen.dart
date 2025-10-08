@@ -66,6 +66,9 @@ class _ReportsScreenState extends State<ReportsScreen> with TickerProviderStateM
         foregroundColor: AppColors.white,
         bottom: TabBar(
           controller: _tabController,
+          labelColor: AppColors.white,
+          unselectedLabelColor: AppColors.white.withOpacity(0.7),
+          indicatorColor: AppColors.white,
           tabs: const [
             Tab(icon: Icon(Icons.dashboard), text: 'Resumen'),
             Tab(icon: Icon(Icons.pets), text: 'Bovinos'),

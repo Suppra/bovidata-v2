@@ -1,9 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/treatment_model.dart';
 import '../constants/app_constants.dart';
+import 'activity_service.dart';
 
 class TreatmentService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  static final FirebaseAuth _auth = FirebaseAuth.instance;
+  static final ActivityService _activityService = ActivityService();
 
   // Create a new treatment
   static Future<String?> createTreatment(TreatmentModel treatment) async {
@@ -11,6 +15,30 @@ class TreatmentService {
       final docRef = await _firestore
           .collection(AppConstants.treatmentsCollection)
           .add(treatment.toFirestore());
+      
+      // Log activity - get bovine name for better description
+      final currentUserId = _auth.currentUser?.uid;
+      if (currentUserId != null && treatment.bovineId.isNotEmpty) {
+        try {
+          final bovineDoc = await _firestore
+              .collection(AppConstants.bovinesCollection)
+              .doc(treatment.bovineId)
+              .get();
+          
+          final bovineName = bovineDoc.data()?['nombre'] ?? 'Desconocido';
+          
+          await _activityService.logTreatmentCreated(
+            docRef.id,
+            treatment.tipo,
+            treatment.bovineId,
+            bovineName,
+            currentUserId,
+          );
+        } catch (e) {
+          print('Error logging treatment activity: $e');
+        }
+      }
+      
       return docRef.id;
     } catch (e) {
       print('Error creating treatment: $e');
