@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import '../../controllers/inventory_controller.dart';
-import '../../controllers/auth_controller.dart';
+import '../../core/controllers/controllers.dart';
 import '../../models/inventory_model.dart';
 import '../../constants/app_styles.dart';
 import '../../constants/app_constants.dart';
@@ -107,8 +106,8 @@ class _InventoryFormScreenState extends State<InventoryFormScreen> {
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
       ),
-      body: Consumer2<InventoryController, AuthController>(
-        builder: (context, inventoryController, authController, child) {
+      body: Consumer2<SolidInventoryController, AuthController>(
+        builder: (context, SolidInventoryController, authController, child) {
           return Form(
             key: _formKey,
             child: SingleChildScrollView(
@@ -490,8 +489,8 @@ class _InventoryFormScreenState extends State<InventoryFormScreen> {
                       Expanded(
                         flex: 2,
                         child: ElevatedButton(
-                          onPressed: inventoryController.isLoading ? null : _saveItem,
-                          child: inventoryController.isLoading
+                          onPressed: SolidInventoryController.isLoading ? null : _saveItem,
+                          child: SolidInventoryController.isLoading
                               ? const SizedBox(
                                   width: 20,
                                   height: 20,
@@ -567,7 +566,7 @@ class _InventoryFormScreenState extends State<InventoryFormScreen> {
       return;
     }
 
-    final inventoryController = context.read<InventoryController>();
+    final inventoryController = context.read<SolidInventoryController>();
 
     final item = InventoryModel(
       id: widget.item?.id ?? '',
@@ -590,9 +589,9 @@ class _InventoryFormScreenState extends State<InventoryFormScreen> {
 
     bool success;
     if (widget.item == null) {
-      success = await inventoryController.createInventoryItem(item);
+      success = await inventoryController.createItem(item);
     } else {
-      success = await inventoryController.updateInventoryItem(item);
+      success = await inventoryController.updateItem(item);
     }
 
     if (success && mounted) {

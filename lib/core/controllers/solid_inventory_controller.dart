@@ -33,6 +33,14 @@ class SolidInventoryController extends ChangeNotifier {
       item.cantidadActual <= item.cantidadMinima).length;
   int get outOfStockItems => _inventory.where((item) => 
       item.cantidadActual <= 0).length;
+      
+  // Items vencidos
+  int get expiredItems {
+    final now = DateTime.now();
+    return _inventory.where((item) => 
+      item.fechaVencimiento != null && item.fechaVencimiento!.isBefore(now)
+    ).length;
+  }
 
   // Categorías disponibles
   List<String> get availableCategories {
@@ -48,6 +56,13 @@ class SolidInventoryController extends ChangeNotifier {
   /// Inicializar controller usando servicios SOLID
   void initialize() {
     loadInventory();
+  }
+
+  /// Buscar items en inventario
+  void search(String query) {
+    _searchQuery = query;
+    _applyFilters();
+    notifyListeners();
   }
 
   /// Cargar inventario usando servicio SOLID
@@ -218,5 +233,102 @@ class SolidInventoryController extends ChangeNotifier {
   /// Verificar si un item está agotado
   bool isOutOfStock(InventoryModel item) {
     return item.cantidadActual <= 0;
+  }
+
+  /// Alternar mostrar items con stock bajo
+  void toggleShowLowStock(bool show) {
+    _showLowStock = show;
+    _applyFilters();
+    notifyListeners();
+  }
+
+  /// Alternar mostrar items vencidos
+  void toggleShowExpired(bool show) {
+    // Implementar lógica de filtro si es necesario
+    _applyFilters();
+    notifyListeners();
+  }
+
+  /// Alternar mostrar items por vencer pronto
+  void toggleShowExpiringSoon(bool show) {
+    // Implementar lógica de filtro si es necesario
+    _applyFilters();
+    notifyListeners();
+  }
+
+  /// Agregar stock usando servicio SOLID
+  Future<bool> addStock(String itemId, int quantity) async {
+    _setLoading(true);
+    _clearError();
+    
+    try {
+      // Encontrar el item
+      final index = _inventory.indexWhere((item) => item.id == itemId);
+      if (index == -1) {
+        _setError('Item no encontrado');
+        return false;
+      }
+      
+      // Crear versión actualizada
+      final item = _inventory[index];
+      final updatedItem = item.copyWith(
+        cantidadActual: item.cantidadActual + quantity
+      );
+      
+      // Usar servicio SOLID para actualizar
+      final success = await _inventoryService.updateInventoryItem(itemId, updatedItem);
+      if (success) {
+        _inventory[index] = updatedItem;
+        _applyFilters();
+        notifyListeners();
+      }
+      return success;
+    } catch (e) {
+      _setError('Error al agregar stock: $e');
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  /// Remover stock usando servicio SOLID
+  Future<bool> removeStock(String itemId, int quantity) async {
+    _setLoading(true);
+    _clearError();
+    
+    try {
+      // Encontrar el item
+      final index = _inventory.indexWhere((item) => item.id == itemId);
+      if (index == -1) {
+        _setError('Item no encontrado');
+        return false;
+      }
+      
+      // Validar cantidad
+      final item = _inventory[index];
+      if (item.cantidadActual < quantity) {
+        _setError('No hay suficiente stock disponible');
+        return false;
+      }
+      
+      // Crear versión actualizada
+      final updatedItem = item.copyWith(
+        cantidadActual: item.cantidadActual - quantity
+      );
+      
+      // Usar servicio SOLID para actualizar
+      final success = await _inventoryService.updateInventoryItem(itemId, updatedItem);
+      if (success) {
+        _inventory[index] = updatedItem;
+        _applyFilters();
+        notifyListeners();
+      }
+      return success;
+    } catch (e) {
+      _setError('Error al remover stock: $e');
+      return false;
+    } finally {
+      _setLoading(false);
+    }
   }
 }

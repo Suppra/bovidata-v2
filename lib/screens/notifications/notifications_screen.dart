@@ -1,13 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import '../../controllers/bovine_controller.dart';
-import '../../controllers/treatment_controller.dart';
-import '../../controllers/inventory_controller.dart';
-import '../../controllers/auth_controller.dart';
-import '../../controllers/notification_controller.dart';
 import '../../core/controllers/controllers.dart';
-
 import '../../models/bovine_model.dart';
 import '../../models/treatment_model.dart';
 import '../../models/inventory_model.dart';
@@ -16,7 +10,6 @@ import '../../constants/app_styles.dart';
 import '../../constants/app_constants.dart';
 import '../treatments/treatment_detail_screen.dart';
 import '../inventory/inventory_detail_screen.dart';
-
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -55,11 +48,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
 
   void _loadData() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Initialize legacy controllers for compatibility
-      context.read<BovineController>().loadBovines();
-      context.read<TreatmentController>().loadTreatments();
-      context.read<InventoryController>().loadInventoryItems();
-      
       // Initialize SOLID controllers
       context.read<SolidBovineController>().initialize();
       context.read<SolidTreatmentController>().initialize();
@@ -69,7 +57,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
       final authController = context.read<AuthController>();
       final currentUser = authController.currentUser;
       if (currentUser != null) {
-        context.read<NotificationController>().loadNotifications(currentUser.id);
+        context.read<SolidNotificationController>().initialize(currentUser.id);
       }
     });
   }
@@ -142,12 +130,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
   }
 
   Widget _buildAllNotificationsTab() {
-    return Consumer3<BovineController, TreatmentController, InventoryController>(
-      builder: (context, bovineController, treatmentController, inventoryController, child) {
+    return Consumer3<SolidBovineController, SolidTreatmentController, SolidInventoryController>(
+      builder: (context, solidBovineController, solidTreatmentController, solidInventoryController, child) {
         final notifications = _generateNotifications(
-          bovineController.bovines,
-          treatmentController.treatments,
-          inventoryController.inventoryItems,
+          solidBovineController.bovines,
+          solidTreatmentController.treatments,
+          solidInventoryController.inventory,
         );
 
         final filteredNotifications = _filterNotifications(notifications);
@@ -172,12 +160,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
   }
 
   Widget _buildUrgentNotificationsTab() {
-    return Consumer3<BovineController, TreatmentController, InventoryController>(
-      builder: (context, bovineController, treatmentController, inventoryController, child) {
+    return Consumer3<SolidBovineController, SolidTreatmentController, SolidInventoryController>(
+      builder: (context, solidBovineController, solidTreatmentController, solidInventoryController, child) {
         final notifications = _generateNotifications(
-          bovineController.bovines,
-          treatmentController.treatments,
-          inventoryController.inventoryItems,
+          solidBovineController.bovines,
+          solidTreatmentController.treatments,
+          solidInventoryController.inventory,
         );
 
         final urgentNotifications = notifications.where((n) => n.priority == NotificationPriority.urgent).toList();
@@ -199,7 +187,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
   }
 
   Widget _buildMessagesTab() {
-    return Consumer2<AuthController, NotificationController>(
+    return Consumer2<AuthController, SolidNotificationController>(
       builder: (context, authController, notificationController, child) {
         final currentUser = authController.currentUser;
         
@@ -1001,7 +989,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
 
   void _markAllAsRead() {
     final authController = context.read<AuthController>();
-    final notificationController = context.read<NotificationController>();
+    final notificationController = context.read<SolidNotificationController>();
     final currentUser = authController.currentUser;
     
     if (currentUser != null) {
@@ -1038,7 +1026,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
 
   // Métodos para manejar notificaciones del sistema
   void _handleSystemNotificationAction(String action, NotificationModel notification) {
-    final notificationController = context.read<NotificationController>();
+    final notificationController = context.read<SolidNotificationController>();
     
     switch (action) {
       case 'mark_read':
@@ -1051,7 +1039,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
   }
 
   void _handleSystemNotificationTap(NotificationModel notification) {
-    final notificationController = context.read<NotificationController>();
+    final notificationController = context.read<SolidNotificationController>();
     
     // Marcar como leída si no está leída
     if (!notification.leida) {
@@ -1078,7 +1066,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              context.read<NotificationController>().deleteNotification(notification.id);
+              context.read<SolidNotificationController>().deleteNotification(notification.id);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('Notificación eliminada'),
@@ -1163,7 +1151,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
   }
 
   void _navigateToTreatmentDetail(String treatmentId) {
-    final treatmentController = context.read<TreatmentController>();
+    final treatmentController = context.read<SolidTreatmentController>();
     final treatment = treatmentController.treatments.firstWhere(
       (t) => t.id == treatmentId,
       orElse: () => throw Exception('Treatment not found'),
@@ -1177,8 +1165,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
   }
 
   void _navigateToInventoryDetail(String itemId) {
-    final inventoryController = context.read<InventoryController>();
-    final item = inventoryController.inventoryItems.firstWhere(
+    final inventoryController = context.read<SolidInventoryController>();
+    final item = inventoryController.inventory.firstWhere(
       (i) => i.id == itemId,
       orElse: () => throw Exception('Inventory item not found'),
     );
@@ -1191,7 +1179,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
   }
 
   void _navigateToBovineDetail(String bovineId) {
-    final bovineController = context.read<BovineController>();
+    final bovineController = context.read<SolidBovineController>();
     final bovine = bovineController.bovines.firstWhere(
       (b) => b.id == bovineId,
       orElse: () => throw Exception('Bovine not found'),

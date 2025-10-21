@@ -33,6 +33,14 @@ class SolidTreatmentController extends ChangeNotifier {
   int get totalTreatments => _treatments.length;
   int get completedTreatments => _treatments.where((t) => t.completado).length;
   int get pendingTreatments => _treatments.where((t) => !t.completado).length;
+  
+  // Tratamientos vencidos
+  int get overdueTreatments {
+    final now = DateTime.now();
+    return _treatments.where((t) => 
+      !t.completado && t.proximaAplicacion != null && t.proximaAplicacion!.isBefore(now)
+    ).length;
+  }
 
   // Tipos de tratamiento disponibles
   List<String> get availableTypes {
@@ -197,6 +205,39 @@ class SolidTreatmentController extends ChangeNotifier {
   }
 
   /// Limpiar error
+  /// Marcar tratamiento como completado usando servicio SOLID
+  Future<bool> markTreatmentCompleted(String treatmentId) async {
+    _setLoading(true);
+    _clearError();
+    
+    try {
+      // Encontrar el tratamiento
+      final index = _treatments.indexWhere((t) => t.id == treatmentId);
+      if (index == -1) {
+        _setError('Tratamiento no encontrado');
+        return false;
+      }
+      
+      // Crear versión actualizada
+      final treatment = _treatments[index];
+      final updatedTreatment = treatment.copyWith(completado: true);
+      
+      // Usar servicio SOLID para actualizar
+      final success = await _treatmentService.updateTreatment(treatmentId, updatedTreatment);
+      if (success) {
+        _treatments[index] = updatedTreatment;
+        _applyFilters();
+        notifyListeners();
+      }
+      return success;
+    } catch (e) {
+      _setError('Error al completar tratamiento: $e');
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
   void clearError() {
     _clearError();
     notifyListeners();

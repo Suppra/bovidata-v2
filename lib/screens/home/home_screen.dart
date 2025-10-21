@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../controllers/auth_controller.dart';
-import '../../controllers/bovine_controller.dart';
 import '../../core/controllers/controllers.dart';
 
 import '../../constants/app_styles.dart';
@@ -30,20 +29,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Initialize both legacy and SOLID controllers during migration
+    // Initialize SOLID controllers only
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final authController = context.read<AuthController>();
-      final bovineController = context.read<BovineController>();
       final solidBovineController = context.read<SolidBovineController>();
-      
-      // Initialize legacy controller for compatibility
-      if (authController.isVeterinario) {
-        bovineController.loadBovinesForVeterinarian();
-      } else {
-        bovineController.initialize();
-      }
-      
-      // Initialize SOLID controller
       solidBovineController.initialize();
     });
   }
@@ -263,8 +251,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildDashboard() {
-    return Consumer3<AuthController, BovineController, SolidBovineController>(
-      builder: (context, authController, bovineController, solidBovineController, child) {
+    return Consumer2<AuthController, SolidBovineController>(
+      builder: (context, authController, solidBovineController, child) {
         return SingleChildScrollView(
           padding: const EdgeInsets.all(AppDimensions.paddingM),
           child: Column(
@@ -326,7 +314,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: AppDimensions.marginM),
               
-              _buildStatisticsGrid(solidBovineController, bovineController),
+              _buildStatisticsGrid(solidBovineController),
               
               const SizedBox(height: AppDimensions.marginL),
 
@@ -345,12 +333,12 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildStatisticsGrid(SolidBovineController solidController, BovineController legacyController) {
+  Widget _buildStatisticsGrid(SolidBovineController solidController) {
     // Use SOLID controller data, fallback to legacy if needed
-    final bovines = solidController.bovines.isNotEmpty ? solidController.bovines : legacyController.bovines;
-    final healthyBovines = solidController.bovines.isNotEmpty ? solidController.healthyBovines : legacyController.healthyBovines;
-    final sickBovines = solidController.bovines.isNotEmpty ? solidController.sickBovines : legacyController.sickBovines;
-    final recoveringBovines = solidController.bovines.isNotEmpty ? solidController.recoveringBovines : legacyController.recoveringBovines;
+    final bovines = solidController.bovines;
+    final healthyBovines = solidController.healthyBovines;
+    final sickBovines = solidController.sickBovines;
+    final recoveringBovines = solidController.recoveringBovines;
     
     return GridView.count(
       crossAxisCount: 2,

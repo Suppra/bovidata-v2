@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import '../../controllers/inventory_controller.dart';
+
 import '../../controllers/auth_controller.dart';
+import '../../core/controllers/controllers.dart';
 import '../../models/inventory_model.dart';
 import '../../constants/app_styles.dart';
 import '../../constants/app_constants.dart';
@@ -44,7 +45,7 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<InventoryController>().loadInventoryItems();
+      context.read<SolidInventoryController>().loadInventory();
     });
   }
 
@@ -94,7 +95,7 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
                             icon: const Icon(Icons.clear),
                             onPressed: () {
                               _searchController.clear();
-                              context.read<InventoryController>().searchInventoryItems('');
+                              context.read<SolidInventoryController>().search('');
                             },
                           )
                         : null,
@@ -103,7 +104,7 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
                     ),
                   ),
                   onChanged: (value) {
-                    context.read<InventoryController>().searchInventoryItems(value);
+                    context.read<SolidInventoryController>().search(value);
                   },
                 ),
 
@@ -130,7 +131,7 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
                           setState(() {
                             _selectedCategory = value!;
                           });
-                          context.read<InventoryController>().filterByCategory(
+                          context.read<SolidInventoryController>().filterByCategory(
                             value == 'Todos' ? '' : value!,
                           );
                         },
@@ -157,7 +158,7 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
                           }
                         });
                         
-                        final controller = context.read<InventoryController>();
+                        final controller = context.read<SolidInventoryController>();
                         controller.toggleShowLowStock(_showLowStock);
                         controller.toggleShowExpired(_showExpired);
                         controller.toggleShowExpiringSoon(_showExpiringSoon);
@@ -187,8 +188,9 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
           ),
 
           // Statistics Section
-          Consumer<InventoryController>(
+          Consumer<SolidInventoryController>(
             builder: (context, controller, child) {
+
               return Container(
                 padding: const EdgeInsets.all(AppDimensions.paddingM),
                 margin: const EdgeInsets.all(AppDimensions.marginM),
@@ -238,7 +240,7 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
 
           // Inventory List
           Expanded(
-            child: Consumer<InventoryController>(
+            child: Consumer<SolidInventoryController>(
               builder: (context, controller, child) {
                 if (controller.isLoading) {
                   return const Center(
@@ -266,7 +268,7 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
                         ElevatedButton(
                           onPressed: () {
                             controller.clearError();
-                            controller.loadInventoryItems();
+                            controller.loadInventory();
                           },
                           child: const Text('Reintentar'),
                         ),
@@ -275,7 +277,7 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
                   );
                 }
 
-                if (controller.inventoryItems.isEmpty) {
+                if (controller.inventory.isEmpty) {
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -325,13 +327,13 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
 
                 return RefreshIndicator(
                   onRefresh: () async {
-                    await controller.loadInventoryItems();
+                    await controller.loadInventory();
                   },
                   child: ListView.builder(
                     padding: const EdgeInsets.all(AppDimensions.paddingM),
-                    itemCount: controller.inventoryItems.length,
+                    itemCount: controller.inventory.length,
                     itemBuilder: (context, index) {
-                      final item = controller.inventoryItems[index];
+                      final item = controller.inventory[index];
                       return InventoryCard(
                         item: item,
                         onTap: () {
@@ -473,9 +475,9 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
       
       bool success = false;
       if (operation == 'add') {
-        success = await context.read<InventoryController>().addStock(item.id, quantity);
+        success = await context.read<SolidInventoryController>().addStock(item.id, quantity);
       } else {
-        success = await context.read<InventoryController>().removeStock(item.id, quantity);
+        success = await context.read<SolidInventoryController>().removeStock(item.id, quantity);
       }
 
       if (success && mounted) {
@@ -486,7 +488,7 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
           ),
         );
       } else if (mounted) {
-        final error = context.read<InventoryController>().errorMessage;
+        final error = context.read<SolidInventoryController>().errorMessage;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(error ?? 'Error al ajustar stock'),

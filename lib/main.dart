@@ -3,10 +3,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'controllers/auth_controller.dart';
-import 'controllers/bovine_controller.dart';
-import 'controllers/treatment_controller.dart';
-import 'controllers/inventory_controller.dart';
-import 'controllers/notification_controller.dart';
 import 'core/controllers/controllers.dart';
 import 'core/locator/service_locator.dart';
 import 'services/scheduler_service.dart';
@@ -41,15 +37,11 @@ class BoviDataApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthController()),
-        // Legacy controllers - will be gradually replaced
-        ChangeNotifierProvider(create: (_) => BovineController()),
-        ChangeNotifierProvider(create: (_) => TreatmentController()),
-        ChangeNotifierProvider(create: (_) => InventoryController()),
-        ChangeNotifierProvider(create: (_) => NotificationController()),
-        // Modern SOLID controllers - gradually replacing legacy ones
+        // SOLID architecture controllers
         ChangeNotifierProvider(create: (_) => SolidBovineController()),
         ChangeNotifierProvider(create: (_) => SolidTreatmentController()),
         ChangeNotifierProvider(create: (_) => SolidInventoryController()),
+        ChangeNotifierProvider(create: (_) => SolidNotificationController()),
       ],
       child: MaterialApp(
         title: 'BoviData',

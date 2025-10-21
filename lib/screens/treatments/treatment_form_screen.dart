@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import '../../controllers/treatment_controller.dart';
-import '../../controllers/bovine_controller.dart';
-import '../../controllers/auth_controller.dart';
 import '../../core/controllers/controllers.dart';
 import '../../models/treatment_model.dart';
 import '../../models/bovine_model.dart';
@@ -68,9 +65,9 @@ class _TreatmentFormScreenState extends State<TreatmentFormScreen> {
     
     // Cargar bovinos si no están cargados
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final bovineController = context.read<BovineController>();
-      if (bovineController.bovines.isEmpty) {
-        bovineController.loadBovines();
+      final solidBovineController = context.read<SolidBovineController>();
+      if (solidBovineController.bovines.isEmpty) {
+        solidBovineController.initialize();
       }
     });
   }
@@ -97,8 +94,8 @@ class _TreatmentFormScreenState extends State<TreatmentFormScreen> {
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
       ),
-      body: Consumer3<TreatmentController, BovineController, AuthController>(
-        builder: (context, treatmentController, bovineController, authController, child) {
+      body: Consumer3<SolidTreatmentController, SolidBovineController, AuthController>(
+        builder: (context, treatmentController, solidBovineController, authController, child) {
           return Form(
             key: _formKey,
             child: SingleChildScrollView(
@@ -130,7 +127,7 @@ class _TreatmentFormScreenState extends State<TreatmentFormScreen> {
                               border: OutlineInputBorder(),
                               prefixIcon: Icon(Icons.pets),
                             ),
-                            items: bovineController.bovines.map((bovine) {
+                            items: solidBovineController.bovines.map((bovine) {
                               return DropdownMenuItem(
                                 value: bovine.id,
                                 child: Text('${bovine.nombre} (${bovine.numeroIdentificacion})'),
@@ -151,7 +148,7 @@ class _TreatmentFormScreenState extends State<TreatmentFormScreen> {
                           
                           if (_selectedBovineId.isNotEmpty) ...[
                             const SizedBox(height: AppDimensions.marginM),
-                            Consumer<BovineController>(
+                            Consumer<SolidBovineController>(
                               builder: (context, controller, child) {
                                 final bovine = controller.bovines.firstWhere(
                                   (b) => b.id == _selectedBovineId,
@@ -522,8 +519,7 @@ class _TreatmentFormScreenState extends State<TreatmentFormScreen> {
     }
 
     final authController = context.read<AuthController>();
-    final treatmentController = context.read<TreatmentController>();
-    final solidTreatmentController = context.read<SolidTreatmentController>();
+    final treatmentController = context.read<SolidTreatmentController>();
 
     final treatment = TreatmentModel(
       id: widget.treatment?.id ?? '',

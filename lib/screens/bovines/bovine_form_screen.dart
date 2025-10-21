@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import '../../controllers/auth_controller.dart';
-import '../../controllers/bovine_controller.dart';
 import '../../core/controllers/controllers.dart';
 import '../../models/bovine_model.dart';
 import '../../constants/app_styles.dart';
@@ -123,7 +121,6 @@ class _BovineFormScreenState extends State<BovineFormScreen> {
 
     try {
       final authController = context.read<AuthController>();
-      final bovineController = context.read<BovineController>();
       final solidBovineController = context.read<SolidBovineController>();
 
       final bovineData = BovineModel(
@@ -152,17 +149,11 @@ class _BovineFormScreenState extends State<BovineFormScreen> {
 
       bool success;
       if (widget.isEditing) {
-        // Try SOLID controller first, fallback to legacy
+        // Using SOLID controller for update
         success = await solidBovineController.updateBovine(widget.bovine!.id, bovineData);
-        if (!success) {
-          success = await bovineController.updateBovine(widget.bovine!.id, bovineData);
-        }
       } else {
-        // Try SOLID controller first, fallback to legacy
+        // Using SOLID controller for creation
         success = await solidBovineController.createBovine(bovineData);
-        if (!success) {
-          success = await bovineController.addBovine(bovineData);
-        }
       }
 
       if (success && mounted) {
@@ -180,7 +171,7 @@ class _BovineFormScreenState extends State<BovineFormScreen> {
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(solidBovineController.errorMessage ?? bovineController.errorMessage ?? 'Error al guardar bovino'),
+            content: Text(solidBovineController.errorMessage ?? 'Error al guardar bovino'),
             backgroundColor: AppColors.error,
           ),
         );

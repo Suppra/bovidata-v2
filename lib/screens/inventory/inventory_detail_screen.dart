@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import '../../controllers/inventory_controller.dart';
-import '../../controllers/auth_controller.dart';
+import '../../core/controllers/controllers.dart';
 import '../../models/inventory_model.dart';
 import '../../constants/app_styles.dart';
 import '../../constants/app_constants.dart';
@@ -627,18 +626,18 @@ class InventoryDetailScreen extends StatelessWidget {
               onPressed: () => Navigator.of(context).pop(),
               child: const Text('Cancelar'),
             ),
-            Consumer<InventoryController>(
-              builder: (context, inventoryController, child) => ElevatedButton(
-                onPressed: inventoryController.isLoading
+            Consumer<SolidInventoryController>(
+              builder: (context, SolidInventoryController, child) => ElevatedButton(
+                onPressed: SolidInventoryController.isLoading
                     ? null
                     : () => _adjustStock(
                         context,
-                        inventoryController,
+                        SolidInventoryController,
                         quantityController.text,
                         adjustmentType,
                         reasonController.text,
                       ),
-                child: inventoryController.isLoading
+                child: SolidInventoryController.isLoading
                     ? const SizedBox(
                         width: 20,
                         height: 20,
@@ -655,7 +654,7 @@ class InventoryDetailScreen extends StatelessWidget {
 
   Future<void> _adjustStock(
     BuildContext context,
-    InventoryController inventoryController,
+    SolidInventoryController inventoryController,
     String quantityText,
     String adjustmentType,
     String reason,
@@ -705,7 +704,7 @@ class InventoryDetailScreen extends StatelessWidget {
       activo: item.activo,
     );
 
-    final success = await inventoryController.updateInventoryItem(updatedItem);
+    final success = await inventoryController.updateItem(updatedItem);
 
     if (context.mounted) {
       Navigator.of(context).pop();
@@ -732,16 +731,16 @@ class InventoryDetailScreen extends StatelessWidget {
             onPressed: () => Navigator.of(context).pop(),
             child: const Text('Cancelar'),
           ),
-          Consumer<InventoryController>(
-            builder: (context, inventoryController, child) => ElevatedButton(
-              onPressed: inventoryController.isLoading
+          Consumer<SolidInventoryController>(
+            builder: (context, SolidInventoryController, child) => ElevatedButton(
+              onPressed: SolidInventoryController.isLoading
                   ? null
-                  : () => _deleteItem(context, inventoryController),
+                  : () => _deleteItem(context, SolidInventoryController),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.error,
                 foregroundColor: AppColors.white,
               ),
-              child: inventoryController.isLoading
+              child: SolidInventoryController.isLoading
                   ? const SizedBox(
                       width: 20,
                       height: 20,
@@ -757,9 +756,9 @@ class InventoryDetailScreen extends StatelessWidget {
 
   Future<void> _deleteItem(
     BuildContext context,
-    InventoryController inventoryController,
+    SolidInventoryController inventoryController,
   ) async {
-    final success = await inventoryController.deleteInventoryItem(item.id);
+    final success = await inventoryController.deleteItem(item.id);
 
     if (context.mounted) {
       Navigator.of(context).pop(); // Close dialog

@@ -4,6 +4,7 @@ import '../interfaces/repository_interface.dart';
 import '../interfaces/service_interface.dart';
 import '../repositories/concrete_repositories.dart';
 import '../services/solid_services.dart';
+import '../services/solid_notification_service.dart';
 import '../factories/model_factory.dart';
 import '../builders/entity_builder.dart';
 
@@ -64,6 +65,9 @@ class ServiceLocator {
       validationService: _services[IValidationService] as IValidationService,
     );
 
+    // Registrar SolidNotificationService
+    _services[SolidNotificationService] = SolidNotificationService();
+
     _isInitialized = true;
   }
 
@@ -82,6 +86,7 @@ class ServiceLocator {
   static SolidBovineService get bovineService => get<SolidBovineService>();
   static SolidTreatmentService get treatmentService => get<SolidTreatmentService>();
   static SolidInventoryService get inventoryService => get<SolidInventoryService>();
+  static SolidNotificationService get notificationService => get<SolidNotificationService>();
   static IBovineRepository get bovineRepository => get<IBovineRepository>();
   static ITreatmentRepository get treatmentRepository => get<ITreatmentRepository>();
   static IInventoryRepository get inventoryRepository => get<IInventoryRepository>();

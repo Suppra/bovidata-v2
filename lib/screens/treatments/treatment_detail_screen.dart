@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import '../../controllers/treatment_controller.dart';
-import '../../controllers/auth_controller.dart';
+import '../../core/controllers/controllers.dart';
 import '../../models/treatment_model.dart';
 import '../../constants/app_styles.dart';
 import '../../constants/app_constants.dart';
@@ -418,7 +417,7 @@ class TreatmentDetailScreen extends StatelessWidget {
               Navigator.of(context).pop();
               
               final success = await context
-                  .read<TreatmentController>()
+                  .read<SolidTreatmentController>()
                   .markTreatmentCompleted(treatment.id);
               
               if (success && context.mounted) {
@@ -430,7 +429,7 @@ class TreatmentDetailScreen extends StatelessWidget {
                   ),
                 );
               } else if (context.mounted) {
-                final error = context.read<TreatmentController>().errorMessage;
+                final error = context.read<SolidTreatmentController>().errorMessage;
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(error ?? 'Error al completar tratamiento'),
@@ -467,7 +466,7 @@ class TreatmentDetailScreen extends StatelessWidget {
               Navigator.of(context).pop();
               
               final success = await context
-                  .read<TreatmentController>()
+                  .read<SolidTreatmentController>()
                   .deleteTreatment(treatment.id);
               
               if (success && context.mounted) {
@@ -479,7 +478,7 @@ class TreatmentDetailScreen extends StatelessWidget {
                   ),
                 );
               } else if (context.mounted) {
-                final error = context.read<TreatmentController>().errorMessage;
+                final error = context.read<SolidTreatmentController>().errorMessage;
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(error ?? 'Error al eliminar tratamiento'),

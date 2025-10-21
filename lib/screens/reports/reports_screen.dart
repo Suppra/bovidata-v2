@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import '../../controllers/bovine_controller.dart';
-import '../../controllers/treatment_controller.dart';
-import '../../controllers/inventory_controller.dart';
-import '../../controllers/auth_controller.dart';
 import '../../core/controllers/controllers.dart';
 import '../../models/bovine_model.dart';
 import '../../models/treatment_model.dart';
 import '../../models/inventory_model.dart';
 import '../../constants/app_styles.dart';
 import '../../constants/app_constants.dart';
-
 
 class ReportsScreen extends StatefulWidget {
   const ReportsScreen({super.key});
@@ -52,11 +47,6 @@ class _ReportsScreenState extends State<ReportsScreen> with TickerProviderStateM
 
   void _loadData() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Initialize legacy controllers
-      context.read<BovineController>().loadBovines();
-      context.read<TreatmentController>().loadTreatments();
-      context.read<InventoryController>().loadInventoryItems();
-      
       // Initialize SOLID controllers
       context.read<SolidBovineController>().initialize();
       context.read<SolidTreatmentController>().initialize();
@@ -163,19 +153,12 @@ class _ReportsScreenState extends State<ReportsScreen> with TickerProviderStateM
   }
 
   Widget _buildGeneralReportTab() {
-    return Consumer4<BovineController, TreatmentController, InventoryController, AuthController>(
-      builder: (context, bovineController, treatmentController, inventoryController, authController, child) {
-        // Get SOLID controllers
-        final solidBovineController = context.watch<SolidBovineController>();
-        final solidTreatmentController = context.watch<SolidTreatmentController>();
-        final solidInventoryController = context.watch<SolidInventoryController>();
-        // Use SOLID controllers with legacy fallback
-        final bovines = solidBovineController.bovines.isNotEmpty ? 
-            solidBovineController.bovines : bovineController.bovines;
-        final treatments = solidTreatmentController.treatments.isNotEmpty ? 
-            solidTreatmentController.treatments : treatmentController.treatments;
-        final inventory = solidInventoryController.inventory.isNotEmpty ? 
-            solidInventoryController.inventory : inventoryController.inventoryItems;
+    return Consumer4<SolidBovineController, SolidTreatmentController, SolidInventoryController, AuthController>(
+      builder: (context, solidBovineController, solidTreatmentController, solidInventoryController, authController, child) {
+        // Use SOLID controllers data
+        final bovines = solidBovineController.bovines;
+        final treatments = solidTreatmentController.treatments;
+        final inventory = solidInventoryController.inventory;
 
         return SingleChildScrollView(
           padding: const EdgeInsets.all(AppDimensions.paddingL),
@@ -261,7 +244,7 @@ class _ReportsScreenState extends State<ReportsScreen> with TickerProviderStateM
   }
 
   Widget _buildBovineReportTab() {
-    return Consumer<BovineController>(
+    return Consumer<SolidBovineController>(
       builder: (context, controller, child) {
         final bovines = controller.bovines;
         final filteredBovines = _filterBovinesByDate(bovines);
@@ -345,7 +328,7 @@ class _ReportsScreenState extends State<ReportsScreen> with TickerProviderStateM
   }
 
   Widget _buildTreatmentReportTab() {
-    return Consumer<TreatmentController>(
+    return Consumer<SolidTreatmentController>(
       builder: (context, controller, child) {
         final treatments = controller.treatments;
         final filteredTreatments = _filterTreatmentsByDate(treatments);
@@ -421,9 +404,9 @@ class _ReportsScreenState extends State<ReportsScreen> with TickerProviderStateM
   }
 
   Widget _buildInventoryReportTab() {
-    return Consumer<InventoryController>(
+    return Consumer<SolidInventoryController>(
       builder: (context, controller, child) {
-        final inventory = controller.inventoryItems;
+        final inventory = controller.inventory;
 
         return SingleChildScrollView(
           padding: const EdgeInsets.all(AppDimensions.paddingL),

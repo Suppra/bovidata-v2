@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import '../../controllers/treatment_controller.dart';
+
 import '../../controllers/auth_controller.dart';
 import '../../core/controllers/controllers.dart';
 import '../../models/treatment_model.dart';
 import '../../constants/app_styles.dart';
 import '../../constants/app_constants.dart';
 import 'treatment_form_screen.dart';
-
 
 class TreatmentListScreen extends StatefulWidget {
   final String? bovineId;
@@ -46,14 +45,12 @@ class _TreatmentListScreenState extends State<TreatmentListScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final treatmentController = context.read<TreatmentController>();
       final solidTreatmentController = context.read<SolidTreatmentController>();
       
       if (widget.bovineId != null) {
-        treatmentController.loadTreatmentsByBovine(widget.bovineId!);
         solidTreatmentController.loadTreatmentsByBovine(widget.bovineId!);
       } else {
-        treatmentController.loadTreatments();
+        solidTreatmentController.loadTreatments();
         solidTreatmentController.initialize();
       }
     });
@@ -105,7 +102,7 @@ class _TreatmentListScreenState extends State<TreatmentListScreen> {
                             icon: const Icon(Icons.clear),
                             onPressed: () {
                               _searchController.clear();
-                              context.read<TreatmentController>().searchTreatments('');
+                              context.read<SolidTreatmentController>().searchTreatments('');
                             },
                           )
                         : null,
@@ -114,7 +111,7 @@ class _TreatmentListScreenState extends State<TreatmentListScreen> {
                     ),
                   ),
                   onChanged: (value) {
-                    context.read<TreatmentController>().searchTreatments(value);
+                    context.read<SolidTreatmentController>().searchTreatments(value);
                   },
                 ),
 
@@ -141,7 +138,7 @@ class _TreatmentListScreenState extends State<TreatmentListScreen> {
                           setState(() {
                             _selectedFilter = value!;
                           });
-                          context.read<TreatmentController>().filterByType(
+                          context.read<SolidTreatmentController>().filterByType(
                             value == 'Todos' ? '' : value!,
                           );
                         },
@@ -165,7 +162,7 @@ class _TreatmentListScreenState extends State<TreatmentListScreen> {
                           }
                         });
                         
-                        final controller = context.read<TreatmentController>();
+                        final controller = context.read<SolidTreatmentController>();
                         controller.toggleShowCompleted(_showCompleted);
                         controller.toggleShowPending(_showPending);
                       },
@@ -190,8 +187,8 @@ class _TreatmentListScreenState extends State<TreatmentListScreen> {
 
           // Statistics Section
           if (widget.bovineId == null)
-            Consumer2<TreatmentController, SolidTreatmentController>(
-              builder: (context, controller, solidController, child) {
+            Consumer<SolidTreatmentController>(
+              builder: (context, controller, child) {
                 return Container(
                   padding: const EdgeInsets.all(AppDimensions.paddingM),
                   margin: const EdgeInsets.all(AppDimensions.marginM),
@@ -241,7 +238,7 @@ class _TreatmentListScreenState extends State<TreatmentListScreen> {
 
           // Treatment List
           Expanded(
-            child: Consumer<TreatmentController>(
+            child: Consumer<SolidTreatmentController>(
               builder: (context, controller, child) {
                 if (controller.isLoading) {
                   return const Center(
@@ -422,7 +419,7 @@ class _TreatmentListScreenState extends State<TreatmentListScreen> {
 
     if (confirm == true && mounted) {
       final success = await context
-          .read<TreatmentController>()
+          .read<SolidTreatmentController>()
           .markTreatmentCompleted(treatment.id);
 
       if (success && mounted) {
@@ -433,7 +430,7 @@ class _TreatmentListScreenState extends State<TreatmentListScreen> {
           ),
         );
       } else if (mounted) {
-        final error = context.read<TreatmentController>().errorMessage;
+        final error = context.read<SolidTreatmentController>().errorMessage;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(error ?? 'Error al completar tratamiento'),
