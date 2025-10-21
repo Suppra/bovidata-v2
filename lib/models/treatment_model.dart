@@ -101,6 +101,49 @@ class TreatmentModel {
     return proximaAplicacion!.difference(DateTime.now()).inDays;
   }
 
+  // Factory method para crear tratamiento vacío (Pattern: Factory Method)
+  factory TreatmentModel.empty() {
+    return TreatmentModel(
+      id: '',
+      bovineId: '',
+      tipo: '',
+      nombre: '',
+      descripcion: '',
+      fecha: DateTime.now(),
+      veterinarioId: '',
+      fechaCreacion: DateTime.now(),
+    );
+  }
+
+  // Factory method desde Map (Pattern: Factory Method)
+  factory TreatmentModel.fromMap(Map<String, dynamic> data, String id) {
+    return TreatmentModel(
+      id: id,
+      bovineId: data['bovineId'] ?? '',
+      tipo: data['tipo'] ?? '',
+      nombre: data['nombre'] ?? '',
+      descripcion: data['descripcion'] ?? '',
+      fecha: data['fecha'] is DateTime ? data['fecha'] : DateTime.now(),
+      medicamento: data['medicamento'],
+      dosis: data['dosis']?.toDouble(),
+      unidadDosis: data['unidadDosis'],
+      veterinarioId: data['veterinarioId'] ?? '',
+      proximaAplicacion: data['proximaAplicacion'] is DateTime
+          ? data['proximaAplicacion']
+          : null,
+      completado: data['completado'] ?? false,
+      fechaCreacion: data['fechaCreacion'] is DateTime
+          ? data['fechaCreacion']
+          : DateTime.now(),
+      observaciones: data['observaciones'],
+      costo: data['costo']?.toDouble(),
+      imagenesUrl: data['imagenesUrl'] != null
+          ? List<String>.from(data['imagenesUrl'])
+          : null,
+      efectosSecundarios: data['efectosSecundarios'],
+    );
+  }
+
   // Copy with method
   TreatmentModel copyWith({
     String? id,

@@ -157,4 +157,47 @@ class InventoryModel {
       propiedades: propiedades ?? this.propiedades,
     );
   }
+
+  // Factory method para crear inventario vacío (Pattern: Factory Method)
+  factory InventoryModel.empty() {
+    return InventoryModel(
+      id: '',
+      nombre: '',
+      tipo: '',
+      categoria: '',
+      cantidadActual: 0,
+      cantidadMinima: 0,
+      unidad: '',
+      fechaCreacion: DateTime.now(),
+    );
+  }
+
+  // Factory method desde Map (Pattern: Factory Method)
+  factory InventoryModel.fromMap(Map<String, dynamic> data, String id) {
+    return InventoryModel(
+      id: id,
+      nombre: data['nombre'] ?? '',
+      tipo: data['tipo'] ?? '',
+      categoria: data['categoria'] ?? '',
+      cantidadActual: data['cantidadActual'] ?? 0,
+      cantidadMinima: data['cantidadMinima'] ?? 0,
+      unidad: data['unidad'] ?? '',
+      precioUnitario: data['precioUnitario']?.toDouble(),
+      fechaVencimiento: data['fechaVencimiento'] is DateTime
+          ? data['fechaVencimiento']
+          : null,
+      lote: data['lote'],
+      proveedor: data['proveedor'],
+      descripcion: data['descripcion'],
+      fechaCreacion: data['fechaCreacion'] is DateTime
+          ? data['fechaCreacion']
+          : DateTime.now(),
+      fechaActualizacion: data['fechaActualizacion'] is DateTime
+          ? data['fechaActualizacion']
+          : null,
+      imagenUrl: data['imagenUrl'],
+      activo: data['activo'] ?? true,
+      propiedades: data['propiedades'],
+    );
+  }
 }

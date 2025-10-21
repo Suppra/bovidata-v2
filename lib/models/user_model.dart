@@ -92,4 +92,36 @@ class UserModel {
       avatarUrl: avatarUrl ?? this.avatarUrl,
     );
   }
+
+  // Factory method para crear usuario vacío (Pattern: Factory Method)
+  factory UserModel.empty() {
+    return UserModel(
+      id: '',
+      nombre: '',
+      apellido: '',
+      email: '',
+      telefono: '',
+      rol: '',
+      fechaCreacion: DateTime.now(),
+    );
+  }
+
+  // Factory method desde Map (Pattern: Factory Method)
+  factory UserModel.fromMap(Map<String, dynamic> data, String id) {
+    return UserModel(
+      id: id,
+      nombre: data['nombre'] ?? '',
+      apellido: data['apellido'] ?? '',
+      email: data['email'] ?? '',
+      telefono: data['telefono'] ?? '',
+      rol: data['rol'] ?? '',
+      direccion: data['direccion'],
+      cedula: data['cedula'],
+      fechaCreacion: data['fechaCreacion'] is DateTime
+          ? data['fechaCreacion']
+          : DateTime.now(),
+      activo: data['activo'] ?? true,
+      avatarUrl: data['avatarUrl'],
+    );
+  }
 }

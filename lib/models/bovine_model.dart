@@ -39,6 +39,69 @@ class BovineModel {
     this.activo = true,
   });
 
+  // Factory method para crear bovino vacío (Pattern: Factory Method)
+  factory BovineModel.empty() {
+    return BovineModel(
+      id: '',
+      nombre: '',
+      raza: '',
+      sexo: '',
+      fechaNacimiento: DateTime.now(),
+      color: '',
+      peso: 0.0,
+      numeroIdentificacion: '',
+      estado: 'Sano',
+      propietarioId: '',
+      fechaCreacion: DateTime.now(),
+    );
+  }
+
+  // Factory method para crear bovino con raza específica (Pattern: Factory Method)
+  factory BovineModel.withBreed(String breed) {
+    return BovineModel(
+      id: '',
+      nombre: '',
+      raza: breed,
+      sexo: '',
+      fechaNacimiento: DateTime.now(),
+      color: '',
+      peso: 0.0,
+      numeroIdentificacion: '',
+      estado: 'Sano',
+      propietarioId: '',
+      fechaCreacion: DateTime.now(),
+    );
+  }
+
+  // Factory method desde Map (Pattern: Factory Method)
+  factory BovineModel.fromMap(Map<String, dynamic> data, String id) {
+    return BovineModel(
+      id: id,
+      nombre: data['nombre'] ?? '',
+      raza: data['raza'] ?? '',
+      sexo: data['sexo'] ?? '',
+      fechaNacimiento: data['fechaNacimiento'] is DateTime
+          ? data['fechaNacimiento']
+          : DateTime.now(),
+      color: data['color'] ?? '',
+      peso: (data['peso'] ?? 0.0).toDouble(),
+      numeroIdentificacion: data['numeroIdentificacion'] ?? '',
+      estado: data['estado'] ?? 'Sano',
+      propietarioId: data['propietarioId'] ?? '',
+      fechaCreacion: data['fechaCreacion'] is DateTime
+          ? data['fechaCreacion']
+          : DateTime.now(),
+      fechaActualizacion: data['fechaActualizacion'] is DateTime
+          ? data['fechaActualizacion']
+          : null,
+      imagenUrl: data['imagenUrl'],
+      observaciones: data['observaciones'],
+      padre: data['padre'],
+      madre: data['madre'],
+      activo: data['activo'] ?? true,
+    );
+  }
+
   // Convert from Firestore Document
   factory BovineModel.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
