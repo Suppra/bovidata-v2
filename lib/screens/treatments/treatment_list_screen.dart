@@ -7,7 +7,7 @@ import '../../models/treatment_model.dart';
 import '../../constants/app_styles.dart';
 import '../../constants/app_constants.dart';
 import 'treatment_form_screen.dart';
-import 'treatment_detail_screen.dart';
+
 
 class TreatmentListScreen extends StatefulWidget {
   final String? bovineId;

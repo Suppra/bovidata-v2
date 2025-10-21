@@ -3,8 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/bovine_controller.dart';
-import '../../controllers/treatment_controller.dart';
-import '../../controllers/inventory_controller.dart';
+
 import '../../constants/app_styles.dart';
 import '../../constants/app_constants.dart';
 import '../../services/activity_service.dart';
