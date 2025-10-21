@@ -7,6 +7,8 @@ import 'controllers/bovine_controller.dart';
 import 'controllers/treatment_controller.dart';
 import 'controllers/inventory_controller.dart';
 import 'controllers/notification_controller.dart';
+import 'core/controllers/controllers.dart';
+import 'core/locator/service_locator.dart';
 import 'services/scheduler_service.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/home/home_screen.dart';
@@ -18,6 +20,12 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  
+  // Initialize SOLID architecture services
+  ServiceLocator.initialize();
+  
+  // Initialize SOLID architecture dependencies
+  ServiceLocator.initialize();
   
   // Initialize scheduled notifications
   SchedulerService.initializeScheduler();
@@ -33,10 +41,15 @@ class BoviDataApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthController()),
+        // Legacy controllers - will be gradually replaced
         ChangeNotifierProvider(create: (_) => BovineController()),
         ChangeNotifierProvider(create: (_) => TreatmentController()),
         ChangeNotifierProvider(create: (_) => InventoryController()),
         ChangeNotifierProvider(create: (_) => NotificationController()),
+        // Modern SOLID controllers - gradually replacing legacy ones
+        ChangeNotifierProvider(create: (_) => SolidBovineController()),
+        ChangeNotifierProvider(create: (_) => SolidTreatmentController()),
+        ChangeNotifierProvider(create: (_) => SolidInventoryController()),
       ],
       child: MaterialApp(
         title: 'BoviData',

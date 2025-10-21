@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../controllers/treatment_controller.dart';
 import '../../controllers/auth_controller.dart';
+import '../../core/controllers/controllers.dart';
 import '../../models/treatment_model.dart';
 import '../../constants/app_styles.dart';
 import '../../constants/app_constants.dart';
@@ -46,10 +47,14 @@ class _TreatmentListScreenState extends State<TreatmentListScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final treatmentController = context.read<TreatmentController>();
+      final solidTreatmentController = context.read<SolidTreatmentController>();
+      
       if (widget.bovineId != null) {
         treatmentController.loadTreatmentsByBovine(widget.bovineId!);
+        solidTreatmentController.loadTreatmentsByBovine(widget.bovineId!);
       } else {
         treatmentController.loadTreatments();
+        solidTreatmentController.initialize();
       }
     });
   }
@@ -185,8 +190,8 @@ class _TreatmentListScreenState extends State<TreatmentListScreen> {
 
           // Statistics Section
           if (widget.bovineId == null)
-            Consumer<TreatmentController>(
-              builder: (context, controller, child) {
+            Consumer2<TreatmentController, SolidTreatmentController>(
+              builder: (context, controller, solidController, child) {
                 return Container(
                   padding: const EdgeInsets.all(AppDimensions.paddingM),
                   margin: const EdgeInsets.all(AppDimensions.marginM),
@@ -195,7 +200,7 @@ class _TreatmentListScreenState extends State<TreatmentListScreen> {
                     borderRadius: BorderRadius.circular(AppDimensions.radiusM),
                     boxShadow: const [
                       BoxShadow(
-                        color: Colors.black12,
+                        color: AppColors.grey200,
                         blurRadius: 4,
                         offset: Offset(0, 2),
                       ),

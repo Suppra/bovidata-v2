@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/bovine_controller.dart';
+import '../../core/controllers/controllers.dart';
 import '../../models/bovine_model.dart';
 import '../../constants/app_styles.dart';
 import '../../constants/app_constants.dart';
@@ -363,7 +364,13 @@ class BovineDetailScreen extends StatelessWidget {
               Navigator.of(context).pop();
               
               final bovineController = context.read<BovineController>();
-              final success = await bovineController.deleteBovine(bovine.id);
+              final solidBovineController = context.read<SolidBovineController>();
+              
+              // Try SOLID controller first, fallback to legacy
+              bool success = await solidBovineController.deleteBovine(bovine.id);
+              if (!success) {
+                success = await bovineController.deleteBovine(bovine.id);
+              }
               
               if (success && context.mounted) {
                 Navigator.of(context).pop();
@@ -376,7 +383,7 @@ class BovineDetailScreen extends StatelessWidget {
               } else if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(bovineController.errorMessage ?? 'Error al eliminar bovino'),
+                    content: Text(solidBovineController.errorMessage ?? bovineController.errorMessage ?? 'Error al eliminar bovino'),
                     backgroundColor: AppColors.error,
                   ),
                 );

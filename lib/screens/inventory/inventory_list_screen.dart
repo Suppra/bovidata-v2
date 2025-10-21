@@ -197,7 +197,7 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
                   borderRadius: BorderRadius.circular(AppDimensions.radiusM),
                   boxShadow: const [
                     BoxShadow(
-                      color: Colors.black12,
+                      color: AppColors.grey200,
                       blurRadius: 4,
                       offset: Offset(0, 2),
                     ),

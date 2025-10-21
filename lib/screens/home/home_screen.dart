@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/bovine_controller.dart';
+import '../../core/controllers/controllers.dart';
 
 import '../../constants/app_styles.dart';
 import '../../constants/app_constants.dart';
@@ -29,16 +30,21 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Initialize bovine controller
+    // Initialize both legacy and SOLID controllers during migration
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final authController = context.read<AuthController>();
       final bovineController = context.read<BovineController>();
+      final solidBovineController = context.read<SolidBovineController>();
       
+      // Initialize legacy controller for compatibility
       if (authController.isVeterinario) {
         bovineController.loadBovinesForVeterinarian();
       } else {
         bovineController.initialize();
       }
+      
+      // Initialize SOLID controller
+      solidBovineController.initialize();
     });
   }
 
@@ -77,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           '3',
                           style: TextStyle(
                             color: AppColors.white,
-                            fontSize: 10,
+                            fontSize: 10, // Mantener tamaño específico
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -257,8 +263,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildDashboard() {
-    return Consumer2<AuthController, BovineController>(
-      builder: (context, authController, bovineController, child) {
+    return Consumer3<AuthController, BovineController, SolidBovineController>(
+      builder: (context, authController, bovineController, solidBovineController, child) {
         return SingleChildScrollView(
           padding: const EdgeInsets.all(AppDimensions.paddingM),
           child: Column(
@@ -320,7 +326,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: AppDimensions.marginM),
               
-              _buildStatisticsGrid(bovineController),
+              _buildStatisticsGrid(solidBovineController, bovineController),
               
               const SizedBox(height: AppDimensions.marginL),
 
@@ -339,7 +345,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildStatisticsGrid(BovineController bovineController) {
+  Widget _buildStatisticsGrid(SolidBovineController solidController, BovineController legacyController) {
+    // Use SOLID controller data, fallback to legacy if needed
+    final bovines = solidController.bovines.isNotEmpty ? solidController.bovines : legacyController.bovines;
+    final healthyBovines = solidController.bovines.isNotEmpty ? solidController.healthyBovines : legacyController.healthyBovines;
+    final sickBovines = solidController.bovines.isNotEmpty ? solidController.sickBovines : legacyController.sickBovines;
+    final recoveringBovines = solidController.bovines.isNotEmpty ? solidController.recoveringBovines : legacyController.recoveringBovines;
+    
     return GridView.count(
       crossAxisCount: 2,
       shrinkWrap: true,
@@ -350,25 +362,25 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         _buildStatCard(
           'Total Bovinos',
-          '${bovineController.bovines.length}',
+          '${bovines.length}',
           Icons.pets,
           AppColors.primary,
         ),
         _buildStatCard(
           'Sanos',
-          '${bovineController.healthyBovines.length}',
+          '${healthyBovines.length}',
           Icons.health_and_safety,
           AppColors.success,
         ),
         _buildStatCard(
           'Enfermos',
-          '${bovineController.sickBovines.length}',
+          '${sickBovines.length}',
           Icons.sick,
           AppColors.error,
         ),
         _buildStatCard(
           'En Tratamiento',
-          '${bovineController.recoveringBovines.length}',
+          '${recoveringBovines.length}',
           Icons.medical_services,
           AppColors.warning,
         ),
@@ -399,7 +411,7 @@ class _HomeScreenState extends State<HomeScreen> {
             FittedBox(
               child: Text(
                 title,
-                style: AppTextStyles.caption.copyWith(fontSize: 11),
+                style: AppTextStyles.caption,
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -476,7 +488,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     'Comienza registrando bovinos, tratamientos o inventario',
                     style: AppTextStyles.caption.copyWith(
                       color: AppColors.grey600,
-                      fontSize: 11,
+                      fontSize: 11, // Tamaño específico para navegación
                     ),
                     textAlign: TextAlign.center,
                   ),

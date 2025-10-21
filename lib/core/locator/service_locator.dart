@@ -11,6 +11,12 @@ class ServiceLocator {
   static final Map<Type, dynamic> _services = {};
   static bool _isInitialized = false;
 
+  /// Inicializa el contenedor de dependencias
+  static void initialize() {
+    if (_isInitialized) return;
+    setupDependencies();
+  }
+
   static void setupDependencies() {
     if (_isInitialized) return;
     

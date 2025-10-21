@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/bovine_controller.dart';
+import '../../core/controllers/controllers.dart';
 import '../../models/bovine_model.dart';
 import '../../constants/app_styles.dart';
 import '../../constants/app_constants.dart';
@@ -123,6 +124,7 @@ class _BovineFormScreenState extends State<BovineFormScreen> {
     try {
       final authController = context.read<AuthController>();
       final bovineController = context.read<BovineController>();
+      final solidBovineController = context.read<SolidBovineController>();
 
       final bovineData = BovineModel(
         id: widget.bovine?.id ?? '',
@@ -150,9 +152,17 @@ class _BovineFormScreenState extends State<BovineFormScreen> {
 
       bool success;
       if (widget.isEditing) {
-        success = await bovineController.updateBovine(widget.bovine!.id, bovineData);
+        // Try SOLID controller first, fallback to legacy
+        success = await solidBovineController.updateBovine(widget.bovine!.id, bovineData);
+        if (!success) {
+          success = await bovineController.updateBovine(widget.bovine!.id, bovineData);
+        }
       } else {
-        success = await bovineController.addBovine(bovineData);
+        // Try SOLID controller first, fallback to legacy
+        success = await solidBovineController.createBovine(bovineData);
+        if (!success) {
+          success = await bovineController.addBovine(bovineData);
+        }
       }
 
       if (success && mounted) {
@@ -170,7 +180,7 @@ class _BovineFormScreenState extends State<BovineFormScreen> {
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(bovineController.errorMessage ?? 'Error al guardar bovino'),
+            content: Text(solidBovineController.errorMessage ?? bovineController.errorMessage ?? 'Error al guardar bovino'),
             backgroundColor: AppColors.error,
           ),
         );

@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../controllers/treatment_controller.dart';
 import '../../controllers/bovine_controller.dart';
 import '../../controllers/auth_controller.dart';
+import '../../core/controllers/controllers.dart';
 import '../../models/treatment_model.dart';
 import '../../models/bovine_model.dart';
 import '../../constants/app_styles.dart';
@@ -522,6 +523,7 @@ class _TreatmentFormScreenState extends State<TreatmentFormScreen> {
 
     final authController = context.read<AuthController>();
     final treatmentController = context.read<TreatmentController>();
+    final solidTreatmentController = context.read<SolidTreatmentController>();
 
     final treatment = TreatmentModel(
       id: widget.treatment?.id ?? '',

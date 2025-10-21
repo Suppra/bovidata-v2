@@ -5,6 +5,7 @@ import '../../controllers/bovine_controller.dart';
 import '../../controllers/treatment_controller.dart';
 import '../../controllers/inventory_controller.dart';
 import '../../controllers/auth_controller.dart';
+import '../../core/controllers/controllers.dart';
 import '../../models/bovine_model.dart';
 import '../../models/treatment_model.dart';
 import '../../models/inventory_model.dart';
@@ -51,9 +52,15 @@ class _ReportsScreenState extends State<ReportsScreen> with TickerProviderStateM
 
   void _loadData() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Initialize legacy controllers
       context.read<BovineController>().loadBovines();
       context.read<TreatmentController>().loadTreatments();
       context.read<InventoryController>().loadInventoryItems();
+      
+      // Initialize SOLID controllers
+      context.read<SolidBovineController>().initialize();
+      context.read<SolidTreatmentController>().initialize();
+      context.read<SolidInventoryController>().initialize();
     });
   }
 
@@ -158,9 +165,17 @@ class _ReportsScreenState extends State<ReportsScreen> with TickerProviderStateM
   Widget _buildGeneralReportTab() {
     return Consumer4<BovineController, TreatmentController, InventoryController, AuthController>(
       builder: (context, bovineController, treatmentController, inventoryController, authController, child) {
-        final bovines = bovineController.bovines;
-        final treatments = treatmentController.treatments;
-        final inventory = inventoryController.inventoryItems;
+        // Get SOLID controllers
+        final solidBovineController = context.watch<SolidBovineController>();
+        final solidTreatmentController = context.watch<SolidTreatmentController>();
+        final solidInventoryController = context.watch<SolidInventoryController>();
+        // Use SOLID controllers with legacy fallback
+        final bovines = solidBovineController.bovines.isNotEmpty ? 
+            solidBovineController.bovines : bovineController.bovines;
+        final treatments = solidTreatmentController.treatments.isNotEmpty ? 
+            solidTreatmentController.treatments : treatmentController.treatments;
+        final inventory = solidInventoryController.inventory.isNotEmpty ? 
+            solidInventoryController.inventory : inventoryController.inventoryItems;
 
         return SingleChildScrollView(
           padding: const EdgeInsets.all(AppDimensions.paddingL),

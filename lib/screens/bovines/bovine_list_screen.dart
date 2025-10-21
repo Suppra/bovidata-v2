@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/bovine_controller.dart';
+import '../../core/controllers/controllers.dart';
 import '../../models/bovine_model.dart';
 import '../../constants/app_styles.dart';
 
@@ -41,7 +42,12 @@ class _BovineListScreenState extends State<BovineListScreen> {
 
   void _filterBovines() {
     final bovineController = context.read<BovineController>();
-    List<BovineModel> filtered = List.from(bovineController.bovines);
+    final solidBovineController = context.read<SolidBovineController>();
+    
+    // Use SOLID controller data with fallback to legacy
+    final bovines = solidBovineController.bovines.isNotEmpty ? 
+        solidBovineController.bovines : bovineController.bovines;
+    List<BovineModel> filtered = List.from(bovines);
 
     // Filter by search text
     if (_searchController.text.isNotEmpty) {
@@ -95,13 +101,17 @@ class _BovineListScreenState extends State<BovineListScreen> {
           ),
         ],
       ),
-      body: Consumer<BovineController>(
-        builder: (context, bovineController, child) {
-          if (bovineController.isLoading) {
+      body: Consumer2<BovineController, SolidBovineController>(
+        builder: (context, bovineController, solidBovineController, child) {
+          // Use SOLID controller status with fallback
+          final isLoading = solidBovineController.isLoading || bovineController.isLoading;
+          final errorMessage = solidBovineController.errorMessage ?? bovineController.errorMessage;
+          
+          if (isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (bovineController.errorMessage != null) {
+          if (errorMessage != null) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -118,13 +128,16 @@ class _BovineListScreenState extends State<BovineListScreen> {
                   ),
                   const SizedBox(height: AppDimensions.marginS),
                   Text(
-                    bovineController.errorMessage!,
+                    errorMessage,
                     style: AppTextStyles.body2,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: AppDimensions.marginM),
                   ElevatedButton(
-                    onPressed: () => bovineController.refresh(),
+                    onPressed: () {
+                      bovineController.refresh();
+                      solidBovineController.refresh();
+                    },
                     child: const Text('Reintentar'),
                   ),
                 ],
@@ -132,8 +145,12 @@ class _BovineListScreenState extends State<BovineListScreen> {
             );
           }
 
-          if (_filteredBovines.isEmpty && bovineController.bovines.isNotEmpty) {
-            _filteredBovines = bovineController.bovines;
+          // Use SOLID controller data with fallback
+          final allBovines = solidBovineController.bovines.isNotEmpty ? 
+              solidBovineController.bovines : bovineController.bovines;
+              
+          if (_filteredBovines.isEmpty && allBovines.isNotEmpty) {
+            _filteredBovines = allBovines;
           }
 
           return Column(
@@ -159,7 +176,7 @@ class _BovineListScreenState extends State<BovineListScreen> {
               ),
 
               // Statistics Summary
-              _buildStatisticsSummary(bovineController),
+              _buildStatisticsSummary(solidBovineController, bovineController),
 
               // Bovines List
               Expanded(
@@ -195,7 +212,13 @@ class _BovineListScreenState extends State<BovineListScreen> {
     );
   }
 
-  Widget _buildStatisticsSummary(BovineController bovineController) {
+  Widget _buildStatisticsSummary(SolidBovineController solidController, BovineController legacyController) {
+    // Use SOLID data with fallback to legacy
+    final bovines = solidController.bovines.isNotEmpty ? solidController.bovines : legacyController.bovines;
+    final healthyBovines = solidController.bovines.isNotEmpty ? solidController.healthyBovines : legacyController.healthyBovines;
+    final sickBovines = solidController.bovines.isNotEmpty ? solidController.sickBovines : legacyController.sickBovines;
+    final recoveringBovines = solidController.bovines.isNotEmpty ? solidController.recoveringBovines : legacyController.recoveringBovines;
+    
     return Container(
       margin: const EdgeInsets.all(AppDimensions.marginM),
       child: Card(
@@ -206,22 +229,22 @@ class _BovineListScreenState extends State<BovineListScreen> {
             children: [
               _buildStatItem(
                 'Total',
-                '${bovineController.bovines.length}',
+                '${bovines.length}',
                 AppColors.primary,
               ),
               _buildStatItem(
                 'Sanos',
-                '${bovineController.healthyBovines.length}',
+                '${healthyBovines.length}',
                 AppColors.success,
               ),
               _buildStatItem(
                 'Enfermos',
-                '${bovineController.sickBovines.length}',
+                '${sickBovines.length}',
                 AppColors.error,
               ),
               _buildStatItem(
                 'En Trat.',
-                '${bovineController.recoveringBovines.length}',
+                '${recoveringBovines.length}',
                 AppColors.warning,
               ),
             ],
@@ -237,7 +260,7 @@ class _BovineListScreenState extends State<BovineListScreen> {
       children: [
         Text(
           value,
-          style: AppTextStyles.h4.copyWith(color: color, fontWeight: FontWeight.bold),
+          style: AppTextStyles.h4.copyWith(color: color).merge(AppTextStyles.bodyBold),
         ),
         const SizedBox(height: AppDimensions.marginXS),
         Text(

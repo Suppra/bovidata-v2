@@ -6,6 +6,7 @@ import '../../controllers/treatment_controller.dart';
 import '../../controllers/inventory_controller.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/notification_controller.dart';
+import '../../core/controllers/controllers.dart';
 
 import '../../models/bovine_model.dart';
 import '../../models/treatment_model.dart';
@@ -54,9 +55,15 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
 
   void _loadData() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Initialize legacy controllers for compatibility
       context.read<BovineController>().loadBovines();
       context.read<TreatmentController>().loadTreatments();
       context.read<InventoryController>().loadInventoryItems();
+      
+      // Initialize SOLID controllers
+      context.read<SolidBovineController>().initialize();
+      context.read<SolidTreatmentController>().initialize();
+      context.read<SolidInventoryController>().initialize();
       
       // Cargar notificaciones del usuario actual
       final authController = context.read<AuthController>();

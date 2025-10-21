@@ -57,9 +57,9 @@ class InventoryDetailScreen extends StatelessWidget {
                         value: 'delete',
                         child: Row(
                           children: [
-                            Icon(Icons.delete, color: Colors.red),
+                            Icon(Icons.delete, color: AppColors.error),
                             SizedBox(width: 8),
-                            Text('Eliminar', style: TextStyle(color: Colors.red)),
+                            Text('Eliminar', style: AppTextStyles.errorText),
                           ],
                         ),
                       ),
