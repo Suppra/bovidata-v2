@@ -8,6 +8,7 @@ import '../../models/treatment_model.dart';
 import '../../constants/app_styles.dart';
 import '../../constants/app_constants.dart';
 import 'treatment_form_screen.dart';
+import 'treatment_detail_screen.dart';
 
 class TreatmentListScreen extends StatefulWidget {
   final String? bovineId;
@@ -342,9 +343,10 @@ class _TreatmentListScreenState extends State<TreatmentListScreen> {
                       return TreatmentCard(
                         treatment: treatment,
                         onTap: () {
-                          // TODO: Navigate to TreatmentDetailScreen
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Detalles en desarrollo')),
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => TreatmentDetailScreen(treatment: treatment),
+                            ),
                           );
                         },
                         onComplete: context.watch<AuthController>().isVeterinario
@@ -352,9 +354,10 @@ class _TreatmentListScreenState extends State<TreatmentListScreen> {
                             : null,
                         onEdit: context.watch<AuthController>().isVeterinario
                             ? () {
-                                // TODO: Navigate to TreatmentFormScreen
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Edición en desarrollo')),
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => TreatmentFormScreen(treatment: treatment),
+                                  ),
                                 );
                               }
                             : null,

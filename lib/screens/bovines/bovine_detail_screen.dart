@@ -6,6 +6,7 @@ import '../../models/bovine_model.dart';
 import '../../constants/app_styles.dart';
 import '../../constants/app_constants.dart';
 import 'bovine_form_screen.dart';
+import 'medical_history_screen.dart';
 
 class BovineDetailScreen extends StatelessWidget {
   final BovineModel bovine;
@@ -233,7 +234,11 @@ class BovineDetailScreen extends StatelessWidget {
                     
                     OutlinedButton.icon(
                       onPressed: () {
-                        // TODO: Navigate to medical history
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => MedicalHistoryScreen(bovine: bovine),
+                          ),
+                        );
                       },
                       icon: const Icon(Icons.history_edu),
                       label: const Text('Ver Historial Médico'),
