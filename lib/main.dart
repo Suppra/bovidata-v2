@@ -3,10 +3,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'controllers/auth_controller.dart';
+import 'controllers/settings_controller.dart';
 import 'core/controllers/controllers.dart';
 import 'core/locator/service_locator.dart';
 import 'services/scheduler_service.dart';
 import 'screens/auth/login_screen.dart';
+import 'screens/auth/profile_screen.dart';
+import 'screens/auth/settings_screen.dart';
 import 'screens/home/home_screen.dart';
 import 'constants/app_styles.dart';
 import 'firebase_options.dart';
@@ -37,27 +40,31 @@ class BoviDataApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthController()),
+        ChangeNotifierProvider(create: (_) => SettingsController()),
         // SOLID architecture controllers
         ChangeNotifierProvider(create: (_) => SolidBovineController()),
         ChangeNotifierProvider(create: (_) => SolidTreatmentController()),
         ChangeNotifierProvider(create: (_) => SolidInventoryController()),
         ChangeNotifierProvider(create: (_) => SolidNotificationController()),
       ],
-      child: MaterialApp(
-        title: 'BoviData',
-        debugShowCheckedModeBanner: false,
-        // Configuración de localizaciones
-        localizationsDelegates: const [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: const [
-          Locale('es', 'ES'), // Español
-          Locale('en', 'US'), // Inglés (fallback)
-        ],
-        locale: const Locale('es', 'ES'),
-        theme: ThemeData(
+      child: Consumer<SettingsController>(
+        builder: (context, settingsController, child) {
+          return MaterialApp(
+            title: 'BoviData',
+            debugShowCheckedModeBanner: false,
+            // Configuración de localizaciones
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('es', 'ES'), // Español
+              Locale('en', 'US'), // Inglés (fallback)
+            ],
+            locale: const Locale('es', 'ES'),
+            themeMode: settingsController.themeMode,
+            theme: ThemeData(
           primarySwatch: Colors.green,
           primaryColor: AppColors.primary,
           scaffoldBackgroundColor: AppColors.background,
@@ -125,14 +132,38 @@ class BoviDataApp extends StatelessWidget {
             type: BottomNavigationBarType.fixed,
             elevation: 8,
           ),
-          colorScheme: ColorScheme.fromSwatch().copyWith(
-            primary: AppColors.primary,
-            secondary: AppColors.secondary,
-            error: AppColors.error,
-            surface: AppColors.surface,
-          ),
-        ),
-        home: const AuthWrapper(),
+              colorScheme: ColorScheme.fromSwatch().copyWith(
+                primary: AppColors.primary,
+                secondary: AppColors.secondary,
+                error: AppColors.error,
+                surface: AppColors.surface,
+              ),
+            ),
+            darkTheme: ThemeData.dark().copyWith(
+              primaryColor: AppColors.primary,
+              appBarTheme: const AppBarTheme(
+                backgroundColor: AppColors.primary,
+                foregroundColor: AppColors.white,
+                elevation: AppDimensions.elevationM,
+              ),
+              elevatedButtonTheme: ElevatedButtonThemeData(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: AppColors.white,
+                  minimumSize: const Size(double.infinity, AppDimensions.buttonHeight),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+                  ),
+                ),
+              ),
+            ),
+            routes: {
+              '/profile': (context) => const ProfileScreen(),
+              '/settings': (context) => const SettingsScreen(),
+            },
+            home: const AuthWrapper(),
+          );
+        },
       ),
     );
   }

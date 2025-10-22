@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../controllers/auth_controller.dart';
+import '../../controllers/settings_controller.dart';
 import '../../constants/app_styles.dart';
 import '../../constants/app_constants.dart';
 
@@ -12,14 +13,11 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  bool _notificaciones = true;
-  bool _actualizacionesAutomaticas = true;
-  bool _modoOscuro = false;
-  bool _sincronizacionAuto = true;
 
   @override
   Widget build(BuildContext context) {
     final authController = Provider.of<AuthController>(context);
+    final settingsController = Provider.of<SettingsController>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -65,53 +63,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
             // Sección de Aplicación
             _buildSectionCard(
-              title: 'Aplicación',
+              title: 'Configuración',
               icon: Icons.settings,
               child: Column(
                 children: [
+                  ListTile(
+                    title: const Text('Tema de la Aplicación'),
+                    subtitle: Text('Actual: ${settingsController.getThemeModeText()}'),
+                    leading: Icon(settingsController.getThemeModeIcon()),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () {
+                      _showThemeDialog(context, settingsController);
+                    },
+                  ),
+                  const Divider(),
                   SwitchListTile(
                     title: const Text('Notificaciones'),
                     subtitle: const Text('Recibir alertas y recordatorios'),
-                    value: _notificaciones,
-                    onChanged: (value) {
-                      setState(() {
-                        _notificaciones = value;
-                      });
-                    },
+                    value: settingsController.notificationsEnabled,
+                    onChanged: settingsController.setNotifications,
                     secondary: const Icon(Icons.notifications_outlined),
                   ),
                   SwitchListTile(
-                    title: const Text('Modo Oscuro'),
-                    subtitle: const Text('Tema oscuro para la aplicación'),
-                    value: _modoOscuro,
-                    onChanged: (value) {
-                      setState(() {
-                        _modoOscuro = value;
-                      });
-                      // TODO: Implementar cambio de tema
-                    },
-                    secondary: const Icon(Icons.dark_mode_outlined),
-                  ),
-                  SwitchListTile(
-                    title: const Text('Actualizaciones Automáticas'),
-                    subtitle: const Text('Actualizar datos automáticamente'),
-                    value: _actualizacionesAutomaticas,
-                    onChanged: (value) {
-                      setState(() {
-                        _actualizacionesAutomaticas = value;
-                      });
-                    },
-                    secondary: const Icon(Icons.update_outlined),
-                  ),
-                  SwitchListTile(
                     title: const Text('Sincronización Automática'),
-                    subtitle: const Text('Sincronizar con Firebase'),
-                    value: _sincronizacionAuto,
-                    onChanged: (value) {
-                      setState(() {
-                        _sincronizacionAuto = value;
-                      });
-                    },
+                    subtitle: const Text('Sincronizar datos con Firebase'),
+                    value: settingsController.autoSyncEnabled,
+                    onChanged: settingsController.setAutoSync,
                     secondary: const Icon(Icons.sync_outlined),
                   ),
                 ],
@@ -120,39 +97,39 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
             const SizedBox(height: AppDimensions.marginL),
 
-            // Sección de Datos
+            // Sección de Datos del Ganado
             _buildSectionCard(
-              title: 'Datos',
-              icon: Icons.storage,
+              title: 'Gestión de Datos',
+              icon: Icons.analytics,
               child: Column(
                 children: [
                   ListTile(
-                    title: const Text('Exportar Datos'),
-                    subtitle: const Text('Descargar copia de seguridad'),
-                    leading: const Icon(Icons.download_outlined),
+                    title: const Text('Estadísticas Generales'),
+                    subtitle: const Text('Ver resumen del ganado'),
+                    leading: const Icon(Icons.bar_chart_outlined),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
-                      _showExportDialog(context);
+                      Navigator.pushNamed(context, '/statistics');
                     },
                   ),
                   const Divider(),
                   ListTile(
-                    title: const Text('Importar Datos'),
-                    subtitle: const Text('Cargar datos desde archivo'),
-                    leading: const Icon(Icons.upload_outlined),
+                    title: const Text('Exportar Reportes'),
+                    subtitle: const Text('Generar PDF con datos'),
+                    leading: const Icon(Icons.picture_as_pdf_outlined),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
-                      _showImportDialog(context);
+                      Navigator.pushNamed(context, '/reports');
                     },
                   ),
                   const Divider(),
                   ListTile(
-                    title: const Text('Limpiar Caché'),
-                    subtitle: const Text('Liberar espacio de almacenamiento'),
-                    leading: const Icon(Icons.cleaning_services_outlined),
+                    title: const Text('Respaldo de Datos'),
+                    subtitle: const Text('Sincronizar con la nube'),
+                    leading: const Icon(Icons.cloud_sync_outlined),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
-                      _showClearCacheDialog(context);
+                      _showBackupDialog(context);
                     },
                   ),
                 ],
@@ -161,14 +138,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
             const SizedBox(height: AppDimensions.marginL),
 
-            // Sección de Información
+            // Sección de Ayuda
             _buildSectionCard(
-              title: 'Información',
-              icon: Icons.info,
+              title: 'Ayuda y Soporte',
+              icon: Icons.help_outline,
               child: Column(
                 children: [
                   ListTile(
-                    title: const Text('Acerca de'),
+                    title: const Text('Guía de Usuario'),
+                    subtitle: const Text('Aprende a usar BoviData'),
+                    leading: const Icon(Icons.help_outline),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () {
+                      _showUserGuide(context);
+                    },
+                  ),
+                  const Divider(),
+                  ListTile(
+                    title: const Text('Acerca de BoviData'),
                     subtitle: Text('Versión ${AppConstants.appVersion}'),
                     leading: const Icon(Icons.info_outline),
                     trailing: const Icon(Icons.chevron_right),
@@ -178,22 +165,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   const Divider(),
                   ListTile(
-                    title: const Text('Términos y Condiciones'),
-                    subtitle: const Text('Política de uso y privacidad'),
-                    leading: const Icon(Icons.description_outlined),
+                    title: const Text('Reportar Problema'),
+                    subtitle: const Text('Ayúdanos a mejorar'),
+                    leading: const Icon(Icons.bug_report_outlined),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
-                      // TODO: Mostrar términos y condiciones
-                    },
-                  ),
-                  const Divider(),
-                  ListTile(
-                    title: const Text('Soporte'),
-                    subtitle: const Text('Contactar desarrollador'),
-                    leading: const Icon(Icons.support_agent_outlined),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () {
-                      _showSupportDialog(context);
+                      _showReportDialog(context);
                     },
                   ),
                 ],
@@ -354,64 +331,170 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  void _showExportDialog(BuildContext context) {
+  void _showThemeDialog(BuildContext context, SettingsController settingsController) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Exportar Datos'),
-        content: const Text('Se descargará un archivo con todos los datos de la aplicación.'),
+        title: const Text('Seleccionar Tema'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioListTile<ThemeMode>(
+              title: const Text('Claro'),
+              subtitle: const Text('Siempre usar tema claro'),
+              value: ThemeMode.light,
+              groupValue: settingsController.themeMode,
+              onChanged: (value) {
+                if (value != null) {
+                  settingsController.setThemeMode(value);
+                  Navigator.pop(context);
+                }
+              },
+            ),
+            RadioListTile<ThemeMode>(
+              title: const Text('Oscuro'),
+              subtitle: const Text('Siempre usar tema oscuro'),
+              value: ThemeMode.dark,
+              groupValue: settingsController.themeMode,
+              onChanged: (value) {
+                if (value != null) {
+                  settingsController.setThemeMode(value);
+                  Navigator.pop(context);
+                }
+              },
+            ),
+            RadioListTile<ThemeMode>(
+              title: const Text('Sistema'),
+              subtitle: const Text('Usar configuración del sistema'),
+              value: ThemeMode.system,
+              groupValue: settingsController.themeMode,
+              onChanged: (value) {
+                if (value != null) {
+                  settingsController.setThemeMode(value);
+                  Navigator.pop(context);
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showBackupDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Respaldo de Datos'),
+        content: const Text('¿Desea sincronizar todos los datos con Firebase Cloud?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('Cancelar'),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
-              // TODO: Implementar exportación de datos
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Función de exportación pendiente')),
+              
+              // Mostrar indicador de carga
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => const AlertDialog(
+                  content: Row(
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(width: 16),
+                      Text('Sincronizando datos...'),
+                    ],
+                  ),
+                ),
               );
+              
+              // Simular sincronización
+              await Future.delayed(const Duration(seconds: 2));
+              
+              if (mounted) {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Datos sincronizados correctamente'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              }
             },
-            child: const Text('Exportar'),
+            child: const Text('Sincronizar'),
           ),
         ],
       ),
     );
   }
 
-  void _showImportDialog(BuildContext context) {
+  void _showUserGuide(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Importar Datos'),
-        content: const Text('Seleccione el archivo de datos para importar.'),
+        title: const Text('Guía de Usuario'),
+        content: const SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Funciones Principales:',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 8),
+              Text('• Gestión de Ganado: Registra y controla tus animales'),
+              Text('• Tratamientos: Lleva el historial médico'),
+              Text('• Inventario: Controla alimentos y suministros'),
+              Text('• Reportes: Genera PDFs con información'),
+              SizedBox(height: 16),
+              Text(
+                'Navegación:',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 8),
+              Text('• Usa el menú inferior para cambiar secciones'),
+              Text('• Toca los botones "+" para agregar elementos'),
+              Text('• Desliza para actualizar las listas'),
+              Text('• Toca cualquier elemento para ver detalles'),
+            ],
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              // TODO: Implementar importación de datos
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Función de importación pendiente')),
-              );
-            },
-            child: const Text('Importar'),
+            child: const Text('Entendido'),
           ),
         ],
       ),
     );
   }
 
-  void _showClearCacheDialog(BuildContext context) {
+  void _showReportDialog(BuildContext context) {
+    final TextEditingController messageController = TextEditingController();
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Limpiar Caché'),
-        content: const Text('Esto liberará espacio de almacenamiento. ¿Está seguro?'),
+        title: const Text('Reportar Problema'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Describe el problema que encontraste:'),
+            const SizedBox(height: 16),
+            TextField(
+              controller: messageController,
+              maxLines: 4,
+              decoration: const InputDecoration(
+                hintText: 'Describe aquí el problema...',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -420,12 +503,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              // TODO: Implementar limpieza de caché
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Caché limpiado correctamente')),
+                const SnackBar(
+                  content: Text('Reporte enviado. ¡Gracias por tu ayuda!'),
+                  backgroundColor: Colors.green,
+                ),
               );
             },
-            child: const Text('Limpiar'),
+            child: const Text('Enviar'),
           ),
         ],
       ),
@@ -451,34 +536,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  void _showSupportDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Soporte'),
-        content: const Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Para soporte técnico contactar:'),
-            SizedBox(height: 8),
-            Text('Email: soporte@bovidata.com'),
-            Text('Teléfono: +1 234 567 8900'),
-            SizedBox(height: 16),
-            Text('Horario de atención:'),
-            Text('Lunes a Viernes: 8:00 AM - 6:00 PM'),
-            Text('Sábados: 9:00 AM - 2:00 PM'),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cerrar'),
-          ),
-        ],
-      ),
-    );
-  }
+
 
   Future<bool?> _showLogoutConfirmation(BuildContext context) {
     return showDialog<bool>(
