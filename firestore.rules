@@ -55,16 +55,23 @@ service cloud.firestore {
         resource.data.usuarioId == request.auth.uid;
     }
     
-    // Actividades - Acceso según usuario
+    // Incidentes - Acceso según rol
+    match /incidents/{incidentId} {
+      allow read, list: if request.auth != null;
+      allow create, update: if request.auth != null && 
+        (getUserRole() == 'Veterinario' || getUserRole() == 'Ganadero' || getUserRole() == 'Empleado');
+      allow delete: if request.auth != null && getUserRole() == 'Ganadero';
+    }
+
+    // Actividades - Acceso más amplio para reportes
     match /activities/{activityId} {
-      allow read: if request.auth != null && 
-        resource.data.usuarioId == request.auth.uid;
+      allow read, list: if request.auth != null;
       allow create: if request.auth != null && 
         request.resource.data.usuarioId == request.auth.uid;
       allow update, delete: if request.auth != null && 
         resource.data.usuarioId == request.auth.uid;
     }
-    
+
     // Función auxiliar para obtener el rol del usuario
     function getUserRole() {
       let userDoc = get(/databases/$(database)/documents/users/$(request.auth.uid));

@@ -7,6 +7,7 @@ import '../../models/treatment_model.dart';
 import '../../models/inventory_model.dart';
 import '../../constants/app_styles.dart';
 import '../../constants/app_constants.dart';
+import 'pdf_generator_screen.dart';
 
 class ReportsScreen extends StatefulWidget {
   const ReportsScreen({super.key});
@@ -20,7 +21,7 @@ class _ReportsScreenState extends State<ReportsScreen> with TickerProviderStateM
   DateTime _startDate = DateTime.now().subtract(const Duration(days: 30));
   DateTime _endDate = DateTime.now();
   String _selectedReportType = 'general';
-  bool _isGeneratingPDF = false;
+
 
   final List<String> _reportTypes = [
     'general',
@@ -74,10 +75,18 @@ class _ReportsScreenState extends State<ReportsScreen> with TickerProviderStateM
           ],
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.picture_as_pdf),
-            onPressed: _isGeneratingPDF ? null : _generatePDFReport,
-            tooltip: 'Generar PDF',
+          // Solo mostrar PDF para veterinarios y ganaderos
+          Consumer<AuthController>(
+            builder: (context, authController, child) {
+              if (authController.isVeterinario || authController.isGanadero) {
+                return IconButton(
+                  icon: const Icon(Icons.picture_as_pdf),
+                  onPressed: () => _navigateToPdfGenerator(),
+                  tooltip: 'Generar PDF',
+                );
+              }
+              return const SizedBox.shrink();
+            },
           ),
           PopupMenuButton<String>(
             icon: const Icon(Icons.date_range),
@@ -1412,39 +1421,12 @@ class _ReportsScreenState extends State<ReportsScreen> with TickerProviderStateM
     );
   }
 
-  Future<void> _generatePDFReport() async {
-    setState(() {
-      _isGeneratingPDF = true;
-    });
-
-    try {
-      // TODO: Implement PDF generation
-      await Future.delayed(const Duration(seconds: 2)); // Simulate PDF generation
-      
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Reporte PDF generado exitosamente'),
-            backgroundColor: AppColors.success,
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error al generar PDF: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isGeneratingPDF = false;
-        });
-      }
-    }
+  void _navigateToPdfGenerator() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const PdfGeneratorScreen(),
+      ),
+    );
   }
 
   @override
