@@ -420,7 +420,7 @@ class _TreatmentDetailScreenState extends State<TreatmentDetailScreen> {
                 _buildInfoRow(
                   'Fecha de Creación', 
                   DateFormat(AppConstants.dateTimeFormat).format(treatment.fechaCreacion),
-                  Icons.add_circle_outline,
+                  Icons.schedule,
                 ),
               ],
             ),

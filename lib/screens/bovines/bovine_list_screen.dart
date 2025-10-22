@@ -83,7 +83,7 @@ class _BovineListScreenState extends State<BovineListScreen> {
             builder: (context, authController, child) {
               if (authController.isGanadero || authController.isEmpleado) {
                 return IconButton(
-                  icon: const Icon(Icons.add),
+                  icon: const Icon(Icons.add_circle),
                   onPressed: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -298,8 +298,14 @@ class _BovineListScreenState extends State<BovineListScreen> {
                       ),
                     );
                   },
-                  icon: const Icon(Icons.add),
+                  icon: const Icon(Icons.pets),
                   label: const Text('Agregar Bovino'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: AppColors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    elevation: 3,
+                  ),
                 );
               }
               return const SizedBox.shrink();

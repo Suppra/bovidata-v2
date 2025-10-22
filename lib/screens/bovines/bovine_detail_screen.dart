@@ -199,7 +199,7 @@ class BovineDetailScreen extends StatelessWidget {
                 _buildInfoRow(
                   'Fecha de Registro', 
                   DateFormat(AppConstants.dateTimeFormat).format(bovine.fechaCreacion),
-                  Icons.add_circle_outline,
+                  Icons.event_available,
                 ),
                 if (bovine.fechaActualizacion != null)
                   _buildInfoRow(

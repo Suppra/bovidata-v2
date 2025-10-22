@@ -69,7 +69,7 @@ class _TreatmentListScreenState extends State<TreatmentListScreen> {
             builder: (context, authController, child) {
               if (authController.isVeterinario) {
                 return IconButton(
-                  icon: const Icon(Icons.add),
+                  icon: const Icon(Icons.medical_services_rounded),
                   onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => TreatmentFormScreen(
@@ -317,7 +317,7 @@ class _TreatmentListScreenState extends State<TreatmentListScreen> {
                                     ),
                                   ),
                                 ),
-                                icon: const Icon(Icons.add),
+                                icon: const Icon(Icons.medical_services),
                                 label: const Text('Agregar Tratamiento'),
                               ),
                             ],

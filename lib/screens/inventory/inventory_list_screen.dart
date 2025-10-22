@@ -61,7 +61,7 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
             builder: (context, authController, child) {
               if (authController.isGanadero || authController.isEmpleado) {
                 return IconButton(
-                  icon: const Icon(Icons.add),
+                  icon: const Icon(Icons.add_box_rounded),
                   onPressed: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -315,7 +315,7 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
                                     ),
                                   );
                                 },
-                                icon: const Icon(Icons.add),
+                                icon: const Icon(Icons.inventory_2),
                                 label: const Text('Agregar Item'),
                               ),
                             ],
@@ -709,7 +709,7 @@ class InventoryCard extends StatelessWidget {
                   // Action buttons
                   if (onAdjustStock != null)
                     IconButton(
-                      icon: const Icon(Icons.add_circle_outline),
+                      icon: const Icon(Icons.inventory),
                       onPressed: onAdjustStock,
                       color: AppColors.primary,
                       tooltip: 'Ajustar Stock',
