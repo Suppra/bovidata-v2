@@ -104,7 +104,11 @@ class SolidInventoryController extends ChangeNotifier {
     _clearError();
     
     try {
-      await _inventoryService.updateInventoryItem(item.id, item);
+      final ok = await _inventoryService.updateInventoryItem(item.id, item);
+      if (!ok) {
+        _setError('No se pudo actualizar el item');
+        return false;
+      }
       final idx = _inventory.indexWhere((i) => i.id == item.id);
       if (idx != -1) {
         _inventory[idx] = item;
@@ -127,7 +131,11 @@ class SolidInventoryController extends ChangeNotifier {
     _clearError();
 
     try {
-      await _inventoryService.deleteInventoryItem(id);
+      final ok = await _inventoryService.deleteInventoryItem(id);
+      if (!ok) {
+        _setError('No se pudo eliminar el item');
+        return false;
+      }
       _inventory.removeWhere((i) => i.id == id);
       _applyFilters();
       return true;

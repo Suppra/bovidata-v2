@@ -84,7 +84,11 @@ class SolidBovineController extends ChangeNotifier {
     _clearError();
     
     try {
-      await _bovineService.updateBovine(id, bovine);
+      final ok = await _bovineService.updateBovine(id, bovine);
+      if (!ok) {
+        _setError('No se pudo actualizar el bovino');
+        return false;
+      }
       // Muta el estado local en vez de recargar toda la colección.
       final idx = _bovines.indexWhere((b) => b.id == id);
       if (idx != -1) {
@@ -108,7 +112,11 @@ class SolidBovineController extends ChangeNotifier {
     _clearError();
 
     try {
-      await _bovineService.deleteBovine(id);
+      final ok = await _bovineService.deleteBovine(id);
+      if (!ok) {
+        _setError('No se pudo eliminar el bovino');
+        return false;
+      }
       _bovines.removeWhere((b) => b.id == id); // muta estado local
       _applyFilters();
       return true;

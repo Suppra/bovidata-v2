@@ -106,7 +106,11 @@ class SolidTreatmentController extends ChangeNotifier {
     _clearError();
     
     try {
-      await _treatmentService.updateTreatment(treatment.id, treatment);
+      final ok = await _treatmentService.updateTreatment(treatment.id, treatment);
+      if (!ok) {
+        _setError('No se pudo actualizar el tratamiento');
+        return false;
+      }
       final idx = _treatments.indexWhere((t) => t.id == treatment.id);
       if (idx != -1) {
         _treatments[idx] = treatment;
@@ -129,7 +133,11 @@ class SolidTreatmentController extends ChangeNotifier {
     _clearError();
 
     try {
-      await _treatmentService.deleteTreatment(id);
+      final ok = await _treatmentService.deleteTreatment(id);
+      if (!ok) {
+        _setError('No se pudo eliminar el tratamiento');
+        return false;
+      }
       _treatments.removeWhere((t) => t.id == id);
       _applyFilters();
       return true;
