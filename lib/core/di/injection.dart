@@ -21,6 +21,9 @@ import 'package:bovidata_new/features/inventory/domain/ports/inventory_repositor
 import 'package:bovidata_new/features/inventory/infrastructure/repositories/inventory_repository_impl.dart';
 import 'package:bovidata_new/features/inventory/application/inventory_service.dart';
 import 'package:bovidata_new/features/notifications/infrastructure/solid_notification_service.dart';
+import 'package:bovidata_new/features/mortality/domain/ports/incident_repository.dart';
+import 'package:bovidata_new/features/mortality/infrastructure/repositories/incident_repository_impl.dart';
+import 'package:bovidata_new/features/dashboard/infrastructure/activity_repository.dart';
 import 'package:bovidata_new/features/membership/domain/ports/membership_repository.dart';
 import 'package:bovidata_new/features/membership/infrastructure/repositories/membership_repository_impl.dart';
 import 'package:bovidata_new/features/membership/application/membership_interactor.dart';
@@ -46,6 +49,8 @@ void configureDependencies() {
       () => UserRepository(modelFactory: getIt<ModelFactory>()));
   getIt.registerLazySingleton<MembershipRepository>(
       () => MembershipRepositoryImpl());
+  getIt.registerLazySingleton<IIncidentRepository>(() => IncidentRepository());
+  getIt.registerLazySingleton<ActivityRepository>(() => ActivityRepository());
 
   // Servicios transversales
   getIt.registerLazySingleton<FarmAccessService>(() =>

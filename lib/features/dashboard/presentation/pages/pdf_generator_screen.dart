@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:bovidata_new/core/controllers/controllers.dart';
+import 'package:bovidata_new/core/di/injection.dart';
 import 'package:bovidata_new/models/models.dart';
 import 'package:bovidata_new/constants/app_styles.dart';
 import 'package:bovidata_new/features/dashboard/infrastructure/pdf_service.dart';
+import 'package:bovidata_new/features/dashboard/infrastructure/activity_repository.dart';
+import 'package:bovidata_new/features/treatments/domain/ports/treatment_repository.dart';
+import 'package:bovidata_new/features/mortality/domain/ports/incident_repository.dart';
+import 'package:bovidata_new/features/users/domain/ports/user_repository.dart';
+
+const _kVetActivityTypes = ['Vacunación', 'Checkup', 'Consulta Veterinaria'];
 
 class PdfGeneratorScreen extends StatefulWidget {
   const PdfGeneratorScreen({super.key});
@@ -487,29 +493,16 @@ class _PdfGeneratorScreenState extends State<PdfGeneratorScreen> {
   
   Future<Map<String, int>> _getRecordCounts(BovineModel bovine) async {
     try {
-      // Contar tratamientos
-      final treatmentsQuery = await FirebaseFirestore.instance
-          .collection('treatments')
-          .where('bovineId', isEqualTo: bovine.id)
-          .get();
-      
-      // Contar incidentes
-      final incidentsQuery = await FirebaseFirestore.instance
-          .collection('incidents')
-          .where('bovineId', isEqualTo: bovine.id)
-          .get();
-      
-      // Contar actividades
-      final activitiesQuery = await FirebaseFirestore.instance
-          .collection('activities')
-          .where('entidadId', isEqualTo: bovine.id)
-          .where('tipo', whereIn: ['Vacunación', 'Checkup', 'Consulta Veterinaria'])
-          .get();
-      
+      final treatments =
+          await getIt<ITreatmentRepository>().getByBovine(bovine.id);
+      final incidents =
+          await getIt<IIncidentRepository>().getByBovine(bovine.id);
+      final activities = await getIt<ActivityRepository>()
+          .getByEntity(bovine.id, tipos: _kVetActivityTypes);
       return {
-        'treatments': treatmentsQuery.docs.length,
-        'incidents': incidentsQuery.docs.length,
-        'activities': activitiesQuery.docs.length,
+        'treatments': treatments.length,
+        'incidents': incidents.length,
+        'activities': activities.length,
       };
     } catch (e) {
       return {'treatments': 0, 'incidents': 0, 'activities': 0};
@@ -599,44 +592,20 @@ class _PdfGeneratorScreenState extends State<PdfGeneratorScreen> {
     // Obtener tratamientos
     List<TreatmentModel> treatments = [];
     if (_reportType == 'Completo' || _reportType == 'Solo Tratamientos') {
-      final treatmentsQuery = await FirebaseFirestore.instance
-          .collection('treatments')
-          .where('bovineId', isEqualTo: bovine.id)
-          .orderBy('fecha', descending: true)
-          .get();
-      
-      treatments = treatmentsQuery.docs
-          .map((doc) => TreatmentModel.fromFirestore(doc))
-          .toList();
+      treatments = await getIt<ITreatmentRepository>().getByBovine(bovine.id);
     }
-    
+
     // Obtener incidentes
     List<IncidentModel> incidents = [];
     if ((_reportType == 'Completo' && _includeIncidents) || _reportType == 'Solo Incidentes') {
-      final incidentsQuery = await FirebaseFirestore.instance
-          .collection('incidents')
-          .where('bovineId', isEqualTo: bovine.id)
-          .orderBy('fecha', descending: true)
-          .get();
-      
-      incidents = incidentsQuery.docs
-          .map((doc) => IncidentModel.fromFirestore(doc))
-          .toList();
+      incidents = await getIt<IIncidentRepository>().getByBovine(bovine.id);
     }
-    
+
     // Obtener actividades
     List<ActivityModel> activities = [];
     if (_reportType == 'Completo' && _includeActivities) {
-      final activitiesQuery = await FirebaseFirestore.instance
-          .collection('activities')
-          .where('entidadId', isEqualTo: bovine.id)
-          .where('tipo', whereIn: ['Vacunación', 'Checkup', 'Consulta Veterinaria'])
-          .orderBy('fecha', descending: true)
-          .get();
-      
-      activities = activitiesQuery.docs
-          .map((doc) => ActivityModel.fromJson({...doc.data(), 'id': doc.id}))
-          .toList();
+      activities = await getIt<ActivityRepository>()
+          .getByEntity(bovine.id, tipos: _kVetActivityTypes);
     }
     
     // Obtener veterinario (usuario actual si es veterinario, o buscar uno)
@@ -645,15 +614,10 @@ class _PdfGeneratorScreenState extends State<PdfGeneratorScreen> {
     if (authController.isVeterinario) {
       veterinarian = authController.currentUser!;
     } else {
-      // Buscar un veterinario que haya tratado este bovino
-      final vetQuery = await FirebaseFirestore.instance
-          .collection('users')
-          .where('rol', isEqualTo: 'Veterinario')
-          .limit(1)
-          .get();
-      
-      if (vetQuery.docs.isNotEmpty) {
-        veterinarian = UserModel.fromFirestore(vetQuery.docs.first);
+      // Buscar un veterinario vía repositorio
+      final vets = await getIt<IUserRepository>().getByRole('Veterinario');
+      if (vets.isNotEmpty) {
+        veterinarian = vets.first;
       } else {
         // Crear un veterinario por defecto si no hay ninguno
         veterinarian = UserModel(
@@ -673,14 +637,10 @@ class _PdfGeneratorScreenState extends State<PdfGeneratorScreen> {
     if (authController.isGanadero) {
       owner = authController.currentUser!;
     } else {
-      // Obtener el propietario del bovino
-      final ownerQuery = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(bovine.propietarioId)
-          .get();
-      
-      if (ownerQuery.exists) {
-        owner = UserModel.fromFirestore(ownerQuery);
+      // Obtener el propietario del bovino vía repositorio
+      final fetched = await getIt<IUserRepository>().getById(bovine.propietarioId);
+      if (fetched != null) {
+        owner = fetched;
       } else {
         owner = UserModel(
           id: bovine.propietarioId,

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:bovidata_new/core/di/injection.dart';
+import 'package:bovidata_new/features/mortality/domain/ports/incident_repository.dart';
+import 'package:bovidata_new/features/dashboard/infrastructure/activity_repository.dart';
 import 'package:bovidata_new/features/treatments/presentation/controllers/treatment_controller.dart';
 import 'package:bovidata_new/models/models.dart';
 import 'package:bovidata_new/constants/app_styles.dart';
@@ -78,15 +80,8 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen>
 
   Future<void> _loadIncidents() async {
     try {
-      final querySnapshot = await FirebaseFirestore.instance
-          .collection('incidents')
-          .where('bovineId', isEqualTo: widget.bovine.id)
-          .orderBy('fecha', descending: true)
-          .get();
-      
-      _incidents = querySnapshot.docs
-          .map((doc) => IncidentModel.fromFirestore(doc))
-          .toList();
+      _incidents =
+          await getIt<IIncidentRepository>().getByBovine(widget.bovine.id);
     } catch (e) {
       debugPrint('Error cargando incidentes: $e');
     }
@@ -94,16 +89,10 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen>
 
   Future<void> _loadActivities() async {
     try {
-      final querySnapshot = await FirebaseFirestore.instance
-          .collection('activities')
-          .where('entidadId', isEqualTo: widget.bovine.id)
-          .where('tipo', whereIn: ['Vacunación', 'Checkup', 'Consulta Veterinaria'])
-          .orderBy('fecha', descending: true)
-          .get();
-      
-      _activities = querySnapshot.docs
-          .map((doc) => ActivityModel.fromJson({...doc.data(), 'id': doc.id}))
-          .toList();
+      _activities = await getIt<ActivityRepository>().getByEntity(
+        widget.bovine.id,
+        tipos: const ['Vacunación', 'Checkup', 'Consulta Veterinaria'],
+      );
     } catch (e) {
       debugPrint('Error cargando actividades: $e');
     }

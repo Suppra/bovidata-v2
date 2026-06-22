@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:bovidata_new/core/di/injection.dart';
+import 'package:bovidata_new/features/users/domain/ports/user_repository.dart';
 import 'package:bovidata_new/core/controllers/controllers.dart';
 import 'package:bovidata_new/models/models.dart';
 import 'package:bovidata_new/constants/app_styles.dart';
@@ -841,15 +842,10 @@ class _TreatmentDetailScreenState extends State<TreatmentDetailScreen> {
         };
       }
 
-      // Obtener información real del veterinario desde Firestore
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(treatment.veterinarioId)
-          .get();
-      
-      if (userDoc.exists) {
-        final user = UserModel.fromFirestore(userDoc);
-        
+      // Obtener información real del veterinario vía repositorio (no Firestore directo)
+      final user = await getIt<IUserRepository>().getById(treatment.veterinarioId);
+
+      if (user != null) {
         return {
           'nombre': '${user.nombre} ${user.apellido}'.trim(),
           'email': user.email,
