@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../controllers/auth_controller.dart';
+import 'package:bovidata_new/features/authentication/presentation/controllers/auth_controller.dart';
 import '../../core/controllers/controllers.dart';
 import '../../models/bovine_model.dart';
 import '../../constants/app_styles.dart';

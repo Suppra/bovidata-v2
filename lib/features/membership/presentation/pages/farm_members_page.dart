@@ -1,7 +1,7 @@
 // Capa de PRESENTACIÓN — gestión de miembros del hato e invitaciones.
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../controllers/auth_controller.dart';
+import 'package:bovidata_new/features/authentication/presentation/controllers/auth_controller.dart';
 import '../../../../constants/app_styles.dart';
 import '../../domain/entities/membership.dart';
 import '../controllers/membership_controller.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import '../../controllers/auth_controller.dart';
+import 'package:bovidata_new/features/authentication/presentation/controllers/auth_controller.dart';
 import '../../core/controllers/controllers.dart';
 
 import '../../constants/app_styles.dart';
@@ -10,8 +10,8 @@ import '../../services/activity_service.dart';
 import '../../models/activity_model.dart';
 import '../bovines/bovine_list_screen.dart';
 import '../treatments/treatment_list_screen.dart';
-import '../auth/profile_screen.dart';
-import '../auth/settings_screen.dart';
+import 'package:bovidata_new/features/authentication/presentation/pages/profile_screen.dart';
+import 'package:bovidata_new/features/authentication/presentation/pages/settings_screen.dart';
 import '../inventory/inventory_list_screen.dart';
 import '../reports/reports_screen.dart';
 import '../notifications/notifications_screen.dart';

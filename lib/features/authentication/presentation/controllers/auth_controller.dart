@@ -1,10 +1,18 @@
+// Capa de PRESENTACIÓN — estado de autenticación (Provider/ChangeNotifier).
+// Depende del puerto AuthRepository (no de Firebase directamente).
 import 'package:flutter/material.dart';
-import '../models/user_model.dart';
-import '../services/auth_service.dart';
-import '../constants/app_constants.dart';
+import 'package:bovidata_new/models/user_model.dart';
+import 'package:bovidata_new/constants/app_constants.dart';
+import 'package:bovidata_new/features/authentication/domain/ports/auth_repository.dart';
+import 'package:bovidata_new/features/authentication/infrastructure/repositories/auth_repository_impl.dart';
 
 class AuthController extends ChangeNotifier {
-  final AuthService _authService = AuthService();
+  final AuthRepository _authService;
+
+  AuthController({AuthRepository? authRepository})
+      : _authService = authRepository ?? AuthRepositoryImpl() {
+    _initAuthListener();
+  }
 
   UserModel? _currentUser;
   bool _isLoading = false;
@@ -22,14 +30,10 @@ class AuthController extends ChangeNotifier {
   bool get isVeterinario => _currentUser?.rol == AppConstants.roleVeterinario;
   bool get isEmpleado => _currentUser?.rol == AppConstants.roleEmpleado;
 
-  AuthController() {
-    _initAuthListener();
-  }
-
   // Initialize auth state listener
   void _initAuthListener() {
-    _authService.authStateChanges.listen((user) async {
-      if (user != null) {
+    _authService.authStateChanges().listen((signedIn) async {
+      if (signedIn) {
         await _loadUserData();
       } else {
         _currentUser = null;
@@ -52,16 +56,11 @@ class AuthController extends ChangeNotifier {
   Future<bool> signIn(String email, String password) async {
     _setLoading(true);
     _clearError();
-
     try {
-      final credential = await _authService.signInWithEmailPassword(email, password);
-      if (credential != null) {
-        await _loadUserData();
-        _setLoading(false);
-        return true;
-      }
+      await _authService.signIn(email, password);
+      await _loadUserData();
       _setLoading(false);
-      return false;
+      return true;
     } catch (e) {
       _setError(e.toString());
       _setLoading(false);
@@ -82,7 +81,6 @@ class AuthController extends ChangeNotifier {
   }) async {
     _setLoading(true);
     _clearError();
-
     try {
       final userData = UserModel(
         id: '',
@@ -95,20 +93,10 @@ class AuthController extends ChangeNotifier {
         cedula: cedula,
         fechaCreacion: DateTime.now(),
       );
-
-      final credential = await _authService.registerWithEmailPassword(
-        email,
-        password,
-        userData,
-      );
-
-      if (credential != null) {
-        await _loadUserData();
-        _setLoading(false);
-        return true;
-      }
+      await _authService.register(email, password, userData);
+      await _loadUserData();
       _setLoading(false);
-      return false;
+      return true;
     } catch (e) {
       _setError(e.toString());
       _setLoading(false);
@@ -120,7 +108,6 @@ class AuthController extends ChangeNotifier {
   Future<bool> sendPasswordResetEmail(String email) async {
     _setLoading(true);
     _clearError();
-
     try {
       await _authService.sendPasswordResetEmail(email);
       _setLoading(false);
@@ -155,10 +142,8 @@ class AuthController extends ChangeNotifier {
     String? avatarUrl,
   }) async {
     if (_currentUser == null) return false;
-
     _setLoading(true);
     _clearError();
-
     try {
       final updatedUser = _currentUser!.copyWith(
         nombre: nombre,
@@ -168,7 +153,6 @@ class AuthController extends ChangeNotifier {
         cedula: cedula,
         avatarUrl: avatarUrl,
       );
-
       await _authService.updateUserProfile(updatedUser);
       _currentUser = updatedUser;
       _setLoading(false);
@@ -185,7 +169,6 @@ class AuthController extends ChangeNotifier {
   Future<bool> updatePassword(String currentPassword, String newPassword) async {
     _setLoading(true);
     _clearError();
-
     try {
       await _authService.updatePassword(currentPassword, newPassword);
       _setLoading(false);
@@ -201,7 +184,6 @@ class AuthController extends ChangeNotifier {
   Future<bool> updateEmail(String newEmail) async {
     _setLoading(true);
     _clearError();
-
     try {
       await _authService.updateEmail(newEmail);
       _setLoading(false);
@@ -217,7 +199,6 @@ class AuthController extends ChangeNotifier {
   Future<bool> sendEmailVerification() async {
     _setLoading(true);
     _clearError();
-
     try {
       await _authService.sendEmailVerification();
       _setLoading(false);
@@ -233,7 +214,6 @@ class AuthController extends ChangeNotifier {
   Future<bool> deleteAccount(String password) async {
     _setLoading(true);
     _clearError();
-
     try {
       await _authService.deleteAccount(password);
       _currentUser = null;
@@ -249,15 +229,15 @@ class AuthController extends ChangeNotifier {
 
   // Validate role access
   Future<bool> validateRoleAccess(String requiredRole) async {
-    return await _authService.validateRoleAccess(requiredRole);
+    return _authService.validateRoleAccess(requiredRole);
   }
 
   // Check if user has any of the specified roles
   Future<bool> hasAnyRole(List<String> roles) async {
-    return await _authService.hasAnyRole(roles);
+    return _authService.hasAnyRole(roles);
   }
 
-  // Private helper methods
+  // Private helpers
   void _setLoading(bool loading) {
     _isLoading = loading;
     notifyListeners();
@@ -273,15 +253,7 @@ class AuthController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Clear error message manually
-  void clearError() {
-    _clearError();
-  }
+  void clearError() => _clearError();
 
-  // Refresh user data
-  Future<void> refreshUserData() async {
-    await _loadUserData();
-  }
-
-
+  Future<void> refreshUserData() async => _loadUserData();
 }
