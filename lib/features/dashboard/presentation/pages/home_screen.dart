@@ -6,12 +6,12 @@ import 'package:bovidata_new/core/controllers/controllers.dart';
 
 import 'package:bovidata_new/constants/app_styles.dart';
 import 'package:bovidata_new/constants/app_constants.dart';
-import 'package:bovidata_new/services/activity_service.dart';
+import 'package:bovidata_new/features/dashboard/infrastructure/activity_service.dart';
 import 'package:bovidata_new/models/activity_model.dart';
 import 'package:bovidata_new/features/animals/presentation/pages/bovine_list_screen.dart';
 import 'package:bovidata_new/features/treatments/presentation/pages/treatment_list_screen.dart';
 import 'package:bovidata_new/features/authentication/presentation/pages/profile_screen.dart';
-import 'package:bovidata_new/features/authentication/presentation/pages/settings_screen.dart';
+import 'package:bovidata_new/features/settings/presentation/pages/settings_screen.dart';
 import 'package:bovidata_new/features/inventory/presentation/pages/inventory_list_screen.dart';
 import 'package:bovidata_new/features/dashboard/presentation/pages/reports_screen.dart';
 import 'package:bovidata_new/features/notifications/presentation/pages/notifications_screen.dart';

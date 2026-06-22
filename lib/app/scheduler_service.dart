@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bovidata_new/constants/app_constants.dart';
-import 'package:bovidata_new/services/notification_service.dart';
-import 'package:bovidata_new/services/user_service.dart';
-import 'package:bovidata_new/services/inventory_service.dart';
+import 'package:bovidata_new/features/notifications/infrastructure/notification_service.dart';
+import 'package:bovidata_new/features/users/infrastructure/user_service.dart';
+import 'package:bovidata_new/features/inventory/infrastructure/inventory_service.dart';
 
 class SchedulerService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;

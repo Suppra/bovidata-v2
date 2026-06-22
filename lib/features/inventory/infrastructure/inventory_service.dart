@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:bovidata_new/models/inventory_model.dart';
 import 'package:bovidata_new/constants/app_constants.dart';
-import 'package:bovidata_new/services/activity_service.dart';
-import 'package:bovidata_new/services/notification_service.dart';
-import 'package:bovidata_new/services/user_service.dart';
+import 'package:bovidata_new/features/dashboard/infrastructure/activity_service.dart';
+import 'package:bovidata_new/features/notifications/infrastructure/notification_service.dart';
+import 'package:bovidata_new/features/users/infrastructure/user_service.dart';
 
 class InventoryService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
