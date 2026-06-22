@@ -1,13 +1,13 @@
 // Controllers modernos que implementan la arquitectura SOLID
 import 'package:flutter/material.dart';
-import 'package:bovidata_new/core/locator/service_locator.dart';
+import 'package:bovidata_new/core/di/injection.dart';
 import 'package:bovidata_new/features/animals/application/bovine_service.dart';
 import 'package:bovidata_new/models/bovine_model.dart';
 
 /// Controller moderno para bovinos usando arquitectura SOLID
 /// Reemplaza BovineController legacy con principios SOLID aplicados
 class SolidBovineController extends ChangeNotifier {
-  final SolidBovineService _bovineService = ServiceLocator.bovineService;
+  final SolidBovineService _bovineService = getIt<SolidBovineService>();
   
   List<BovineModel> _bovines = [];
   List<BovineModel> _filteredBovines = [];

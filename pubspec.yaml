@@ -21,6 +21,9 @@ dependencies:
   
   # State Management - Usado en toda la app
   provider: ^6.1.2
+
+  # Dependency Injection - Contenedor de servicios (reemplaza ServiceLocator)
+  get_it: ^8.0.0
   
   # Date & Time - Usado para formatear fechas
   intl: ^0.20.2

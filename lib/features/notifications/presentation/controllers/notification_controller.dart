@@ -1,7 +1,7 @@
 // Controller moderno para notificaciones usando arquitectura SOLID
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:bovidata_new/core/locator/service_locator.dart';
+import 'package:bovidata_new/core/di/injection.dart';
 import 'package:bovidata_new/features/notifications/infrastructure/solid_notification_service.dart';
 import 'package:bovidata_new/models/notification_model.dart';
 import 'package:bovidata_new/models/bovine_model.dart';
@@ -11,7 +11,7 @@ import 'package:bovidata_new/models/inventory_model.dart';
 /// Controller moderno para notificaciones usando arquitectura SOLID
 /// Reemplaza NotificationController legacy con principios SOLID aplicados
 class SolidNotificationController extends ChangeNotifier {
-  final SolidNotificationService _notificationService = ServiceLocator.notificationService;
+  final SolidNotificationService _notificationService = getIt<SolidNotificationService>();
   
   List<NotificationModel> _notifications = [];
   bool _isLoading = false;

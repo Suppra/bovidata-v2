@@ -5,7 +5,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:bovidata_new/features/authentication/presentation/controllers/auth_controller.dart';
 import 'package:bovidata_new/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:bovidata_new/core/controllers/controllers.dart';
-import 'package:bovidata_new/core/locator/service_locator.dart';
+import 'package:bovidata_new/core/di/injection.dart';
+import 'package:bovidata_new/features/membership/application/membership_interactor.dart';
+import 'package:bovidata_new/features/membership/domain/ports/membership_repository.dart';
 import 'package:bovidata_new/features/membership/presentation/controllers/membership_controller.dart';
 import 'package:bovidata_new/features/membership/presentation/pages/farm_members_page.dart';
 import 'package:bovidata_new/app/scheduler_service.dart';
@@ -22,8 +24,8 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   
-  // Initialize SOLID architecture dependencies (DI container)
-  ServiceLocator.initialize();
+  // Initialize dependency injection container (get_it)
+  configureDependencies();
 
   // Initialize scheduled notifications
   SchedulerService.initializeScheduler();
@@ -48,8 +50,8 @@ class BoviDataApp extends StatelessWidget {
         // Feature membership (hexagonal): invitaciones y acceso por hato
         ChangeNotifierProvider(
           create: (_) => MembershipController(
-            interactor: ServiceLocator.membershipInteractor,
-            repository: ServiceLocator.membershipRepository,
+            interactor: getIt<MembershipInteractor>(),
+            repository: getIt<MembershipRepository>(),
           ),
         ),
       ],

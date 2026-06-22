@@ -1,13 +1,13 @@
 // Controller moderno para tratamientos usando arquitectura SOLID
 import 'package:flutter/material.dart';
-import 'package:bovidata_new/core/locator/service_locator.dart';
+import 'package:bovidata_new/core/di/injection.dart';
 import 'package:bovidata_new/features/treatments/application/treatment_service.dart';
 import 'package:bovidata_new/models/treatment_model.dart';
 
 /// Controller moderno para tratamientos usando arquitectura SOLID
 /// Reemplaza TreatmentController legacy con principios SOLID aplicados
 class SolidTreatmentController extends ChangeNotifier {
-  final SolidTreatmentService _treatmentService = ServiceLocator.treatmentService;
+  final SolidTreatmentService _treatmentService = getIt<SolidTreatmentService>();
   
   List<TreatmentModel> _treatments = [];
   List<TreatmentModel> _filteredTreatments = [];
