@@ -16,7 +16,7 @@ BovineModel _bovine({
     propietarioId: owner,
     estado: estado,
     activo: activo,
-    fechaCreacion: creado ?? DateTime(2026, 1, 1),
+    fechaCreacion: creado ?? DateTime(2026),
   );
 }
 
@@ -49,8 +49,8 @@ void main() {
 
   test('getByOwners (scoping por hato) une varios dueños y ordena por fecha',
       () async {
-    await repo.create(_bovine(owner: 'A', nombre: 'viejo', creado: DateTime(2025, 1, 1)));
-    await repo.create(_bovine(owner: 'B', nombre: 'nuevo', creado: DateTime(2026, 6, 1)));
+    await repo.create(_bovine(owner: 'A', nombre: 'viejo', creado: DateTime(2025)));
+    await repo.create(_bovine(owner: 'B', nombre: 'nuevo', creado: DateTime(2026, 6)));
     await repo.create(_bovine(owner: 'C', nombre: 'ajeno'));
 
     final result = await repo.getByOwners(['A', 'B']);
@@ -73,7 +73,7 @@ void main() {
   });
 
   test('getByStatus filtra por estado', () async {
-    await repo.create(_bovine(estado: 'Sano'));
+    await repo.create(_bovine());
     await repo.create(_bovine(estado: 'Enfermo'));
     final enfermos = await repo.getByStatus('Enfermo');
     expect(enfermos.length, 1);

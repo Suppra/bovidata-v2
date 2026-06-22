@@ -788,15 +788,23 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen>
       
       if (a is TreatmentModel) {
         dateA = a.fecha;
-      } else if (a is IncidentModel) dateA = a.fecha;
-      else if (a is ActivityModel) dateA = a.fecha;
-      else dateA = DateTime.now();
-      
+      } else if (a is IncidentModel) {
+        dateA = a.fecha;
+      } else if (a is ActivityModel) {
+        dateA = a.fecha;
+      } else {
+        dateA = DateTime.now();
+      }
+
       if (b is TreatmentModel) {
         dateB = b.fecha;
-      } else if (b is IncidentModel) dateB = b.fecha;
-      else if (b is ActivityModel) dateB = b.fecha;
-      else dateB = DateTime.now();
+      } else if (b is IncidentModel) {
+        dateB = b.fecha;
+      } else if (b is ActivityModel) {
+        dateB = b.fecha;
+      } else {
+        dateB = DateTime.now();
+      }
       
       return dateB.compareTo(dateA);
     });

@@ -30,9 +30,9 @@ void main() {
   });
 
   test('getLowStock usa cantidadMinima por ítem (no un umbral fijo)', () async {
-    await repo.create(_i(nombre: 'bajo', actual: 3, minimo: 5)); // low
-    await repo.create(_i(nombre: 'justo', actual: 5, minimo: 5)); // low (<=)
-    await repo.create(_i(nombre: 'ok', actual: 20, minimo: 5)); // ok
+    await repo.create(_i(nombre: 'bajo', actual: 3)); // low
+    await repo.create(_i(nombre: 'justo', actual: 5)); // low (<=)
+    await repo.create(_i(nombre: 'ok', actual: 20)); // ok
 
     final low = await repo.getLowStock();
     expect(low.map((i) => i.nombre).toSet(), {'bajo', 'justo'});

@@ -589,6 +589,10 @@ class _PdfGeneratorScreenState extends State<PdfGeneratorScreen> {
   }
   
   Future<Map<String, dynamic>> _getAllData(BovineModel bovine) async {
+    // Capturar el AuthController antes de cualquier await (evita usar context
+    // a través de gaps asíncronos).
+    final authController = context.read<AuthController>();
+
     // Obtener tratamientos
     List<TreatmentModel> treatments = [];
     if (_reportType == 'Completo' || _reportType == 'Solo Tratamientos') {
@@ -610,7 +614,6 @@ class _PdfGeneratorScreenState extends State<PdfGeneratorScreen> {
     
     // Obtener veterinario (usuario actual si es veterinario, o buscar uno)
     UserModel veterinarian;
-    final authController = context.read<AuthController>();
     if (authController.isVeterinario) {
       veterinarian = authController.currentUser!;
     } else {

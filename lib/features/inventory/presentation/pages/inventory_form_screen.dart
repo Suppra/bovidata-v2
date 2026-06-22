@@ -107,7 +107,7 @@ class _InventoryFormScreenState extends State<InventoryFormScreen> {
         foregroundColor: AppColors.white,
       ),
       body: Consumer2<SolidInventoryController, AuthController>(
-        builder: (context, SolidInventoryController, authController, child) {
+        builder: (context, inventoryController, authController, child) {
           return Form(
             key: _formKey,
             child: SingleChildScrollView(
@@ -489,8 +489,8 @@ class _InventoryFormScreenState extends State<InventoryFormScreen> {
                       Expanded(
                         flex: 2,
                         child: ElevatedButton(
-                          onPressed: SolidInventoryController.isLoading ? null : _saveItem,
-                          child: SolidInventoryController.isLoading
+                          onPressed: inventoryController.isLoading ? null : _saveItem,
+                          child: inventoryController.isLoading
                               ? const SizedBox(
                                   width: 20,
                                   height: 20,

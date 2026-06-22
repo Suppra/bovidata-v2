@@ -13,7 +13,7 @@ Membership _m(String ganadero, String member, MembershipStatus estado) =>
       memberNombre: 'M $member',
       memberRol: 'Veterinario',
       estado: estado,
-      fechaCreacion: DateTime(2026, 1, 1),
+      fechaCreacion: DateTime(2026),
     );
 
 void main() {

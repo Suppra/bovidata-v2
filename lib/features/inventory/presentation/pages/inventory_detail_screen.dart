@@ -627,17 +627,17 @@ class InventoryDetailScreen extends StatelessWidget {
               child: const Text('Cancelar'),
             ),
             Consumer<SolidInventoryController>(
-              builder: (context, SolidInventoryController, child) => ElevatedButton(
-                onPressed: SolidInventoryController.isLoading
+              builder: (context, controller, child) => ElevatedButton(
+                onPressed: controller.isLoading
                     ? null
                     : () => _adjustStock(
                         context,
-                        SolidInventoryController,
+                        controller,
                         quantityController.text,
                         adjustmentType,
                         reasonController.text,
                       ),
-                child: SolidInventoryController.isLoading
+                child: controller.isLoading
                     ? const SizedBox(
                         width: 20,
                         height: 20,
@@ -732,15 +732,15 @@ class InventoryDetailScreen extends StatelessWidget {
             child: const Text('Cancelar'),
           ),
           Consumer<SolidInventoryController>(
-            builder: (context, SolidInventoryController, child) => ElevatedButton(
-              onPressed: SolidInventoryController.isLoading
+            builder: (context, controller, child) => ElevatedButton(
+              onPressed: controller.isLoading
                   ? null
-                  : () => _deleteItem(context, SolidInventoryController),
+                  : () => _deleteItem(context, controller),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.error,
                 foregroundColor: AppColors.white,
               ),
-              child: SolidInventoryController.isLoading
+              child: controller.isLoading
                   ? const SizedBox(
                       width: 20,
                       height: 20,

@@ -184,12 +184,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () async {
+                  final navigator = Navigator.of(context);
                   final confirm = await _showLogoutConfirmation(context);
                   if (confirm == true) {
                     await authController.signOut();
-                    if (mounted) {
-                      Navigator.of(context).pushReplacementNamed('/login');
-                    }
+                    navigator.pushReplacementNamed('/login');
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -394,8 +393,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           ElevatedButton(
             onPressed: () async {
-              Navigator.pop(context);
-              
+              final navigator = Navigator.of(context);
+              final messenger = ScaffoldMessenger.of(context);
+              navigator.pop();
+
               // Mostrar indicador de carga
               showDialog(
                 context: context,
@@ -413,16 +414,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
               
               // Simular sincronización
               await Future.delayed(const Duration(seconds: 2));
-              
-              if (mounted) {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Datos sincronizados correctamente'),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-              }
+
+              navigator.pop();
+              messenger.showSnackBar(
+                const SnackBar(
+                  content: Text('Datos sincronizados correctamente'),
+                  backgroundColor: Colors.green,
+                ),
+              );
             },
             child: const Text('Sincronizar'),
           ),

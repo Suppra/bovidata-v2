@@ -16,7 +16,7 @@ TreatmentModel _t({
     veterinarioId: 'vet1',
     propietarioId: owner,
     completado: completado,
-    fecha: fecha ?? DateTime(2026, 1, 1),
+    fecha: fecha ?? DateTime(2026),
   );
 }
 
@@ -30,8 +30,8 @@ void main() {
   });
 
   test('getByOwners acota al hato y ordena por fecha desc', () async {
-    await repo.create(_t(owner: 'A', fecha: DateTime(2025, 1, 1)));
-    await repo.create(_t(owner: 'B', fecha: DateTime(2026, 5, 1)));
+    await repo.create(_t(owner: 'A', fecha: DateTime(2025)));
+    await repo.create(_t(owner: 'B', fecha: DateTime(2026, 5)));
     await repo.create(_t(owner: 'C'));
 
     final result = await repo.getByOwners(['A', 'B']);
@@ -40,7 +40,7 @@ void main() {
   });
 
   test('getByBovine filtra por bovino', () async {
-    await repo.create(_t(bovineId: 'b1'));
+    await repo.create(_t());
     await repo.create(_t(bovineId: 'b2'));
     final result = await repo.getByBovine('b1');
     expect(result.length, 1);
@@ -48,7 +48,7 @@ void main() {
   });
 
   test('getPending devuelve solo no completados', () async {
-    await repo.create(_t(completado: false));
+    await repo.create(_t());
     await repo.create(_t(completado: true));
     final pending = await repo.getPending();
     expect(pending.length, 1);
