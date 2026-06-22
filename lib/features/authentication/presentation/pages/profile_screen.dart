@@ -277,28 +277,94 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _saveProfile() {
-    if (_formKey.currentState!.validate()) {
-      // TODO: Implementar actualización de perfil
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Perfil actualizado correctamente'),
-          backgroundColor: AppColors.success,
-        ),
-      );
-    }
+  Future<void> _saveProfile() async {
+    if (!_formKey.currentState!.validate()) return;
+    final auth = context.read<AuthController>();
+    final messenger = ScaffoldMessenger.of(context);
+    final ok = await auth.updateProfile(
+      nombre: _nombreController.text.trim(),
+      apellido: _apellidoController.text.trim(),
+      telefono: _telefonoController.text.trim(),
+      direccion: _direccionController.text.trim().isNotEmpty
+          ? _direccionController.text.trim()
+          : null,
+      cedula: _cedulaController.text.trim().isNotEmpty
+          ? _cedulaController.text.trim()
+          : null,
+    );
+    if (!mounted) return;
+    messenger.showSnackBar(SnackBar(
+      content: Text(ok
+          ? 'Perfil actualizado correctamente'
+          : (auth.errorMessage ?? 'No se pudo actualizar el perfil')),
+      backgroundColor: ok ? AppColors.success : AppColors.error,
+    ));
   }
 
   void _changePassword() {
+    final currentController = TextEditingController();
+    final newController = TextEditingController();
+    final confirmController = TextEditingController();
+    final dialogFormKey = GlobalKey<FormState>();
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Cambiar Contraseña'),
-        content: const Text('Funcionalidad en desarrollo. Pronto podrás cambiar tu contraseña desde aquí.'),
+        content: Form(
+          key: dialogFormKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: currentController,
+                obscureText: true,
+                decoration: const InputDecoration(labelText: 'Contraseña actual'),
+                validator: (v) =>
+                    (v == null || v.isEmpty) ? 'Requerida' : null,
+              ),
+              TextFormField(
+                controller: newController,
+                obscureText: true,
+                decoration: const InputDecoration(labelText: 'Nueva contraseña'),
+                validator: (v) =>
+                    (v == null || v.length < 6) ? 'Mínimo 6 caracteres' : null,
+              ),
+              TextFormField(
+                controller: confirmController,
+                obscureText: true,
+                decoration: const InputDecoration(labelText: 'Confirmar nueva'),
+                validator: (v) =>
+                    v != newController.text ? 'No coincide' : null,
+              ),
+            ],
+          ),
+        ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cerrar'),
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (!dialogFormKey.currentState!.validate()) return;
+              final auth = context.read<AuthController>();
+              final messenger = ScaffoldMessenger.of(context);
+              final navigator = Navigator.of(dialogContext);
+              final ok = await auth.updatePassword(
+                currentController.text,
+                newController.text,
+              );
+              navigator.pop();
+              if (!mounted) return;
+              messenger.showSnackBar(SnackBar(
+                content: Text(ok
+                    ? 'Contraseña actualizada'
+                    : (auth.errorMessage ?? 'No se pudo cambiar la contraseña')),
+                backgroundColor: ok ? AppColors.success : AppColors.error,
+              ));
+            },
+            child: const Text('Guardar'),
           ),
         ],
       ),

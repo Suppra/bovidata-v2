@@ -974,10 +974,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
   }
 
   void _markNotificationAsRead(AppNotification notification) {
-    // TODO: Implement marking notification as read in database
     setState(() {
       notification.isRead = true;
     });
+    // Persiste en Firestore (best-effort; ignora sintéticas sin documento).
+    context.read<SolidNotificationController>().markAsRead(notification.id);
   }
 
   void _markAllAsRead() {
@@ -1009,7 +1010,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
   }
 
   void _dismissNotification(AppNotification notification) {
-    // TODO: Implement dismissing notification
+    context.read<SolidNotificationController>().deleteNotification(notification.id);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Notificación descartada'),

@@ -7,6 +7,7 @@ import 'package:bovidata_new/constants/app_styles.dart';
 import 'package:bovidata_new/constants/app_constants.dart';
 import 'package:bovidata_new/features/animals/presentation/pages/bovine_form_screen.dart';
 import 'package:bovidata_new/features/animals/presentation/pages/medical_history_screen.dart';
+import 'package:bovidata_new/features/treatments/presentation/pages/treatment_form_screen.dart';
 
 class BovineDetailScreen extends StatelessWidget {
   final BovineModel bovine;
@@ -221,7 +222,12 @@ class BovineDetailScreen extends StatelessWidget {
                     if (authController.isVeterinario)
                       ElevatedButton.icon(
                         onPressed: () {
-                          // TODO: Navigate to add treatment
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  TreatmentFormScreen(bovineId: bovine.id),
+                            ),
+                          );
                         },
                         icon: const Icon(Icons.medical_services),
                         label: const Text('Agregar Tratamiento'),

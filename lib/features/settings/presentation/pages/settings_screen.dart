@@ -315,12 +315,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: const Text('Cancelar'),
             ),
             ElevatedButton(
-              onPressed: () {
-                // TODO: Implementar cambio de contraseña
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Función de cambio de contraseña pendiente')),
+              onPressed: () async {
+                final messenger = ScaffoldMessenger.of(context);
+                final navigator = Navigator.of(context);
+                final auth = context.read<AuthController>();
+                if (newPasswordController.text.length < 6) {
+                  messenger.showSnackBar(const SnackBar(
+                    content: Text('La nueva contraseña debe tener al menos 6 caracteres'),
+                    backgroundColor: Colors.red,
+                  ));
+                  return;
+                }
+                if (newPasswordController.text != confirmPasswordController.text) {
+                  messenger.showSnackBar(const SnackBar(
+                    content: Text('Las contraseñas no coinciden'),
+                    backgroundColor: Colors.red,
+                  ));
+                  return;
+                }
+                final ok = await auth.updatePassword(
+                  currentPasswordController.text,
+                  newPasswordController.text,
                 );
+                navigator.pop();
+                messenger.showSnackBar(SnackBar(
+                  content: Text(ok
+                      ? 'Contraseña actualizada'
+                      : (auth.errorMessage ?? 'No se pudo cambiar la contraseña')),
+                  backgroundColor: ok ? Colors.green : Colors.red,
+                ));
               },
               child: const Text('Cambiar'),
             ),
