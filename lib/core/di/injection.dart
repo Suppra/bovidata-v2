@@ -5,10 +5,10 @@
 // dependencias se resuelven por constructor, lo que las hace mockeables.
 import 'package:get_it/get_it.dart';
 
-import 'package:bovidata_new/core/interfaces/repository_interface.dart';
 import 'package:bovidata_new/core/interfaces/service_interface.dart';
-import 'package:bovidata_new/core/repositories/concrete_repositories.dart';
 import 'package:bovidata_new/core/services/solid_services.dart';
+import 'package:bovidata_new/features/users/domain/ports/user_repository.dart';
+import 'package:bovidata_new/features/users/infrastructure/repositories/user_repository_impl.dart';
 import 'package:bovidata_new/core/factories/model_factory.dart';
 import 'package:bovidata_new/core/access/farm_access_service.dart';
 import 'package:bovidata_new/features/animals/domain/ports/bovine_repository.dart';

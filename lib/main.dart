@@ -10,7 +10,6 @@ import 'package:bovidata_new/features/membership/application/membership_interact
 import 'package:bovidata_new/features/membership/domain/ports/membership_repository.dart';
 import 'package:bovidata_new/features/membership/presentation/controllers/membership_controller.dart';
 import 'package:bovidata_new/features/membership/presentation/pages/farm_members_page.dart';
-import 'package:bovidata_new/app/scheduler_service.dart';
 import 'package:bovidata_new/features/authentication/presentation/pages/login_screen.dart';
 import 'package:bovidata_new/features/authentication/presentation/pages/profile_screen.dart';
 import 'package:bovidata_new/features/settings/presentation/pages/settings_screen.dart';
@@ -27,9 +26,9 @@ void main() async {
   // Initialize dependency injection container (get_it)
   configureDependencies();
 
-  // Initialize scheduled notifications
-  SchedulerService.initializeScheduler();
-  
+  // Las notificaciones programadas ahora corren en Cloud Functions
+  // (functions/index.js), no en un Timer del cliente.
+
   runApp(const BoviDataApp());
 }
 

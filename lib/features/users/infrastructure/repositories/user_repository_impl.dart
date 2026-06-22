@@ -1,10 +1,9 @@
-// Repositorio de usuarios (pendiente de mover a features/users).
-// Los repositorios de bovinos/tratamientos/inventario ya viven en sus features.
+// Capa de INFRAESTRUCTURA (users) — implementación Firestore del repositorio.
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:bovidata_new/core/interfaces/repository_interface.dart';
 import 'package:bovidata_new/core/factories/model_factory.dart';
-import 'package:bovidata_new/models/user_model.dart';
 import 'package:bovidata_new/constants/app_constants.dart';
+import 'package:bovidata_new/models/user_model.dart';
+import 'package:bovidata_new/features/users/domain/ports/user_repository.dart';
 
 class UserRepository implements IUserRepository {
   final FirebaseFirestore _firestore;
