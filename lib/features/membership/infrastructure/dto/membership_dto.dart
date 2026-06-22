@@ -1,6 +1,6 @@
 // Capa de INFRAESTRUCTURA — adaptador entre Firestore y la entidad de dominio.
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../domain/entities/membership.dart';
+import 'package:bovidata_new/features/membership/domain/entities/membership.dart';
 
 class MembershipDto {
   static Membership fromDoc(DocumentSnapshot doc) {

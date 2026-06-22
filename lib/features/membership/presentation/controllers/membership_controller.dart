@@ -1,8 +1,8 @@
 // Capa de PRESENTACIÓN — estado de UI para membresías (Provider/ChangeNotifier).
 import 'package:flutter/foundation.dart';
-import '../../application/membership_interactor.dart';
-import '../../domain/entities/membership.dart';
-import '../../domain/ports/membership_repository.dart';
+import 'package:bovidata_new/features/membership/application/membership_interactor.dart';
+import 'package:bovidata_new/features/membership/domain/entities/membership.dart';
+import 'package:bovidata_new/features/membership/domain/ports/membership_repository.dart';
 
 class MembershipController extends ChangeNotifier {
   final MembershipInteractor _interactor;

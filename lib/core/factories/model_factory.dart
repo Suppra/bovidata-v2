@@ -1,9 +1,9 @@
 // Factory Method Pattern - Creación de modelos
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../models/bovine_model.dart';
-import '../../models/treatment_model.dart';
-import '../../models/inventory_model.dart';
-import '../../models/user_model.dart';
+import 'package:bovidata_new/models/bovine_model.dart';
+import 'package:bovidata_new/models/treatment_model.dart';
+import 'package:bovidata_new/models/inventory_model.dart';
+import 'package:bovidata_new/models/user_model.dart';
 
 // Abstract Factory para modelos
 abstract class ModelFactory {

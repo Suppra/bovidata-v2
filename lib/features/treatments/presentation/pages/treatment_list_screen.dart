@@ -3,12 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
 import 'package:bovidata_new/features/authentication/presentation/controllers/auth_controller.dart';
-import '../../core/controllers/controllers.dart';
-import '../../models/treatment_model.dart';
-import '../../constants/app_styles.dart';
-import '../../constants/app_constants.dart';
-import 'treatment_form_screen.dart';
-import 'treatment_detail_screen.dart';
+import 'package:bovidata_new/core/controllers/controllers.dart';
+import 'package:bovidata_new/models/treatment_model.dart';
+import 'package:bovidata_new/constants/app_styles.dart';
+import 'package:bovidata_new/constants/app_constants.dart';
+import 'package:bovidata_new/features/treatments/presentation/pages/treatment_form_screen.dart';
+import 'package:bovidata_new/features/treatments/presentation/pages/treatment_detail_screen.dart';
 
 class TreatmentListScreen extends StatefulWidget {
   final String? bovineId;

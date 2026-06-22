@@ -6,7 +6,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:intl/intl.dart';
-import '../models/models.dart';
+import 'package:bovidata_new/models/models.dart';
 
 class PdfService {
   static Future<Uint8List> generateMedicalHistoryPdf({

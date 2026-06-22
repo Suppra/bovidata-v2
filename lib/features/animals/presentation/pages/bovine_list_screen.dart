@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:bovidata_new/features/authentication/presentation/controllers/auth_controller.dart';
-import '../../core/controllers/controllers.dart';
-import '../../models/bovine_model.dart';
-import '../../constants/app_styles.dart';
+import 'package:bovidata_new/core/controllers/controllers.dart';
+import 'package:bovidata_new/models/bovine_model.dart';
+import 'package:bovidata_new/constants/app_styles.dart';
 
-import '../../widgets/bovine_card.dart';
-import '../../widgets/search_filter_bar.dart';
-import 'bovine_form_screen.dart';
-import 'bovine_detail_screen.dart';
+import 'package:bovidata_new/widgets/bovine_card.dart';
+import 'package:bovidata_new/widgets/search_filter_bar.dart';
+import 'package:bovidata_new/features/animals/presentation/pages/bovine_form_screen.dart';
+import 'package:bovidata_new/features/animals/presentation/pages/bovine_detail_screen.dart';
 
 class BovineListScreen extends StatefulWidget {
   const BovineListScreen({super.key});

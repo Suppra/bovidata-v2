@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import '../../core/controllers/controllers.dart';
-import '../../models/bovine_model.dart';
-import '../../constants/app_styles.dart';
-import '../../constants/app_constants.dart';
-import 'bovine_form_screen.dart';
-import 'medical_history_screen.dart';
+import 'package:bovidata_new/core/controllers/controllers.dart';
+import 'package:bovidata_new/models/bovine_model.dart';
+import 'package:bovidata_new/constants/app_styles.dart';
+import 'package:bovidata_new/constants/app_constants.dart';
+import 'package:bovidata_new/features/animals/presentation/pages/bovine_form_screen.dart';
+import 'package:bovidata_new/features/animals/presentation/pages/medical_history_screen.dart';
 
 class BovineDetailScreen extends StatelessWidget {
   final BovineModel bovine;

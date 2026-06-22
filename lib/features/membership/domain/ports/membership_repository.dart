@@ -1,5 +1,5 @@
 // Capa de DOMINIO — Puerto (interfaz). La infraestructura lo implementa.
-import '../entities/membership.dart';
+import 'package:bovidata_new/features/membership/domain/entities/membership.dart';
 
 abstract interface class MembershipRepository {
   /// Crea (o reenvía) una invitación.

@@ -2,9 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:bovidata_new/features/authentication/presentation/controllers/auth_controller.dart';
-import '../../../../constants/app_styles.dart';
-import '../../domain/entities/membership.dart';
-import '../controllers/membership_controller.dart';
+import 'package:bovidata_new/constants/app_styles.dart';
+import 'package:bovidata_new/features/membership/domain/entities/membership.dart';
+import 'package:bovidata_new/features/membership/presentation/controllers/membership_controller.dart';
 
 class FarmMembersPage extends StatelessWidget {
   const FarmMembersPage({super.key});

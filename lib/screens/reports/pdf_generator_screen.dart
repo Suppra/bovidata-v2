@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import '../../core/controllers/controllers.dart';
-import '../../models/models.dart';
-import '../../constants/app_styles.dart';
-import '../../services/pdf_service.dart';
+import 'package:bovidata_new/core/controllers/controllers.dart';
+import 'package:bovidata_new/models/models.dart';
+import 'package:bovidata_new/constants/app_styles.dart';
+import 'package:bovidata_new/services/pdf_service.dart';
 
 class PdfGeneratorScreen extends StatefulWidget {
   const PdfGeneratorScreen({super.key});

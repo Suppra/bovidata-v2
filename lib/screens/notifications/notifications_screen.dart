@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import '../../core/controllers/controllers.dart';
-import '../../models/bovine_model.dart';
-import '../../models/treatment_model.dart';
-import '../../models/inventory_model.dart';
-import '../../models/notification_model.dart';
-import '../../constants/app_styles.dart';
-import '../../constants/app_constants.dart';
-import '../treatments/treatment_detail_screen.dart';
-import '../inventory/inventory_detail_screen.dart';
+import 'package:bovidata_new/core/controllers/controllers.dart';
+import 'package:bovidata_new/models/bovine_model.dart';
+import 'package:bovidata_new/models/treatment_model.dart';
+import 'package:bovidata_new/models/inventory_model.dart';
+import 'package:bovidata_new/models/notification_model.dart';
+import 'package:bovidata_new/constants/app_styles.dart';
+import 'package:bovidata_new/constants/app_constants.dart';
+import 'package:bovidata_new/features/treatments/presentation/pages/treatment_detail_screen.dart';
+import 'package:bovidata_new/features/inventory/presentation/pages/inventory_detail_screen.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});

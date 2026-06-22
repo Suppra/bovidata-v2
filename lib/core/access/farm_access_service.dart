@@ -8,7 +8,7 @@
 //  - Un VETERINARIO/EMPLEADO accede a los hatos de los ganaderos que lo han
 //    invitado y cuya invitación aceptó.
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../features/membership/domain/ports/membership_repository.dart';
+import 'package:bovidata_new/features/membership/domain/ports/membership_repository.dart';
 
 class FarmAccessService {
   final MembershipRepository _memberships;

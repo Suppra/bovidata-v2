@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../models/bovine_model.dart';
-import '../constants/app_styles.dart';
+import 'package:bovidata_new/models/bovine_model.dart';
+import 'package:bovidata_new/constants/app_styles.dart';
 
 class BovineCard extends StatelessWidget {
   final BovineModel bovine;

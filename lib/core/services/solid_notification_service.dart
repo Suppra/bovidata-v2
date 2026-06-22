@@ -1,7 +1,7 @@
 // Servicio moderno para notificaciones usando arquitectura SOLID
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../models/notification_model.dart';
+import 'package:bovidata_new/models/notification_model.dart';
 
 /// Servicio moderno para notificaciones usando principios SOLID
 /// Aplica Single Responsibility, Open/Closed, Interface Segregation

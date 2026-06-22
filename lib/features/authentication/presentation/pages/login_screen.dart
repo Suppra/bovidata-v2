@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:bovidata_new/features/authentication/presentation/controllers/auth_controller.dart';
 import 'package:bovidata_new/constants/app_styles.dart';
 import 'package:bovidata_new/constants/app_constants.dart';
-import 'register_screen.dart';
-import 'forgot_password_screen.dart';
+import 'package:bovidata_new/features/authentication/presentation/pages/register_screen.dart';
+import 'package:bovidata_new/features/authentication/presentation/pages/forgot_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

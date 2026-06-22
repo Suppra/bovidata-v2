@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../core/controllers/controllers.dart';
-import '../../models/models.dart';
-import '../../constants/app_styles.dart';
-import '../../constants/app_constants.dart';
-import 'treatment_form_screen.dart';
+import 'package:bovidata_new/core/controllers/controllers.dart';
+import 'package:bovidata_new/models/models.dart';
+import 'package:bovidata_new/constants/app_styles.dart';
+import 'package:bovidata_new/constants/app_constants.dart';
+import 'package:bovidata_new/features/treatments/presentation/pages/treatment_form_screen.dart';
 
 class TreatmentDetailScreen extends StatefulWidget {
   final TreatmentModel treatment;

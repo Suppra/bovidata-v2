@@ -1,9 +1,7 @@
-// Barrel file para controllers SOLID
-// Facilita la importación de todos los controllers modernos
-
-export 'solid_bovine_controller.dart';
-export 'solid_treatment_controller.dart';
-export 'solid_inventory_controller.dart';
-export 'solid_notification_controller.dart';
-// AuthController se mantiene como legacy funcional
+// Barrel de controllers. Re-exporta desde las features para no romper las
+// pantallas que aún consumen estos controllers por este punto único.
+export 'package:bovidata_new/features/animals/presentation/controllers/bovine_controller.dart';
+export 'package:bovidata_new/features/treatments/presentation/controllers/treatment_controller.dart';
+export 'package:bovidata_new/features/inventory/presentation/controllers/inventory_controller.dart';
+export 'package:bovidata_new/core/controllers/solid_notification_controller.dart';
 export 'package:bovidata_new/features/authentication/presentation/controllers/auth_controller.dart';

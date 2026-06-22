@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:bovidata_new/features/authentication/presentation/controllers/auth_controller.dart';
-import '../../core/controllers/controllers.dart';
+import 'package:bovidata_new/core/controllers/controllers.dart';
 
-import '../../constants/app_styles.dart';
-import '../../constants/app_constants.dart';
-import '../../services/activity_service.dart';
-import '../../models/activity_model.dart';
-import '../bovines/bovine_list_screen.dart';
-import '../treatments/treatment_list_screen.dart';
+import 'package:bovidata_new/constants/app_styles.dart';
+import 'package:bovidata_new/constants/app_constants.dart';
+import 'package:bovidata_new/services/activity_service.dart';
+import 'package:bovidata_new/models/activity_model.dart';
+import 'package:bovidata_new/features/animals/presentation/pages/bovine_list_screen.dart';
+import 'package:bovidata_new/features/treatments/presentation/pages/treatment_list_screen.dart';
 import 'package:bovidata_new/features/authentication/presentation/pages/profile_screen.dart';
 import 'package:bovidata_new/features/authentication/presentation/pages/settings_screen.dart';
-import '../inventory/inventory_list_screen.dart';
-import '../reports/reports_screen.dart';
-import '../notifications/notifications_screen.dart';
+import 'package:bovidata_new/features/inventory/presentation/pages/inventory_list_screen.dart';
+import 'package:bovidata_new/screens/reports/reports_screen.dart';
+import 'package:bovidata_new/screens/notifications/notifications_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

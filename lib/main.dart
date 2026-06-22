@@ -3,18 +3,18 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:bovidata_new/features/authentication/presentation/controllers/auth_controller.dart';
-import 'controllers/settings_controller.dart';
-import 'core/controllers/controllers.dart';
-import 'core/locator/service_locator.dart';
-import 'features/membership/presentation/controllers/membership_controller.dart';
-import 'features/membership/presentation/pages/farm_members_page.dart';
-import 'services/scheduler_service.dart';
+import 'package:bovidata_new/controllers/settings_controller.dart';
+import 'package:bovidata_new/core/controllers/controllers.dart';
+import 'package:bovidata_new/core/locator/service_locator.dart';
+import 'package:bovidata_new/features/membership/presentation/controllers/membership_controller.dart';
+import 'package:bovidata_new/features/membership/presentation/pages/farm_members_page.dart';
+import 'package:bovidata_new/services/scheduler_service.dart';
 import 'package:bovidata_new/features/authentication/presentation/pages/login_screen.dart';
 import 'package:bovidata_new/features/authentication/presentation/pages/profile_screen.dart';
 import 'package:bovidata_new/features/authentication/presentation/pages/settings_screen.dart';
-import 'screens/home/home_screen.dart';
-import 'constants/app_styles.dart';
-import 'firebase_options.dart';
+import 'package:bovidata_new/screens/home/home_screen.dart';
+import 'package:bovidata_new/constants/app_styles.dart';
+import 'package:bovidata_new/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

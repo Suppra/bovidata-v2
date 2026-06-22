@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constants/app_styles.dart';
+import 'package:bovidata_new/constants/app_styles.dart';
 
 class SearchFilterBar extends StatelessWidget {
   final TextEditingController searchController;

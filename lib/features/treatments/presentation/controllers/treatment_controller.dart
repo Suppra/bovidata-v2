@@ -1,8 +1,8 @@
 // Controller moderno para tratamientos usando arquitectura SOLID
 import 'package:flutter/material.dart';
-import '../locator/service_locator.dart';
-import '../services/solid_services.dart';
-import '../../models/treatment_model.dart';
+import 'package:bovidata_new/core/locator/service_locator.dart';
+import 'package:bovidata_new/features/treatments/application/treatment_service.dart';
+import 'package:bovidata_new/models/treatment_model.dart';
 
 /// Controller moderno para tratamientos usando arquitectura SOLID
 /// Reemplaza TreatmentController legacy con principios SOLID aplicados

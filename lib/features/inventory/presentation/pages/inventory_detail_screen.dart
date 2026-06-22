@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import '../../core/controllers/controllers.dart';
-import '../../models/inventory_model.dart';
-import '../../constants/app_styles.dart';
-import '../../constants/app_constants.dart';
-import 'inventory_form_screen.dart';
+import 'package:bovidata_new/core/controllers/controllers.dart';
+import 'package:bovidata_new/models/inventory_model.dart';
+import 'package:bovidata_new/constants/app_styles.dart';
+import 'package:bovidata_new/constants/app_constants.dart';
+import 'package:bovidata_new/features/inventory/presentation/pages/inventory_form_screen.dart';
 
 class InventoryDetailScreen extends StatelessWidget {
   final InventoryModel item;

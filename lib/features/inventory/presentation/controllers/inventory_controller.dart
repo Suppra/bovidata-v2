@@ -1,8 +1,8 @@
 // Controller moderno para inventario usando arquitectura SOLID
 import 'package:flutter/material.dart';
-import '../locator/service_locator.dart';
-import '../services/solid_services.dart';
-import '../../models/inventory_model.dart';
+import 'package:bovidata_new/core/locator/service_locator.dart';
+import 'package:bovidata_new/features/inventory/application/inventory_service.dart';
+import 'package:bovidata_new/models/inventory_model.dart';
 
 /// Controller moderno para inventario usando arquitectura SOLID
 /// Reemplaza InventoryController legacy con principios SOLID aplicados

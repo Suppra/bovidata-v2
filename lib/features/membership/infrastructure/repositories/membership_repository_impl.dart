@@ -1,8 +1,8 @@
 // Capa de INFRAESTRUCTURA — implementación Firestore del puerto MembershipRepository.
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../domain/entities/membership.dart';
-import '../../domain/ports/membership_repository.dart';
-import '../dto/membership_dto.dart';
+import 'package:bovidata_new/features/membership/domain/entities/membership.dart';
+import 'package:bovidata_new/features/membership/domain/ports/membership_repository.dart';
+import 'package:bovidata_new/features/membership/infrastructure/dto/membership_dto.dart';
 
 class MembershipRepositoryImpl implements MembershipRepository {
   final FirebaseFirestore _firestore;

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../core/controllers/solid_treatment_controller.dart';
-import '../../models/models.dart';
-import '../../constants/app_styles.dart';
-import '../treatments/treatment_detail_screen.dart';
+import 'package:bovidata_new/features/treatments/presentation/controllers/treatment_controller.dart';
+import 'package:bovidata_new/models/models.dart';
+import 'package:bovidata_new/constants/app_styles.dart';
+import 'package:bovidata_new/features/treatments/presentation/pages/treatment_detail_screen.dart';
 
 class MedicalHistoryScreen extends StatefulWidget {
   final BovineModel bovine;

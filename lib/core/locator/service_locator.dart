@@ -1,16 +1,24 @@
 // Service Locator Pattern para inyección de dependencias (implementación simple)
 // Implementa Dependency Inversion Principle (DIP)
-import '../interfaces/repository_interface.dart';
-import '../interfaces/service_interface.dart';
-import '../repositories/concrete_repositories.dart';
-import '../services/solid_services.dart';
-import '../services/solid_notification_service.dart';
-import '../factories/model_factory.dart';
-import '../builders/entity_builder.dart';
-import '../access/farm_access_service.dart';
-import '../../features/membership/domain/ports/membership_repository.dart';
-import '../../features/membership/infrastructure/repositories/membership_repository_impl.dart';
-import '../../features/membership/application/membership_interactor.dart';
+import 'package:bovidata_new/core/interfaces/repository_interface.dart';
+import 'package:bovidata_new/core/interfaces/service_interface.dart';
+import 'package:bovidata_new/core/repositories/concrete_repositories.dart';
+import 'package:bovidata_new/core/services/solid_services.dart';
+import 'package:bovidata_new/core/services/solid_notification_service.dart';
+import 'package:bovidata_new/core/factories/model_factory.dart';
+import 'package:bovidata_new/core/access/farm_access_service.dart';
+import 'package:bovidata_new/features/animals/domain/ports/bovine_repository.dart';
+import 'package:bovidata_new/features/animals/infrastructure/repositories/bovine_repository_impl.dart';
+import 'package:bovidata_new/features/animals/application/bovine_service.dart';
+import 'package:bovidata_new/features/treatments/domain/ports/treatment_repository.dart';
+import 'package:bovidata_new/features/treatments/infrastructure/repositories/treatment_repository_impl.dart';
+import 'package:bovidata_new/features/treatments/application/treatment_service.dart';
+import 'package:bovidata_new/features/inventory/domain/ports/inventory_repository.dart';
+import 'package:bovidata_new/features/inventory/infrastructure/repositories/inventory_repository_impl.dart';
+import 'package:bovidata_new/features/inventory/application/inventory_service.dart';
+import 'package:bovidata_new/features/membership/domain/ports/membership_repository.dart';
+import 'package:bovidata_new/features/membership/infrastructure/repositories/membership_repository_impl.dart';
+import 'package:bovidata_new/features/membership/application/membership_interactor.dart';
 
 class ServiceLocator {
   static final Map<Type, dynamic> _services = {};
@@ -112,10 +120,6 @@ class ServiceLocator {
   static MembershipRepository get membershipRepository => get<MembershipRepository>();
   static FarmAccessService get farmAccess => get<FarmAccessService>();
   static MembershipInteractor get membershipInteractor => get<MembershipInteractor>();
-  
-  // Métodos para builders (nueva instancia cada vez)
-  static BovineBuilder get bovineBuilder => BovineBuilder();
-  static TreatmentBuilder get treatmentBuilder => TreatmentBuilder();
 
   // Método para limpiar servicios (útil para tests)
   static void reset() {
