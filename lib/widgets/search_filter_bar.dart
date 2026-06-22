@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constants/app_styles.dart';
+import 'package:bovidata_new/constants/app_styles.dart';
 
 class SearchFilterBar extends StatelessWidget {
   final TextEditingController searchController;
@@ -100,7 +100,7 @@ class SearchFilterBar extends StatelessWidget {
         border: Border.all(color: AppColors.border),
       ),
       child: DropdownButtonFormField<String>(
-        value: value,
+        initialValue: value,
         decoration: InputDecoration(
           labelText: label,
           prefixIcon: Icon(icon, size: AppDimensions.iconS),

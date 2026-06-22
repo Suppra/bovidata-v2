@@ -1,3 +1,6 @@
+// Modelo de actividad (audit log). Clase inmutable simple: usa JSON propio
+// (no Firestore Timestamp), por lo que no se modela con freezed para evitar el
+// acoplamiento con json_serializable.
 class ActivityModel {
   final String id;
   final String tipo;
@@ -8,7 +11,7 @@ class ActivityModel {
   final DateTime fecha;
   final Map<String, dynamic>? metadata;
 
-  ActivityModel({
+  const ActivityModel({
     required this.id,
     required this.tipo,
     required this.descripcion,
@@ -19,49 +22,43 @@ class ActivityModel {
     this.metadata,
   });
 
-  factory ActivityModel.fromJson(Map<String, dynamic> json) {
-    return ActivityModel(
-      id: json['id'] ?? '',
-      tipo: json['tipo'] ?? '',
-      descripcion: json['descripcion'] ?? '',
-      entidadId: json['entidadId'] ?? '',
-      entidadNombre: json['entidadNombre'] ?? '',
-      usuarioId: json['usuarioId'] ?? '',
-      fecha: DateTime.parse(json['fecha']),
-      metadata: json['metadata'],
-    );
-  }
+  factory ActivityModel.fromJson(Map<String, dynamic> json) => ActivityModel(
+        id: json['id'] ?? '',
+        tipo: json['tipo'] ?? '',
+        descripcion: json['descripcion'] ?? '',
+        entidadId: json['entidadId'] ?? '',
+        entidadNombre: json['entidadNombre'] ?? '',
+        usuarioId: json['usuarioId'] ?? '',
+        fecha: DateTime.parse(json['fecha']),
+        metadata: json['metadata'],
+      );
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'tipo': tipo,
-      'descripcion': descripcion,
-      'entidadId': entidadId,
-      'entidadNombre': entidadNombre,
-      'usuarioId': usuarioId,
-      'fecha': fecha.toIso8601String(),
-      'metadata': metadata,
-    };
-  }
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'tipo': tipo,
+        'descripcion': descripcion,
+        'entidadId': entidadId,
+        'entidadNombre': entidadNombre,
+        'usuarioId': usuarioId,
+        'fecha': fecha.toIso8601String(),
+        'metadata': metadata,
+      };
 
-  // Método para crear actividad desde diferentes entidades
   factory ActivityModel.fromBovine({
     required String bovineId,
     required String bovineName,
     required String userId,
     required String action,
-  }) {
-    return ActivityModel(
-      id: '',
-      tipo: 'bovino',
-      descripcion: '$action bovino "$bovineName"',
-      entidadId: bovineId,
-      entidadNombre: bovineName,
-      usuarioId: userId,
-      fecha: DateTime.now(),
-    );
-  }
+  }) =>
+      ActivityModel(
+        id: '',
+        tipo: 'bovino',
+        descripcion: '$action bovino "$bovineName"',
+        entidadId: bovineId,
+        entidadNombre: bovineName,
+        usuarioId: userId,
+        fecha: DateTime.now(),
+      );
 
   factory ActivityModel.fromTreatment({
     required String treatmentId,
@@ -70,36 +67,31 @@ class ActivityModel {
     required String bovineName,
     required String userId,
     required String action,
-  }) {
-    return ActivityModel(
-      id: '',
-      tipo: 'tratamiento',
-      descripcion: '$action tratamiento de $treatmentType para "$bovineName"',
-      entidadId: treatmentId,
-      entidadNombre: treatmentType,
-      usuarioId: userId,
-      fecha: DateTime.now(),
-      metadata: {
-        'bovineId': bovineId,
-        'bovineName': bovineName,
-      },
-    );
-  }
+  }) =>
+      ActivityModel(
+        id: '',
+        tipo: 'tratamiento',
+        descripcion: '$action tratamiento de $treatmentType para "$bovineName"',
+        entidadId: treatmentId,
+        entidadNombre: treatmentType,
+        usuarioId: userId,
+        fecha: DateTime.now(),
+        metadata: {'bovineId': bovineId, 'bovineName': bovineName},
+      );
 
   factory ActivityModel.fromInventory({
     required String itemId,
     required String itemName,
     required String userId,
     required String action,
-  }) {
-    return ActivityModel(
-      id: '',
-      tipo: 'inventario',
-      descripcion: '$action item de inventario "$itemName"',
-      entidadId: itemId,
-      entidadNombre: itemName,
-      usuarioId: userId,
-      fecha: DateTime.now(),
-    );
-  }
+  }) =>
+      ActivityModel(
+        id: '',
+        tipo: 'inventario',
+        descripcion: '$action item de inventario "$itemName"',
+        entidadId: itemId,
+        entidadNombre: itemName,
+        usuarioId: userId,
+        fecha: DateTime.now(),
+      );
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../models/bovine_model.dart';
-import '../constants/app_styles.dart';
+import 'package:bovidata_new/models/bovine_model.dart';
+import 'package:bovidata_new/constants/app_styles.dart';
 
 class BovineCard extends StatelessWidget {
   final BovineModel bovine;
@@ -157,10 +157,10 @@ class BovineCard extends StatelessWidget {
                   vertical: AppDimensions.paddingXS,
                 ),
                 decoration: BoxDecoration(
-                  color: _getStatusColor(bovine.estado).withOpacity(0.1),
+                  color: _getStatusColor(bovine.estado).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(AppDimensions.radiusS),
                   border: Border.all(
-                    color: _getStatusColor(bovine.estado).withOpacity(0.3),
+                    color: _getStatusColor(bovine.estado).withValues(alpha: 0.3),
                   ),
                 ),
                 child: Text(

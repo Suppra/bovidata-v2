@@ -15,12 +15,21 @@ dependencies:
   cupertino_icons: ^1.0.8
   
   # Firebase - Core dependencies para autenticación y base de datos
-  firebase_core: ^3.6.0
-  firebase_auth: ^5.3.1
-  cloud_firestore: ^5.4.3
+  firebase_core: ^4.0.0
+  firebase_auth: ^6.0.0
+  cloud_firestore: ^6.0.0
+
+  # Firebase App Check - protege el backend frente a clientes no oficiales
+  firebase_app_check: ^0.4.0
   
   # State Management - Usado en toda la app
   provider: ^6.1.2
+
+  # Dependency Injection - Contenedor de servicios (reemplaza ServiceLocator)
+  get_it: ^9.0.0
+
+  # Entidades inmutables (value equality, copyWith) por codegen
+  freezed_annotation: ^2.4.4
   
   # Date & Time - Usado para formatear fechas
   intl: ^0.20.2
@@ -52,6 +61,14 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+
+  # Codegen para entidades freezed
+  build_runner: ^2.4.13
+  freezed: ^2.5.7
+
+  # Testing - repositorios contra Firestore falso + mocks
+  fake_cloud_firestore: ^4.0.0
+  mocktail: ^1.0.4
   
 
 

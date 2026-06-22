@@ -1,110 +1,72 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class BovineModel {
-  final String id;
-  final String nombre;
-  final String raza;
-  final String sexo;
-  final DateTime fechaNacimiento;
-  final String color;
-  final double peso;
-  final String numeroIdentificacion;
-  final String estado;
-  final String propietarioId;
-  final DateTime fechaCreacion;
-  final DateTime? fechaActualizacion;
-  final String? imagenUrl;
-  final String? observaciones;
-  final String? padre;
-  final String? madre;
-  final bool activo;
+part 'bovine_model.freezed.dart';
 
-  BovineModel({
-    required this.id,
-    required this.nombre,
-    required this.raza,
-    required this.sexo,
-    required this.fechaNacimiento,
-    required this.color,
-    required this.peso,
-    required this.numeroIdentificacion,
-    required this.estado,
-    required this.propietarioId,
-    required this.fechaCreacion,
-    this.fechaActualizacion,
-    this.imagenUrl,
-    this.observaciones,
-    this.padre,
-    this.madre,
-    this.activo = true,
-  });
+@freezed
+class BovineModel with _$BovineModel {
+  const BovineModel._(); // habilita getters y métodos personalizados
 
-  // Factory method para crear bovino vacío (Pattern: Factory Method)
-  factory BovineModel.empty() {
-    return BovineModel(
-      id: '',
-      nombre: '',
-      raza: '',
-      sexo: '',
-      fechaNacimiento: DateTime.now(),
-      color: '',
-      peso: 0.0,
-      numeroIdentificacion: '',
-      estado: 'Sano',
-      propietarioId: '',
-      fechaCreacion: DateTime.now(),
-    );
-  }
+  const factory BovineModel({
+    required String id,
+    required String nombre,
+    required String raza,
+    required String sexo,
+    required DateTime fechaNacimiento,
+    required String color,
+    required double peso,
+    required String numeroIdentificacion,
+    required String estado,
+    required String propietarioId,
+    required DateTime fechaCreacion,
+    DateTime? fechaActualizacion,
+    String? imagenUrl,
+    String? observaciones,
+    String? padre,
+    String? madre,
+    @Default(true) bool activo,
+  }) = _BovineModel;
 
-  // Factory method para crear bovino con raza específica (Pattern: Factory Method)
-  factory BovineModel.withBreed(String breed) {
-    return BovineModel(
-      id: '',
-      nombre: '',
-      raza: breed,
-      sexo: '',
-      fechaNacimiento: DateTime.now(),
-      color: '',
-      peso: 0.0,
-      numeroIdentificacion: '',
-      estado: 'Sano',
-      propietarioId: '',
-      fechaCreacion: DateTime.now(),
-    );
-  }
+  factory BovineModel.empty() => BovineModel(
+        id: '',
+        nombre: '',
+        raza: '',
+        sexo: '',
+        fechaNacimiento: DateTime.now(),
+        color: '',
+        peso: 0.0,
+        numeroIdentificacion: '',
+        estado: 'Sano',
+        propietarioId: '',
+        fechaCreacion: DateTime.now(),
+      );
 
-  // Factory method desde Map (Pattern: Factory Method)
-  factory BovineModel.fromMap(Map<String, dynamic> data, String id) {
-    return BovineModel(
-      id: id,
-      nombre: data['nombre'] ?? '',
-      raza: data['raza'] ?? '',
-      sexo: data['sexo'] ?? '',
-      fechaNacimiento: data['fechaNacimiento'] is DateTime
-          ? data['fechaNacimiento']
-          : DateTime.now(),
-      color: data['color'] ?? '',
-      peso: (data['peso'] ?? 0.0).toDouble(),
-      numeroIdentificacion: data['numeroIdentificacion'] ?? '',
-      estado: data['estado'] ?? 'Sano',
-      propietarioId: data['propietarioId'] ?? '',
-      fechaCreacion: data['fechaCreacion'] is DateTime
-          ? data['fechaCreacion']
-          : DateTime.now(),
-      fechaActualizacion: data['fechaActualizacion'] is DateTime
-          ? data['fechaActualizacion']
-          : null,
-      imagenUrl: data['imagenUrl'],
-      observaciones: data['observaciones'],
-      padre: data['padre'],
-      madre: data['madre'],
-      activo: data['activo'] ?? true,
-    );
-  }
+  factory BovineModel.fromMap(Map<String, dynamic> data, String id) =>
+      BovineModel(
+        id: id,
+        nombre: data['nombre'] ?? '',
+        raza: data['raza'] ?? '',
+        sexo: data['sexo'] ?? '',
+        fechaNacimiento:
+            data['fechaNacimiento'] is DateTime ? data['fechaNacimiento'] : DateTime.now(),
+        color: data['color'] ?? '',
+        peso: (data['peso'] ?? 0.0).toDouble(),
+        numeroIdentificacion: data['numeroIdentificacion'] ?? '',
+        estado: data['estado'] ?? 'Sano',
+        propietarioId: data['propietarioId'] ?? '',
+        fechaCreacion:
+            data['fechaCreacion'] is DateTime ? data['fechaCreacion'] : DateTime.now(),
+        fechaActualizacion:
+            data['fechaActualizacion'] is DateTime ? data['fechaActualizacion'] : null,
+        imagenUrl: data['imagenUrl'],
+        observaciones: data['observaciones'],
+        padre: data['padre'],
+        madre: data['madre'],
+        activo: data['activo'] ?? true,
+      );
 
-  // Convert from Firestore Document
   factory BovineModel.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    final data = doc.data() as Map<String, dynamic>;
     return BovineModel(
       id: doc.id,
       nombre: data['nombre'] ?? '',
@@ -126,85 +88,38 @@ class BovineModel {
     );
   }
 
-  // Convert to Firestore Document
-  Map<String, dynamic> toFirestore() {
-    return {
-      'nombre': nombre,
-      'raza': raza,
-      'sexo': sexo,
-      'fechaNacimiento': Timestamp.fromDate(fechaNacimiento),
-      'color': color,
-      'peso': peso,
-      'numeroIdentificacion': numeroIdentificacion,
-      'estado': estado,
-      'propietarioId': propietarioId,
-      'fechaCreacion': Timestamp.fromDate(fechaCreacion),
-      'fechaActualizacion': fechaActualizacion != null 
-          ? Timestamp.fromDate(fechaActualizacion!) 
-          : null,
-      'imagenUrl': imagenUrl,
-      'observaciones': observaciones,
-      'padre': padre,
-      'madre': madre,
-      'activo': activo,
-    };
-  }
+  Map<String, dynamic> toFirestore() => {
+        'nombre': nombre,
+        'raza': raza,
+        'sexo': sexo,
+        'fechaNacimiento': Timestamp.fromDate(fechaNacimiento),
+        'color': color,
+        'peso': peso,
+        'numeroIdentificacion': numeroIdentificacion,
+        'estado': estado,
+        'propietarioId': propietarioId,
+        'fechaCreacion': Timestamp.fromDate(fechaCreacion),
+        'fechaActualizacion':
+            fechaActualizacion != null ? Timestamp.fromDate(fechaActualizacion!) : null,
+        'imagenUrl': imagenUrl,
+        'observaciones': observaciones,
+        'padre': padre,
+        'madre': madre,
+        'activo': activo,
+      };
 
-  // Calculate age
   int get edad {
     final now = DateTime.now();
     int age = now.year - fechaNacimiento.year;
-    if (now.month < fechaNacimiento.month || 
+    if (now.month < fechaNacimiento.month ||
         (now.month == fechaNacimiento.month && now.day < fechaNacimiento.day)) {
       age--;
     }
     return age;
   }
 
-  // Get age in months for young animals
   int get edadMeses {
     final now = DateTime.now();
     return (now.year - fechaNacimiento.year) * 12 + now.month - fechaNacimiento.month;
-  }
-
-  // Copy with method
-  BovineModel copyWith({
-    String? id,
-    String? nombre,
-    String? raza,
-    String? sexo,
-    DateTime? fechaNacimiento,
-    String? color,
-    double? peso,
-    String? numeroIdentificacion,
-    String? estado,
-    String? propietarioId,
-    DateTime? fechaCreacion,
-    DateTime? fechaActualizacion,
-    String? imagenUrl,
-    String? observaciones,
-    String? padre,
-    String? madre,
-    bool? activo,
-  }) {
-    return BovineModel(
-      id: id ?? this.id,
-      nombre: nombre ?? this.nombre,
-      raza: raza ?? this.raza,
-      sexo: sexo ?? this.sexo,
-      fechaNacimiento: fechaNacimiento ?? this.fechaNacimiento,
-      color: color ?? this.color,
-      peso: peso ?? this.peso,
-      numeroIdentificacion: numeroIdentificacion ?? this.numeroIdentificacion,
-      estado: estado ?? this.estado,
-      propietarioId: propietarioId ?? this.propietarioId,
-      fechaCreacion: fechaCreacion ?? this.fechaCreacion,
-      fechaActualizacion: fechaActualizacion ?? this.fechaActualizacion,
-      imagenUrl: imagenUrl ?? this.imagenUrl,
-      observaciones: observaciones ?? this.observaciones,
-      padre: padre ?? this.padre,
-      madre: madre ?? this.madre,
-      activo: activo ?? this.activo,
-    );
   }
 }

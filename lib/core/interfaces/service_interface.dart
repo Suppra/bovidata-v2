@@ -1,6 +1,6 @@
 // Dependency Inversion Principle (DIP) - Abstracciones para servicios
-import '../../models/notification_model.dart';
-import '../../models/activity_model.dart';
+import 'package:bovidata_new/models/notification_model.dart';
+import 'package:bovidata_new/models/activity_model.dart';
 
 abstract class INotificationService {
   Future<void> sendNotification(String userId, String title, String message, {String? type, String? priority});

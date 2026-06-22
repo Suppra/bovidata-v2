@@ -1,37 +1,29 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class NotificationModel {
-  final String id;
-  final String titulo;
-  final String mensaje;
-  final String tipo;
-  final String usuarioId;
-  final bool leida;
-  final DateTime fechaCreacion;
-  final DateTime? fechaLectura;
-  final String? accionUrl;
-  final Map<String, dynamic>? datos;
-  final String? iconoTipo;
-  final String prioridad;
+part 'notification_model.freezed.dart';
 
-  NotificationModel({
-    required this.id,
-    required this.titulo,
-    required this.mensaje,
-    required this.tipo,
-    required this.usuarioId,
-    this.leida = false,
-    required this.fechaCreacion,
-    this.fechaLectura,
-    this.accionUrl,
-    this.datos,
-    this.iconoTipo,
-    this.prioridad = 'normal',
-  });
+@freezed
+class NotificationModel with _$NotificationModel {
+  const NotificationModel._();
 
-  // Convert from Firestore Document
+  const factory NotificationModel({
+    required String id,
+    required String titulo,
+    required String mensaje,
+    required String tipo,
+    required String usuarioId,
+    @Default(false) bool leida,
+    required DateTime fechaCreacion,
+    DateTime? fechaLectura,
+    String? accionUrl,
+    Map<String, dynamic>? datos,
+    String? iconoTipo,
+    @Default('normal') String prioridad,
+  }) = _NotificationModel;
+
   factory NotificationModel.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    final data = doc.data() as Map<String, dynamic>;
     return NotificationModel(
       id: doc.id,
       titulo: data['titulo'] ?? '',
@@ -48,78 +40,33 @@ class NotificationModel {
     );
   }
 
-  // Convert to Firestore Document
-  Map<String, dynamic> toFirestore() {
-    return {
-      'titulo': titulo,
-      'mensaje': mensaje,
-      'tipo': tipo,
-      'usuarioId': usuarioId,
-      'leida': leida,
-      'fechaCreacion': Timestamp.fromDate(fechaCreacion),
-      'fechaLectura': fechaLectura != null 
-          ? Timestamp.fromDate(fechaLectura!) 
-          : null,
-      'accionUrl': accionUrl,
-      'datos': datos,
-      'iconoTipo': iconoTipo,
-      'prioridad': prioridad,
-    };
-  }
+  Map<String, dynamic> toFirestore() => {
+        'titulo': titulo,
+        'mensaje': mensaje,
+        'tipo': tipo,
+        'usuarioId': usuarioId,
+        'leida': leida,
+        'fechaCreacion': Timestamp.fromDate(fechaCreacion),
+        'fechaLectura': fechaLectura != null ? Timestamp.fromDate(fechaLectura!) : null,
+        'accionUrl': accionUrl,
+        'datos': datos,
+        'iconoTipo': iconoTipo,
+        'prioridad': prioridad,
+      };
 
-  // Check if notification is recent (less than 24 hours)
-  bool get isRecent {
-    final now = DateTime.now();
-    return now.difference(fechaCreacion).inHours < 24;
-  }
+  bool get isRecent => DateTime.now().difference(fechaCreacion).inHours < 24;
 
-  // Time ago string
+  bool get isHighPriority => prioridad == 'alta';
+
   String get tiempoTranscurrido {
-    final now = DateTime.now();
-    final difference = now.difference(fechaCreacion);
-    
+    final difference = DateTime.now().difference(fechaCreacion);
     if (difference.inDays > 0) {
       return 'hace ${difference.inDays} día${difference.inDays > 1 ? 's' : ''}';
     } else if (difference.inHours > 0) {
       return 'hace ${difference.inHours} hora${difference.inHours > 1 ? 's' : ''}';
     } else if (difference.inMinutes > 0) {
       return 'hace ${difference.inMinutes} minuto${difference.inMinutes > 1 ? 's' : ''}';
-    } else {
-      return 'ahora';
     }
-  }
-
-  // Check if it's high priority
-  bool get isHighPriority => prioridad == 'alta';
-
-  // Copy with method
-  NotificationModel copyWith({
-    String? id,
-    String? titulo,
-    String? mensaje,
-    String? tipo,
-    String? usuarioId,
-    bool? leida,
-    DateTime? fechaCreacion,
-    DateTime? fechaLectura,
-    String? accionUrl,
-    Map<String, dynamic>? datos,
-    String? iconoTipo,
-    String? prioridad,
-  }) {
-    return NotificationModel(
-      id: id ?? this.id,
-      titulo: titulo ?? this.titulo,
-      mensaje: mensaje ?? this.mensaje,
-      tipo: tipo ?? this.tipo,
-      usuarioId: usuarioId ?? this.usuarioId,
-      leida: leida ?? this.leida,
-      fechaCreacion: fechaCreacion ?? this.fechaCreacion,
-      fechaLectura: fechaLectura ?? this.fechaLectura,
-      accionUrl: accionUrl ?? this.accionUrl,
-      datos: datos ?? this.datos,
-      iconoTipo: iconoTipo ?? this.iconoTipo,
-      prioridad: prioridad ?? this.prioridad,
-    );
+    return 'ahora';
   }
 }

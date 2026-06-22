@@ -1,35 +1,53 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class UserModel {
-  final String id;
-  final String nombre;
-  final String apellido;
-  final String email;
-  final String telefono;
-  final String rol;
-  final String? direccion;
-  final String? cedula;
-  final DateTime fechaCreacion;
-  final bool activo;
-  final String? avatarUrl;
+part 'user_model.freezed.dart';
 
-  UserModel({
-    required this.id,
-    required this.nombre,
-    required this.apellido,
-    required this.email,
-    required this.telefono,
-    required this.rol,
-    this.direccion,
-    this.cedula,
-    required this.fechaCreacion,
-    this.activo = true,
-    this.avatarUrl,
-  });
+@freezed
+class UserModel with _$UserModel {
+  const UserModel._();
 
-  // Convert from Firestore Document
+  const factory UserModel({
+    required String id,
+    required String nombre,
+    required String apellido,
+    required String email,
+    required String telefono,
+    required String rol,
+    String? direccion,
+    String? cedula,
+    required DateTime fechaCreacion,
+    @Default(true) bool activo,
+    String? avatarUrl,
+  }) = _UserModel;
+
+  factory UserModel.empty() => UserModel(
+        id: '',
+        nombre: '',
+        apellido: '',
+        email: '',
+        telefono: '',
+        rol: '',
+        fechaCreacion: DateTime.now(),
+      );
+
+  factory UserModel.fromMap(Map<String, dynamic> data, String id) => UserModel(
+        id: id,
+        nombre: data['nombre'] ?? '',
+        apellido: data['apellido'] ?? '',
+        email: data['email'] ?? '',
+        telefono: data['telefono'] ?? '',
+        rol: data['rol'] ?? '',
+        direccion: data['direccion'],
+        cedula: data['cedula'],
+        fechaCreacion:
+            data['fechaCreacion'] is DateTime ? data['fechaCreacion'] : DateTime.now(),
+        activo: data['activo'] ?? true,
+        avatarUrl: data['avatarUrl'],
+      );
+
   factory UserModel.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    final data = doc.data() as Map<String, dynamic>;
     return UserModel(
       id: doc.id,
       nombre: data['nombre'] ?? '',
@@ -45,83 +63,18 @@ class UserModel {
     );
   }
 
-  // Convert to Firestore Document
-  Map<String, dynamic> toFirestore() {
-    return {
-      'nombre': nombre,
-      'apellido': apellido,
-      'email': email,
-      'telefono': telefono,
-      'rol': rol,
-      'direccion': direccion,
-      'cedula': cedula,
-      'fechaCreacion': Timestamp.fromDate(fechaCreacion),
-      'activo': activo,
-      'avatarUrl': avatarUrl,
-    };
-  }
+  Map<String, dynamic> toFirestore() => {
+        'nombre': nombre,
+        'apellido': apellido,
+        'email': email,
+        'telefono': telefono,
+        'rol': rol,
+        'direccion': direccion,
+        'cedula': cedula,
+        'fechaCreacion': Timestamp.fromDate(fechaCreacion),
+        'activo': activo,
+        'avatarUrl': avatarUrl,
+      };
 
-  // Get full name
   String get nombreCompleto => '$nombre $apellido';
-
-  // Copy with method
-  UserModel copyWith({
-    String? id,
-    String? nombre,
-    String? apellido,
-    String? email,
-    String? telefono,
-    String? rol,
-    String? direccion,
-    String? cedula,
-    DateTime? fechaCreacion,
-    bool? activo,
-    String? avatarUrl,
-  }) {
-    return UserModel(
-      id: id ?? this.id,
-      nombre: nombre ?? this.nombre,
-      apellido: apellido ?? this.apellido,
-      email: email ?? this.email,
-      telefono: telefono ?? this.telefono,
-      rol: rol ?? this.rol,
-      direccion: direccion ?? this.direccion,
-      cedula: cedula ?? this.cedula,
-      fechaCreacion: fechaCreacion ?? this.fechaCreacion,
-      activo: activo ?? this.activo,
-      avatarUrl: avatarUrl ?? this.avatarUrl,
-    );
-  }
-
-  // Factory method para crear usuario vacío (Pattern: Factory Method)
-  factory UserModel.empty() {
-    return UserModel(
-      id: '',
-      nombre: '',
-      apellido: '',
-      email: '',
-      telefono: '',
-      rol: '',
-      fechaCreacion: DateTime.now(),
-    );
-  }
-
-  // Factory method desde Map (Pattern: Factory Method)
-  factory UserModel.fromMap(Map<String, dynamic> data, String id) {
-    return UserModel(
-      id: id,
-      nombre: data['nombre'] ?? '',
-      apellido: data['apellido'] ?? '',
-      email: data['email'] ?? '',
-      telefono: data['telefono'] ?? '',
-      rol: data['rol'] ?? '',
-      direccion: data['direccion'],
-      cedula: data['cedula'],
-      fechaCreacion: data['fechaCreacion'] is DateTime
-          ? data['fechaCreacion']
-          : DateTime.now(),
-      activo: data['activo'] ?? true,
-      avatarUrl: data['avatarUrl'],
-    );
-  }
 }

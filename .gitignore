@@ -1,3 +1,11 @@
+# Secrets & local environment (NO versionar)
+.env
+.env.local
+.env.*.local
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+macos/Runner/GoogleService-Info.plist
+
 # Miscellaneous
 *.class
 *.log

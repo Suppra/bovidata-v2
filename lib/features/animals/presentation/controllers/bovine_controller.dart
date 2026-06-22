@@ -1,0 +1,198 @@
+// Controllers modernos que implementan la arquitectura SOLID
+import 'package:flutter/material.dart';
+import 'package:bovidata_new/core/di/injection.dart';
+import 'package:bovidata_new/features/animals/application/bovine_service.dart';
+import 'package:bovidata_new/models/bovine_model.dart';
+
+/// Controller moderno para bovinos usando arquitectura SOLID
+/// Reemplaza BovineController legacy con principios SOLID aplicados
+class SolidBovineController extends ChangeNotifier {
+  final SolidBovineService _bovineService = getIt<SolidBovineService>();
+  
+  List<BovineModel> _bovines = [];
+  List<BovineModel> _filteredBovines = [];
+  bool _isLoading = false;
+  String? _errorMessage;
+  String _searchQuery = '';
+  String _selectedRace = '';
+  String _selectedStatus = '';
+
+  // Getters
+  List<BovineModel> get bovines => _filteredBovines;
+  bool get isLoading => _isLoading;
+  String? get errorMessage => _errorMessage;
+  String get searchQuery => _searchQuery;
+  String get selectedRace => _selectedRace;
+  String get selectedStatus => _selectedStatus;
+
+  // Statistics usando principios SOLID
+  List<BovineModel> get healthyBovines => _bovines.where((b) => b.estado == 'Sano').toList();
+  List<BovineModel> get sickBovines => _bovines.where((b) => b.estado == 'Enfermo').toList();
+  List<BovineModel> get recoveringBovines => _bovines.where((b) => b.estado == 'En recuperación').toList();
+  List<BovineModel> get maleBovines => _bovines.where((b) => b.sexo.toLowerCase() == 'macho').toList();
+  List<BovineModel> get femaleBovines => _bovines.where((b) => b.sexo.toLowerCase() == 'hembra').toList();
+
+  // Razas disponibles
+  List<String> get availableRaces {
+    return _bovines.map((b) => b.raza).toSet().toList()..sort();
+  }
+
+  /// Inicializar controller usando servicios SOLID
+  void initialize() {
+    loadBovines();
+  }
+
+  /// Cargar bovinos visibles para el usuario actual.
+  ///
+  /// El acceso está acotado por HATO (scoping seguro): el ganadero ve su propio
+  /// hato y los veterinarios/empleados solo ven los hatos a los que un ganadero
+  /// los invitó y cuya invitación aceptaron.
+  Future<void> loadBovines() async {
+    _setLoading(true);
+    _clearError();
+
+    try {
+      _bovines = await _bovineService.getAccessibleBovines();
+      _applyFilters();
+    } catch (e) {
+      _setError('Error al cargar bovinos: $e');
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  /// Crear bovino usando Builder pattern
+  Future<bool> createBovine(BovineModel bovine) async {
+    _setLoading(true);
+    _clearError();
+    
+    try {
+      await _bovineService.createBovine(bovine);
+      await loadBovines(); // Recargar lista
+      return true;
+    } catch (e) {
+      _setError('Error al crear bovino: $e');
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  /// Actualizar bovino usando servicio SOLID
+  Future<bool> updateBovine(String id, BovineModel bovine) async {
+    _setLoading(true);
+    _clearError();
+    
+    try {
+      final ok = await _bovineService.updateBovine(id, bovine);
+      if (!ok) {
+        _setError('No se pudo actualizar el bovino');
+        return false;
+      }
+      // Muta el estado local en vez de recargar toda la colección.
+      final idx = _bovines.indexWhere((b) => b.id == id);
+      if (idx != -1) {
+        _bovines[idx] = bovine.copyWith(id: id);
+        _applyFilters();
+      } else {
+        await loadBovines();
+      }
+      return true;
+    } catch (e) {
+      _setError('Error al actualizar bovino: $e');
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  /// Eliminar bovino usando servicio SOLID
+  Future<bool> deleteBovine(String id) async {
+    _setLoading(true);
+    _clearError();
+
+    try {
+      final ok = await _bovineService.deleteBovine(id);
+      if (!ok) {
+        _setError('No se pudo eliminar el bovino');
+        return false;
+      }
+      _bovines.removeWhere((b) => b.id == id); // muta estado local
+      _applyFilters();
+      return true;
+    } catch (e) {
+      _setError('Error al eliminar bovino: $e');
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  /// Buscar bovinos
+  void searchBovines(String query) {
+    _searchQuery = query;
+    _applyFilters();
+  }
+
+  /// Filtrar por raza
+  void filterByRace(String race) {
+    _selectedRace = race;
+    _applyFilters();
+  }
+
+  /// Filtrar por estado
+  void filterByStatus(String status) {
+    _selectedStatus = status;
+    _applyFilters();
+  }
+
+  /// Limpiar filtros
+  void clearFilters() {
+    _searchQuery = '';
+    _selectedRace = '';
+    _selectedStatus = '';
+    _applyFilters();
+  }
+
+  /// Aplicar filtros usando principios SOLID
+  void _applyFilters() {
+    _filteredBovines = _bovines.where((bovine) {
+      final bool matchesSearch = _searchQuery.isEmpty ||
+          bovine.nombre.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+          bovine.numeroIdentificacion.toLowerCase().contains(_searchQuery.toLowerCase());
+
+      final bool matchesRace = _selectedRace.isEmpty || bovine.raza == _selectedRace;
+      
+      final bool matchesStatus = _selectedStatus.isEmpty || bovine.estado == _selectedStatus;
+
+      return matchesSearch && matchesRace && matchesStatus;
+    }).toList();
+    
+    notifyListeners();
+  }
+
+  void _setLoading(bool loading) {
+    _isLoading = loading;
+    notifyListeners();
+  }
+
+  void _setError(String error) {
+    _errorMessage = error;
+    notifyListeners();
+  }
+
+  void _clearError() {
+    _errorMessage = null;
+  }
+
+  /// Refrescar datos
+  void refresh() {
+    loadBovines();
+  }
+
+  /// Limpiar error
+  void clearError() {
+    _clearError();
+    notifyListeners();
+  }
+}

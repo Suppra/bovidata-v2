@@ -1,34 +1,49 @@
+import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'controllers/auth_controller.dart';
-import 'controllers/settings_controller.dart';
-import 'core/controllers/controllers.dart';
-import 'core/locator/service_locator.dart';
-import 'services/scheduler_service.dart';
-import 'screens/auth/login_screen.dart';
-import 'screens/auth/profile_screen.dart';
-import 'screens/auth/settings_screen.dart';
-import 'screens/home/home_screen.dart';
-import 'constants/app_styles.dart';
-import 'firebase_options.dart';
+import 'package:bovidata_new/features/settings/presentation/controllers/settings_controller.dart';
+import 'package:bovidata_new/core/controllers/controllers.dart';
+import 'package:bovidata_new/core/di/injection.dart';
+import 'package:bovidata_new/features/membership/application/membership_interactor.dart';
+import 'package:bovidata_new/features/membership/domain/ports/membership_repository.dart';
+import 'package:bovidata_new/features/membership/presentation/controllers/membership_controller.dart';
+import 'package:bovidata_new/features/membership/presentation/pages/farm_members_page.dart';
+import 'package:bovidata_new/features/authentication/presentation/pages/login_screen.dart';
+import 'package:bovidata_new/features/authentication/presentation/pages/profile_screen.dart';
+import 'package:bovidata_new/features/settings/presentation/pages/settings_screen.dart';
+import 'package:bovidata_new/features/dashboard/presentation/pages/home_screen.dart';
+import 'package:bovidata_new/constants/app_styles.dart';
+import 'package:bovidata_new/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  
-  // Initialize SOLID architecture services
-  ServiceLocator.initialize();
-  
-  // Initialize SOLID architecture dependencies
-  ServiceLocator.initialize();
-  
-  // Initialize scheduled notifications
-  SchedulerService.initializeScheduler();
-  
+
+  // Firebase App Check: protege el backend frente a clientes no oficiales.
+  // En móvil usa Play Integrity / DeviceCheck (debug en modo desarrollo).
+  // En web requiere una clave de sitio reCAPTCHA que se configura aparte.
+  if (!kIsWeb) {
+    await FirebaseAppCheck.instance.activate(
+      providerAndroid: kDebugMode
+          ? const AndroidDebugProvider()
+          : const AndroidPlayIntegrityProvider(),
+      providerApple: kDebugMode
+          ? const AppleDebugProvider()
+          : const AppleDeviceCheckProvider(),
+    );
+  }
+
+  // Initialize dependency injection container (get_it)
+  configureDependencies();
+
+  // Las notificaciones programadas ahora corren en Cloud Functions
+  // (functions/index.js), no en un Timer del cliente.
+
   runApp(const BoviDataApp());
 }
 
@@ -46,6 +61,13 @@ class BoviDataApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => SolidTreatmentController()),
         ChangeNotifierProvider(create: (_) => SolidInventoryController()),
         ChangeNotifierProvider(create: (_) => SolidNotificationController()),
+        // Feature membership (hexagonal): invitaciones y acceso por hato
+        ChangeNotifierProvider(
+          create: (_) => MembershipController(
+            interactor: getIt<MembershipInteractor>(),
+            repository: getIt<MembershipRepository>(),
+          ),
+        ),
       ],
       child: Consumer<SettingsController>(
         builder: (context, settingsController, child) {
@@ -160,6 +182,7 @@ class BoviDataApp extends StatelessWidget {
             routes: {
               '/profile': (context) => const ProfileScreen(),
               '/settings': (context) => const SettingsScreen(),
+              '/farm-members': (context) => const FarmMembersPage(),
             },
             home: const AuthWrapper(),
           );

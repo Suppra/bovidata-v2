@@ -1,123 +1,73 @@
+// Pruebas unitarias REALES de lógica de dominio pura (sin Firebase).
+//
+// Reemplaza el test anterior que solo comparaba literales de string
+// (p. ej. `'SolidBovineController'.contains('Bovine')`) y no validaba
+// comportamiento alguno (hallazgo I2/TD-09 de la auditoría).
 import 'package:flutter_test/flutter_test.dart';
+import 'package:bovidata_new/models/bovine_model.dart';
+import 'package:bovidata_new/models/inventory_model.dart';
+import 'package:bovidata_new/core/services/solid_services.dart';
 
 void main() {
-  group('SOLID Principles Architecture Validation', () {
-    
-    group('Single Responsibility Principle (SRP)', () {
-      test('Each SOLID component has single responsibility', () {
-        // Test that SOLID classes are properly named and focused
-        expect('SolidBovineController'.contains('Bovine'), isTrue);
-        expect('SolidTreatmentController'.contains('Treatment'), isTrue);
-        expect('SolidInventoryController'.contains('Inventory'), isTrue);
-        expect('SolidBovineService'.contains('Bovine'), isTrue);
-      });
+  group('BovineModel — cálculo de edad', () {
+    test('edad en años se calcula correctamente', () {
+      final nacimiento = DateTime.now().subtract(const Duration(days: 365 * 3 + 10));
+      final bovine = BovineModel.empty().copyWith(fechaNacimiento: nacimiento);
+      expect(bovine.edad, 3);
     });
 
-    group('Open/Closed Principle (OCP)', () {
-      test('Architecture supports extension without modification', () {
-        // Test that the system uses interfaces and abstractions
-        expect('IBovineRepository'.startsWith('I'), isTrue, 
-          reason: 'Interface naming follows convention');
-        expect('ITreatmentRepository'.startsWith('I'), isTrue,
-          reason: 'Interface naming follows convention');
-        expect('IInventoryRepository'.startsWith('I'), isTrue,
-          reason: 'Interface naming follows convention');
-      });
+    test('edad en meses para animales jóvenes', () {
+      final nacimiento = DateTime(DateTime.now().year, DateTime.now().month - 5);
+      final bovine = BovineModel.empty().copyWith(fechaNacimiento: nacimiento);
+      expect(bovine.edadMeses, greaterThanOrEqualTo(4));
+    });
+  });
+
+  group('InventoryModel — reglas de negocio de stock', () {
+    InventoryModel item({required int actual, required int minimo, double? precio}) {
+      return InventoryModel.empty().copyWith(
+        cantidadActual: actual,
+        cantidadMinima: minimo,
+        precioUnitario: precio,
+      );
+    }
+
+    test('isLowStock es true cuando actual <= mínimo', () {
+      expect(item(actual: 5, minimo: 10).isLowStock, isTrue);
+      expect(item(actual: 10, minimo: 10).isLowStock, isTrue);
     });
 
-    group('Liskov Substitution Principle (LSP)', () {
-      test('Concrete implementations can substitute abstractions', () {
-        // Test that concrete classes follow abstract contracts
-        expect('BovineRepository'.endsWith('Repository'), isTrue,
-          reason: 'Concrete repository follows naming pattern');
-        expect('TreatmentRepository'.endsWith('Repository'), isTrue,
-          reason: 'Concrete repository follows naming pattern');
-        expect('InventoryRepository'.endsWith('Repository'), isTrue,
-          reason: 'Concrete repository follows naming pattern');
-      });
+    test('isLowStock es false cuando actual > mínimo', () {
+      expect(item(actual: 11, minimo: 10).isLowStock, isFalse);
     });
 
-    group('Interface Segregation Principle (ISP)', () {
-      test('Interfaces are focused and segregated', () {
-        // Test that service and repository interfaces exist separately
-        expect('INotificationService'.contains('Service'), isTrue,
-          reason: 'Service interface is properly named');
-        expect('IValidationService'.contains('Service'), isTrue,
-          reason: 'Validation service interface exists');
-        expect('IDataTransferService'.contains('Service'), isTrue,
-          reason: 'Data transfer service interface exists');
-      });
+    test('valorTotal multiplica precio por cantidad', () {
+      expect(item(actual: 4, minimo: 1, precio: 2.5).valorTotal, 10.0);
     });
 
-    group('Dependency Inversion Principle (DIP)', () {
-      test('High-level modules depend on abstractions', () {
-        // Test that controllers depend on service abstractions
-        expect('SolidBovineService'.contains('Service'), isTrue,
-          reason: 'Service layer exists for dependency inversion');
-        expect('ServiceLocator'.contains('Locator'), isTrue,
-          reason: 'Service Locator manages dependencies');
-      });
+    test('valorTotal es 0 si no hay precio', () {
+      expect(item(actual: 4, minimo: 1).valorTotal, 0.0);
+    });
+  });
+
+  group('ConcreteValidationService — validaciones', () {
+    final validator = ConcreteValidationService();
+
+    test('valida emails correctos e incorrectos', () {
+      expect(validator.validateEmail('user@example.com'), isTrue);
+      expect(validator.validateEmail('no-es-email'), isFalse);
     });
 
-    group('Design Patterns Integration', () {
-      test('Factory Method pattern is implemented', () {
-        // Test Factory Method pattern naming
-        expect('ModelFactory'.contains('Factory'), isTrue,
-          reason: 'Factory pattern is implemented');
-        expect('ConcreteModelFactory'.contains('Factory'), isTrue,
-          reason: 'Concrete factory exists');
-      });
-
-      test('Abstract Factory pattern is implemented', () {
-        // Test Abstract Factory pattern
-        expect('ModelFactory'.length > 0, isTrue,
-          reason: 'Abstract factory interface exists');
-        expect('ConcreteModelFactory'.length > 0, isTrue,
-          reason: 'Concrete factory implementation exists');
-      });
-
-      test('Builder pattern is implemented', () {
-        // Test Builder pattern
-        expect('EntityBuilder'.contains('Builder'), isTrue,
-          reason: 'Builder pattern is implemented');
-        expect('BovineBuilder'.contains('Builder'), isTrue,
-          reason: 'Bovine builder exists');
-      });
-
-      test('Service Locator pattern is implemented', () {
-        // Test Service Locator pattern
-        expect('ServiceLocator'.contains('Locator'), isTrue,
-          reason: 'Service Locator pattern is implemented');
-      });
+    test('campo requerido detecta vacíos y nulos', () {
+      expect(validator.validateRequired('algo'), isTrue);
+      expect(validator.validateRequired('   '), isFalse);
+      expect(validator.validateRequired(null), isFalse);
     });
 
-    group('Architecture Quality Metrics', () {
-      test('SOLID architecture provides better maintainability', () {
-        // Test architectural benefits
-        List<String> solidBenefits = [
-          'Single Responsibility',
-          'Open/Closed',
-          'Liskov Substitution', 
-          'Interface Segregation',
-          'Dependency Inversion'
-        ];
-        
-        expect(solidBenefits.length, equals(5),
-          reason: 'All 5 SOLID principles are implemented');
-      });
-
-      test('Design patterns improve code flexibility', () {
-        // Test design pattern benefits
-        List<String> patterns = [
-          'Factory Method',
-          'Abstract Factory',
-          'Builder',
-          'Service Locator'
-        ];
-        
-        expect(patterns.length, greaterThanOrEqualTo(3),
-          reason: 'At least 3 design patterns are implemented');
-      });
+    test('validateField aplica reglas en orden', () {
+      expect(validator.validateField('', ['required']), 'Este campo es requerido');
+      expect(validator.validateField('mal', ['email']), 'Ingrese un email válido');
+      expect(validator.validateField('ok@mail.com', ['required', 'email']), isNull);
     });
   });
 }
