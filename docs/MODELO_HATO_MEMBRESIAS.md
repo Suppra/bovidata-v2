@@ -114,9 +114,15 @@ function hasFarmAccess(ownerId) {
 | Feature | Estado |
 |---------|--------|
 | **membership** | ✅ Migrada (referencia hexagonal completa) |
-| animals · treatments · inventory | 🟡 Capa de datos ya en capas (repos/servicios/controllers); pendiente extraer entidades puras + casos de uso y mover a `features/*` |
-| authentication · users · mortality · dashboard | 🔴 Pendientes de migrar siguiendo el patrón de `membership` |
+| **authentication** | ✅ Migrada (`features/authentication/{domain,infrastructure,presentation}`, puerto `AuthRepository`) |
+| animals · treatments · inventory | 🟡 Capa de datos ya en capas (repos/servicios/controllers en `core/`); pendiente **dividir los archivos compartidos** (`concrete_repositories.dart`, `solid_services.dart`) por feature y mover controllers + pantallas a `features/*` |
+| notifications · mortality · users · dashboard | 🔴 Pendientes de migrar siguiendo el patrón |
+
+**Convención adoptada:** imports de paquete (`package:bovidata_new/...`) en el código
+migrado, para que las reubicaciones sean robustas. Limpieza: eliminados servicios
+legacy muertos (`bovine_service`, `treatment_service`), `core/services/concrete_services`,
+barrel `screens/screens.dart` y `.md` de estados obsoletos.
 
 El patrón a replicar por feature está descrito en
-[PLAN_MIGRACION_HEXAGONAL.md](PLAN_MIGRACION_HEXAGONAL.md). `membership` sirve como
-plantilla concreta y verificable (con tests de dominio).
+[PLAN_MIGRACION_HEXAGONAL.md](PLAN_MIGRACION_HEXAGONAL.md). `membership` y
+`authentication` sirven como plantillas concretas y verificables.
