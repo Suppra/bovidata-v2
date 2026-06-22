@@ -46,11 +46,26 @@ service cloud.firestore {
     // Usuarios: cada quien su documento; admin/ganadero pueden listar.
     // ─────────────────────────────────────────────────────────────
     match /users/{userId} {
-      allow read, write: if isSignedIn() && request.auth.uid == userId;
-      allow read: if isSignedIn() &&
-        (userRole() == 'Administrador' || userRole() == 'Ganadero');
+      allow get: if isSignedIn() &&
+        (request.auth.uid == userId ||
+         userRole() == 'Administrador' || userRole() == 'Ganadero');
       allow list: if isSignedIn() &&
         (userRole() == 'Administrador' || userRole() == 'Ganadero' || userRole() == 'Empleado');
+
+      // Creación: solo el propio documento y con un rol permitido.
+      // NUNCA 'Administrador' por registro (anti auto-promoción / escalada).
+      allow create: if isSignedIn() && request.auth.uid == userId &&
+        request.resource.data.rol in ['Ganadero', 'Veterinario', 'Empleado'];
+
+      // Actualización: el usuario edita su perfil pero NO puede cambiar su rol;
+      // el cambio de rol queda reservado a un Administrador.
+      allow update: if isSignedIn() && (
+        (request.auth.uid == userId &&
+         request.resource.data.rol == resource.data.rol) ||
+        userRole() == 'Administrador'
+      );
+
+      allow delete: if isSignedIn() && request.auth.uid == userId;
     }
 
     // ─────────────────────────────────────────────────────────────
@@ -79,9 +94,14 @@ service cloud.firestore {
     // ─────────────────────────────────────────────────────────────
     match /treatments/{treatmentId} {
       allow read: if hasFarmAccess(resource.data.propietarioId);
-      allow create, update: if isSignedIn() &&
-        (userRole() == 'Veterinario' || userRole() == 'Ganadero' || userRole() == 'Empleado');
-      allow delete: if isSignedIn() && userRole() == 'Ganadero';
+      allow create: if isSignedIn() &&
+        (userRole() == 'Veterinario' || userRole() == 'Ganadero' || userRole() == 'Empleado') &&
+        hasFarmAccess(request.resource.data.propietarioId);
+      allow update: if isSignedIn() &&
+        (userRole() == 'Veterinario' || userRole() == 'Ganadero' || userRole() == 'Empleado') &&
+        hasFarmAccess(resource.data.propietarioId);
+      allow delete: if isSignedIn() && userRole() == 'Ganadero' &&
+        hasFarmAccess(resource.data.propietarioId);
     }
 
     // ─────────────────────────────────────────────────────────────
@@ -89,10 +109,15 @@ service cloud.firestore {
     // ─────────────────────────────────────────────────────────────
     match /inventory/{itemId} {
       allow read: if hasFarmAccess(resource.data.propietarioId);
-      allow create, update: if isSignedIn() &&
-        (userRole() == 'Ganadero' || userRole() == 'Empleado' || userRole() == 'Veterinario');
+      allow create: if isSignedIn() &&
+        (userRole() == 'Ganadero' || userRole() == 'Empleado' || userRole() == 'Veterinario') &&
+        hasFarmAccess(request.resource.data.propietarioId);
+      allow update: if isSignedIn() &&
+        (userRole() == 'Ganadero' || userRole() == 'Empleado' || userRole() == 'Veterinario') &&
+        hasFarmAccess(resource.data.propietarioId);
       allow delete: if isSignedIn() &&
-        (userRole() == 'Ganadero' || userRole() == 'Empleado');
+        (userRole() == 'Ganadero' || userRole() == 'Empleado') &&
+        hasFarmAccess(resource.data.propietarioId);
     }
 
     // ─────────────────────────────────────────────────────────────
@@ -138,10 +163,15 @@ service cloud.firestore {
     // Incidentes / Mortalidad
     // ─────────────────────────────────────────────────────────────
     match /incidents/{incidentId} {
-      allow read, list: if isSignedIn();
-      allow create, update: if isSignedIn() &&
-        (userRole() == 'Veterinario' || userRole() == 'Ganadero' || userRole() == 'Empleado');
-      allow delete: if isSignedIn() && userRole() == 'Ganadero';
+      allow read: if hasFarmAccess(resource.data.propietarioId);
+      allow create: if isSignedIn() &&
+        (userRole() == 'Veterinario' || userRole() == 'Ganadero' || userRole() == 'Empleado') &&
+        hasFarmAccess(request.resource.data.propietarioId);
+      allow update: if isSignedIn() &&
+        (userRole() == 'Veterinario' || userRole() == 'Ganadero' || userRole() == 'Empleado') &&
+        hasFarmAccess(resource.data.propietarioId);
+      allow delete: if isSignedIn() && userRole() == 'Ganadero' &&
+        hasFarmAccess(resource.data.propietarioId);
     }
 
     // ─────────────────────────────────────────────────────────────

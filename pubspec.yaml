@@ -18,6 +18,9 @@ dependencies:
   firebase_core: ^3.6.0
   firebase_auth: ^5.3.1
   cloud_firestore: ^5.4.3
+
+  # Firebase App Check - protege el backend frente a clientes no oficiales
+  firebase_app_check: ^0.3.1
   
   # State Management - Usado en toda la app
   provider: ^6.1.2

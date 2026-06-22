@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:bovidata_new/features/settings/presentation/controllers/settings_controller.dart';
@@ -21,7 +22,19 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  
+
+  // Firebase App Check: protege el backend frente a clientes no oficiales.
+  // En móvil usa Play Integrity / DeviceCheck (debug en modo desarrollo).
+  // En web requiere una clave de sitio reCAPTCHA que se configura aparte.
+  if (!kIsWeb) {
+    await FirebaseAppCheck.instance.activate(
+      androidProvider:
+          kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
+      appleProvider:
+          kDebugMode ? AppleProvider.debug : AppleProvider.deviceCheck,
+    );
+  }
+
   // Initialize dependency injection container (get_it)
   configureDependencies();
 
