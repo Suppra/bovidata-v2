@@ -12,7 +12,7 @@ import 'package:bovidata_new/services/scheduler_service.dart';
 import 'package:bovidata_new/features/authentication/presentation/pages/login_screen.dart';
 import 'package:bovidata_new/features/authentication/presentation/pages/profile_screen.dart';
 import 'package:bovidata_new/features/authentication/presentation/pages/settings_screen.dart';
-import 'package:bovidata_new/screens/home/home_screen.dart';
+import 'package:bovidata_new/features/dashboard/presentation/pages/home_screen.dart';
 import 'package:bovidata_new/constants/app_styles.dart';
 import 'package:bovidata_new/firebase_options.dart';
 

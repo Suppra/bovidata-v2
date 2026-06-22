@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:bovidata_new/core/controllers/controllers.dart';
 import 'package:bovidata_new/models/models.dart';
 import 'package:bovidata_new/constants/app_styles.dart';
-import 'package:bovidata_new/services/pdf_service.dart';
+import 'package:bovidata_new/features/dashboard/infrastructure/pdf_service.dart';
 
 class PdfGeneratorScreen extends StatefulWidget {
   const PdfGeneratorScreen({super.key});

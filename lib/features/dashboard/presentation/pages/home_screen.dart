@@ -13,8 +13,8 @@ import 'package:bovidata_new/features/treatments/presentation/pages/treatment_li
 import 'package:bovidata_new/features/authentication/presentation/pages/profile_screen.dart';
 import 'package:bovidata_new/features/authentication/presentation/pages/settings_screen.dart';
 import 'package:bovidata_new/features/inventory/presentation/pages/inventory_list_screen.dart';
-import 'package:bovidata_new/screens/reports/reports_screen.dart';
-import 'package:bovidata_new/screens/notifications/notifications_screen.dart';
+import 'package:bovidata_new/features/dashboard/presentation/pages/reports_screen.dart';
+import 'package:bovidata_new/features/notifications/presentation/pages/notifications_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

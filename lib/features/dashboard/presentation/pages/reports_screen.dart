@@ -7,7 +7,7 @@ import 'package:bovidata_new/models/treatment_model.dart';
 import 'package:bovidata_new/models/inventory_model.dart';
 import 'package:bovidata_new/constants/app_styles.dart';
 import 'package:bovidata_new/constants/app_constants.dart';
-import 'package:bovidata_new/screens/reports/pdf_generator_screen.dart';
+import 'package:bovidata_new/features/dashboard/presentation/pages/pdf_generator_screen.dart';
 
 class ReportsScreen extends StatefulWidget {
   const ReportsScreen({super.key});

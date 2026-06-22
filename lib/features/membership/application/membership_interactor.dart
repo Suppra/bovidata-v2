@@ -3,7 +3,7 @@
 // Orquesta el puerto MembershipRepository con la búsqueda de usuarios y el
 // envío de notificaciones, sin conocer detalles de Firestore.
 import 'package:bovidata_new/core/interfaces/repository_interface.dart';
-import 'package:bovidata_new/core/services/solid_notification_service.dart';
+import 'package:bovidata_new/features/notifications/infrastructure/solid_notification_service.dart';
 import 'package:bovidata_new/models/notification_model.dart';
 import 'package:bovidata_new/features/membership/domain/entities/membership.dart';
 import 'package:bovidata_new/features/membership/domain/ports/membership_repository.dart';

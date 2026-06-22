@@ -2,7 +2,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:bovidata_new/core/locator/service_locator.dart';
-import 'package:bovidata_new/core/services/solid_notification_service.dart';
+import 'package:bovidata_new/features/notifications/infrastructure/solid_notification_service.dart';
 import 'package:bovidata_new/models/notification_model.dart';
 import 'package:bovidata_new/models/bovine_model.dart';
 import 'package:bovidata_new/models/treatment_model.dart';

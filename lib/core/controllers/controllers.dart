@@ -3,5 +3,5 @@
 export 'package:bovidata_new/features/animals/presentation/controllers/bovine_controller.dart';
 export 'package:bovidata_new/features/treatments/presentation/controllers/treatment_controller.dart';
 export 'package:bovidata_new/features/inventory/presentation/controllers/inventory_controller.dart';
-export 'package:bovidata_new/core/controllers/solid_notification_controller.dart';
+export 'package:bovidata_new/features/notifications/presentation/controllers/notification_controller.dart';
 export 'package:bovidata_new/features/authentication/presentation/controllers/auth_controller.dart';
