@@ -1,0 +1,122 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─────────────────────────────────────────────────────────────
+    // Helpers
+    // ─────────────────────────────────────────────────────────────
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Rol del usuario autenticado. DENIEGA POR DEFECTO: si el documento de
+    // usuario no existe o no tiene rol, devuelve '' (sin permisos elevados).
+    // (Corrige el hallazgo C2: antes devolvía 'Ganadero' por defecto.)
+    function userRole() {
+      let path = /databases/$(database)/documents/users/$(request.auth.uid);
+      return isSignedIn() && exists(path)
+        ? get(path).data.rol
+        : '';
+    }
+
+    function isVetOrAdmin() {
+      return userRole() == 'Veterinario' || userRole() == 'Administrador';
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // Usuarios: cada quien su documento; admin/ganadero pueden listar.
+    // ─────────────────────────────────────────────────────────────
+    match /users/{userId} {
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+      allow read: if isSignedIn() &&
+        (userRole() == 'Administrador' || userRole() == 'Ganadero');
+      allow list: if isSignedIn() &&
+        (userRole() == 'Administrador' || userRole() == 'Ganadero' || userRole() == 'Empleado');
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // Bovinos: lectura acotada al propietario (o vet/admin con acceso amplio).
+    // (Corrige el hallazgo C1/C3: antes cualquier autenticado leía todo.)
+    // La app consulta `where propietarioId == uid`, por lo que el listado
+    // acotado por dueño es satisfacible para Ganadero/Empleado.
+    // ─────────────────────────────────────────────────────────────
+    match /bovines/{bovineId} {
+      // `read` cubre get y list. En un listado, Firestore exige que TODOS los
+      // documentos devueltos satisfagan la condición; como la app consulta
+      // `where propietarioId == uid`, el listado acotado por dueño se permite,
+      // y una consulta sin ese filtro (que devolvería bovinos ajenos) se
+      // rechaza automáticamente. Vet/Admin pueden listar todo el hato.
+      allow read: if isSignedIn() &&
+        (resource.data.propietarioId == request.auth.uid || isVetOrAdmin());
+      allow create, update: if isSignedIn() &&
+        (userRole() == 'Ganadero' || userRole() == 'Empleado' || userRole() == 'Veterinario');
+      allow delete: if isSignedIn() && userRole() == 'Ganadero';
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // Tratamientos / Vacunas
+    // NOTA: la lectura sigue permitida a cualquier autenticado porque el
+    // modelo de datos actual no tiene un propietario directo en el documento.
+    // Acotarlo por dueño requiere el rediseño descrito en la Fase 3 del ROADMAP.
+    // ─────────────────────────────────────────────────────────────
+    match /treatments/{treatmentId} {
+      allow read, list: if isSignedIn();
+      allow create, update: if isSignedIn() &&
+        (userRole() == 'Veterinario' || userRole() == 'Ganadero' || userRole() == 'Empleado');
+      allow delete: if isSignedIn() && userRole() == 'Ganadero';
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // Inventario (compartido a nivel de explotación; sin dueño por documento)
+    // ─────────────────────────────────────────────────────────────
+    match /inventory/{itemId} {
+      allow read, list: if isSignedIn();
+      allow create, update: if isSignedIn() &&
+        (userRole() == 'Ganadero' || userRole() == 'Empleado' || userRole() == 'Veterinario');
+      allow delete: if isSignedIn() &&
+        (userRole() == 'Ganadero' || userRole() == 'Empleado');
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // Reportes
+    // ─────────────────────────────────────────────────────────────
+    match /reports/{reportId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isSignedIn() && userRole() == 'Ganadero';
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // Notificaciones: solo el destinatario las lee/gestiona, y solo se
+    // pueden CREAR a nombre propio (o por vet/admin). (Corrige C5.)
+    // ─────────────────────────────────────────────────────────────
+    match /notifications/{notificationId} {
+      allow read, list: if isSignedIn() &&
+        resource.data.usuarioId == request.auth.uid;
+      allow create: if isSignedIn() &&
+        (request.resource.data.usuarioId == request.auth.uid || isVetOrAdmin());
+      allow update, delete: if isSignedIn() &&
+        resource.data.usuarioId == request.auth.uid;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // Incidentes / Mortalidad
+    // ─────────────────────────────────────────────────────────────
+    match /incidents/{incidentId} {
+      allow read, list: if isSignedIn();
+      allow create, update: if isSignedIn() &&
+        (userRole() == 'Veterinario' || userRole() == 'Ganadero' || userRole() == 'Empleado');
+      allow delete: if isSignedIn() && userRole() == 'Ganadero';
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // Actividades (auditoría): cada quien crea las suyas.
+    // ─────────────────────────────────────────────────────────────
+    match /activities/{activityId} {
+      allow read, list: if isSignedIn();
+      allow create: if isSignedIn() &&
+        request.resource.data.usuarioId == request.auth.uid;
+      allow update, delete: if isSignedIn() &&
+        resource.data.usuarioId == request.auth.uid;
+    }
+  }
+}
