@@ -29,10 +29,12 @@ void main() async {
   // En web requiere una clave de sitio reCAPTCHA que se configura aparte.
   if (!kIsWeb) {
     await FirebaseAppCheck.instance.activate(
-      providerAndroid:
-          kDebugMode ? AndroidDebugProvider() : AndroidPlayIntegrityProvider(),
-      providerApple:
-          kDebugMode ? AppleDebugProvider() : AppleDeviceCheckProvider(),
+      providerAndroid: kDebugMode
+          ? const AndroidDebugProvider()
+          : const AndroidPlayIntegrityProvider(),
+      providerApple: kDebugMode
+          ? const AppleDebugProvider()
+          : const AppleDeviceCheckProvider(),
     );
   }
 
