@@ -71,7 +71,8 @@ class SolidInventoryController extends ChangeNotifier {
     _clearError();
     
     try {
-      _inventory = await _inventoryService.getAllInventoryItems();
+      // Inventario del hato del usuario (acceso por membresías).
+      _inventory = await _inventoryService.getAccessibleInventory();
       _applyFilters();
     } catch (e) {
       _setError('Error al cargar inventario: $e');

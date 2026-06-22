@@ -58,8 +58,8 @@ class SolidTreatmentController extends ChangeNotifier {
     _clearError();
     
     try {
-      // Usar getPendingTreatments para obtener todos los tratamientos
-      _treatments = await _treatmentService.getPendingTreatments();
+      // Tratamientos del hato del usuario (acceso por membresías).
+      _treatments = await _treatmentService.getAccessibleTreatments();
       _applyFilters();
     } catch (e) {
       _setError('Error al cargar tratamientos: $e');

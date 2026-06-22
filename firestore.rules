@@ -23,6 +23,25 @@ service cloud.firestore {
       return userRole() == 'Veterinario' || userRole() == 'Administrador';
     }
 
+    // Documento de membresía determinista entre un hato (ownerId) y el usuario.
+    function membershipPath(ownerId) {
+      return /databases/$(database)/documents/memberships/$(ownerId + '_' + request.auth.uid);
+    }
+
+    // ¿El usuario actual puede acceder a los datos del hato `ownerId`?
+    //  - Es su propio hato, o
+    //  - tiene una membresía ACEPTADA en ese hato.
+    // (ownerId == '' = dato heredado sin asignar; se permite de forma
+    //  transitoria para no romper datos antiguos hasta su backfill.)
+    function hasFarmAccess(ownerId) {
+      return isSignedIn() && (
+        ownerId == '' ||
+        ownerId == request.auth.uid ||
+        (exists(membershipPath(ownerId)) &&
+         get(membershipPath(ownerId)).data.estado == 'aceptada')
+      );
+    }
+
     // ─────────────────────────────────────────────────────────────
     // Usuarios: cada quien su documento; admin/ganadero pueden listar.
     // ─────────────────────────────────────────────────────────────
@@ -40,41 +59,58 @@ service cloud.firestore {
     // La app consulta `where propietarioId == uid`, por lo que el listado
     // acotado por dueño es satisfacible para Ganadero/Empleado.
     // ─────────────────────────────────────────────────────────────
+    // Acceso por HATO mediante membresías. `read` cubre get y list: la app
+    // consulta `where propietarioId in [hatos accesibles]`, por lo que cada
+    // documento devuelto satisface hasFarmAccess; una consulta a hatos no
+    // autorizados se rechaza automáticamente.
     match /bovines/{bovineId} {
-      // `read` cubre get y list. En un listado, Firestore exige que TODOS los
-      // documentos devueltos satisfagan la condición; como la app consulta
-      // `where propietarioId == uid`, el listado acotado por dueño se permite,
-      // y una consulta sin ese filtro (que devolvería bovinos ajenos) se
-      // rechaza automáticamente. Vet/Admin pueden listar todo el hato.
-      allow read: if isSignedIn() &&
-        (resource.data.propietarioId == request.auth.uid || isVetOrAdmin());
-      allow create, update: if isSignedIn() &&
-        (userRole() == 'Ganadero' || userRole() == 'Empleado' || userRole() == 'Veterinario');
-      allow delete: if isSignedIn() && userRole() == 'Ganadero';
+      allow read: if hasFarmAccess(resource.data.propietarioId);
+      allow create: if isSignedIn() &&
+        (userRole() == 'Ganadero' || userRole() == 'Empleado' || userRole() == 'Veterinario') &&
+        hasFarmAccess(request.resource.data.propietarioId);
+      allow update: if isSignedIn() &&
+        hasFarmAccess(resource.data.propietarioId);
+      allow delete: if isSignedIn() && userRole() == 'Ganadero' &&
+        resource.data.propietarioId == request.auth.uid;
     }
 
     // ─────────────────────────────────────────────────────────────
-    // Tratamientos / Vacunas
-    // NOTA: la lectura sigue permitida a cualquier autenticado porque el
-    // modelo de datos actual no tiene un propietario directo en el documento.
-    // Acotarlo por dueño requiere el rediseño descrito en la Fase 3 del ROADMAP.
+    // Tratamientos / Vacunas — acotados al hato (heredan propietarioId del bovino)
     // ─────────────────────────────────────────────────────────────
     match /treatments/{treatmentId} {
-      allow read, list: if isSignedIn();
+      allow read: if hasFarmAccess(resource.data.propietarioId);
       allow create, update: if isSignedIn() &&
         (userRole() == 'Veterinario' || userRole() == 'Ganadero' || userRole() == 'Empleado');
       allow delete: if isSignedIn() && userRole() == 'Ganadero';
     }
 
     // ─────────────────────────────────────────────────────────────
-    // Inventario (compartido a nivel de explotación; sin dueño por documento)
+    // Inventario — acotado al hato del ganadero
     // ─────────────────────────────────────────────────────────────
     match /inventory/{itemId} {
-      allow read, list: if isSignedIn();
+      allow read: if hasFarmAccess(resource.data.propietarioId);
       allow create, update: if isSignedIn() &&
         (userRole() == 'Ganadero' || userRole() == 'Empleado' || userRole() == 'Veterinario');
       allow delete: if isSignedIn() &&
         (userRole() == 'Ganadero' || userRole() == 'Empleado');
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // Membresías de hato (invitaciones ganadero → veterinario/empleado)
+    // ─────────────────────────────────────────────────────────────
+    match /memberships/{membershipId} {
+      allow read: if isSignedIn() &&
+        (resource.data.ganaderoId == request.auth.uid ||
+         resource.data.memberId == request.auth.uid);
+      // Solo un ganadero crea invitaciones para su propio hato.
+      allow create: if isSignedIn() &&
+        userRole() == 'Ganadero' &&
+        request.resource.data.ganaderoId == request.auth.uid;
+      // El ganadero (revocar) o el miembro (aceptar/rechazar) actualizan.
+      allow update: if isSignedIn() &&
+        (resource.data.ganaderoId == request.auth.uid ||
+         resource.data.memberId == request.auth.uid);
+      allow delete: if isSignedIn() && resource.data.ganaderoId == request.auth.uid;
     }
 
     // ─────────────────────────────────────────────────────────────

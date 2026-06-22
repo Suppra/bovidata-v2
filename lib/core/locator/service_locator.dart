@@ -7,6 +7,10 @@ import '../services/solid_services.dart';
 import '../services/solid_notification_service.dart';
 import '../factories/model_factory.dart';
 import '../builders/entity_builder.dart';
+import '../access/farm_access_service.dart';
+import '../../features/membership/domain/ports/membership_repository.dart';
+import '../../features/membership/infrastructure/repositories/membership_repository_impl.dart';
+import '../../features/membership/application/membership_interactor.dart';
 
 class ServiceLocator {
   static final Map<Type, dynamic> _services = {};
@@ -41,15 +45,23 @@ class ServiceLocator {
       modelFactory: _services[ModelFactory] as ModelFactory,
     );
 
+    // Feature membership (hexagonal) + control de acceso por hato
+    _services[MembershipRepository] = MembershipRepositoryImpl();
+    _services[FarmAccessService] = FarmAccessService(
+      membershipRepository: _services[MembershipRepository] as MembershipRepository,
+    );
+
     // Registrar Servicios
     _services[INotificationService] = ConcreteNotificationService();
     _services[IValidationService] = ConcreteValidationService();
+    _services[SolidNotificationService] = SolidNotificationService();
 
     // Registrar Servicios de Dominio
     _services[SolidBovineService] = SolidBovineService(
       repository: _services[IBovineRepository] as IBovineRepository,
       notificationService: _services[INotificationService] as INotificationService,
       validationService: _services[IValidationService] as IValidationService,
+      farmAccess: _services[FarmAccessService] as FarmAccessService,
     );
 
     _services[SolidTreatmentService] = SolidTreatmentService(
@@ -57,16 +69,22 @@ class ServiceLocator {
       bovineRepository: _services[IBovineRepository] as IBovineRepository,
       notificationService: _services[INotificationService] as INotificationService,
       validationService: _services[IValidationService] as IValidationService,
+      farmAccess: _services[FarmAccessService] as FarmAccessService,
     );
 
     _services[SolidInventoryService] = SolidInventoryService(
       repository: _services[IInventoryRepository] as IInventoryRepository,
       notificationService: _services[INotificationService] as INotificationService,
       validationService: _services[IValidationService] as IValidationService,
+      farmAccess: _services[FarmAccessService] as FarmAccessService,
     );
 
-    // Registrar SolidNotificationService
-    _services[SolidNotificationService] = SolidNotificationService();
+    // Caso de uso de membresías (invitar / responder / revocar)
+    _services[MembershipInteractor] = MembershipInteractor(
+      membershipRepository: _services[MembershipRepository] as MembershipRepository,
+      userRepository: _services[IUserRepository] as IUserRepository,
+      notificationService: _services[SolidNotificationService] as SolidNotificationService,
+    );
 
     _isInitialized = true;
   }
@@ -91,6 +109,9 @@ class ServiceLocator {
   static ITreatmentRepository get treatmentRepository => get<ITreatmentRepository>();
   static IInventoryRepository get inventoryRepository => get<IInventoryRepository>();
   static IUserRepository get userRepository => get<IUserRepository>();
+  static MembershipRepository get membershipRepository => get<MembershipRepository>();
+  static FarmAccessService get farmAccess => get<FarmAccessService>();
+  static MembershipInteractor get membershipInteractor => get<MembershipInteractor>();
   
   // Métodos para builders (nueva instancia cada vez)
   static BovineBuilder get bovineBuilder => BovineBuilder();

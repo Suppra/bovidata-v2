@@ -18,6 +18,9 @@ class TreatmentModel {
   final double? costo;
   final List<String>? imagenesUrl;
   final Map<String, dynamic>? efectosSecundarios;
+  // Dueño del hato (ganadero) al que pertenece el tratamiento. Se usa para el
+  // control de acceso por membresías (scoping seguro). Heredado del bovino.
+  final String propietarioId;
 
   TreatmentModel({
     required this.id,
@@ -37,6 +40,7 @@ class TreatmentModel {
     this.costo,
     this.imagenesUrl,
     this.efectosSecundarios,
+    this.propietarioId = '',
   });
 
   // Convert from Firestore Document
@@ -58,10 +62,11 @@ class TreatmentModel {
       fechaCreacion: (data['fechaCreacion'] as Timestamp?)?.toDate() ?? DateTime.now(),
       observaciones: data['observaciones'],
       costo: data['costo']?.toDouble(),
-      imagenesUrl: data['imagenesUrl'] != null 
-          ? List<String>.from(data['imagenesUrl']) 
+      imagenesUrl: data['imagenesUrl'] != null
+          ? List<String>.from(data['imagenesUrl'])
           : null,
       efectosSecundarios: data['efectosSecundarios'],
+      propietarioId: data['propietarioId'] ?? '',
     );
   }
 
@@ -86,6 +91,7 @@ class TreatmentModel {
       'costo': costo,
       'imagenesUrl': imagenesUrl,
       'efectosSecundarios': efectosSecundarios,
+      'propietarioId': propietarioId,
     };
   }
 
@@ -141,6 +147,7 @@ class TreatmentModel {
           ? List<String>.from(data['imagenesUrl'])
           : null,
       efectosSecundarios: data['efectosSecundarios'],
+      propietarioId: data['propietarioId'] ?? '',
     );
   }
 
@@ -163,6 +170,7 @@ class TreatmentModel {
     double? costo,
     List<String>? imagenesUrl,
     Map<String, dynamic>? efectosSecundarios,
+    String? propietarioId,
   }) {
     return TreatmentModel(
       id: id ?? this.id,
@@ -182,6 +190,7 @@ class TreatmentModel {
       costo: costo ?? this.costo,
       imagenesUrl: imagenesUrl ?? this.imagenesUrl,
       efectosSecundarios: efectosSecundarios ?? this.efectosSecundarios,
+      propietarioId: propietarioId ?? this.propietarioId,
     );
   }
 }

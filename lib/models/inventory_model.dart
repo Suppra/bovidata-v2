@@ -18,6 +18,8 @@ class InventoryModel {
   final String? imagenUrl;
   final bool activo;
   final Map<String, dynamic>? propiedades;
+  // Dueño del hato (ganadero) al que pertenece el ítem de inventario.
+  final String propietarioId;
 
   InventoryModel({
     required this.id,
@@ -37,6 +39,7 @@ class InventoryModel {
     this.imagenUrl,
     this.activo = true,
     this.propiedades,
+    this.propietarioId = '',
   });
 
   // Convert from Firestore Document
@@ -60,6 +63,7 @@ class InventoryModel {
       imagenUrl: data['imagenUrl'],
       activo: data['activo'] ?? true,
       propiedades: data['propiedades'],
+      propietarioId: data['propietarioId'] ?? '',
     );
   }
 
@@ -86,6 +90,7 @@ class InventoryModel {
       'imagenUrl': imagenUrl,
       'activo': activo,
       'propiedades': propiedades,
+      'propietarioId': propietarioId,
     };
   }
 
@@ -136,6 +141,7 @@ class InventoryModel {
     String? imagenUrl,
     bool? activo,
     Map<String, dynamic>? propiedades,
+    String? propietarioId,
   }) {
     return InventoryModel(
       id: id ?? this.id,
@@ -155,6 +161,7 @@ class InventoryModel {
       imagenUrl: imagenUrl ?? this.imagenUrl,
       activo: activo ?? this.activo,
       propiedades: propiedades ?? this.propiedades,
+      propietarioId: propietarioId ?? this.propietarioId,
     );
   }
 
@@ -198,6 +205,7 @@ class InventoryModel {
       imagenUrl: data['imagenUrl'],
       activo: data['activo'] ?? true,
       propiedades: data['propiedades'],
+      propietarioId: data['propietarioId'] ?? '',
     );
   }
 }

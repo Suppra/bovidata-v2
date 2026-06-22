@@ -1,5 +1,6 @@
 // Servicios refactorizados aplicando principios SOLID
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../access/farm_access_service.dart';
 import '../interfaces/service_interface.dart';
 import '../interfaces/repository_interface.dart';
 import '../../models/bovine_model.dart';
@@ -15,21 +16,35 @@ class SolidBovineService {
   final IBovineRepository _repository;
   final INotificationService _notificationService;
   final IValidationService _validationService;
+  final FarmAccessService _farmAccess;
 
   // Dependency Inversion Principle (DIP) - Dependemos de abstracciones
   SolidBovineService({
     required IBovineRepository repository,
     required INotificationService notificationService,
     required IValidationService validationService,
+    required FarmAccessService farmAccess,
   }) : _repository = repository,
        _notificationService = notificationService,
-       _validationService = validationService;
+       _validationService = validationService,
+       _farmAccess = farmAccess;
+
+  /// Bovinos visibles para el usuario actual según su acceso por hato
+  /// (su propio hato + los hatos a los que fue invitado y aceptó).
+  Future<List<BovineModel>> getAccessibleBovines() async {
+    final ownerIds = await _farmAccess.accessibleOwnerIds();
+    return _repository.getByOwners(ownerIds);
+  }
 
   // Métodos aplicando Open/Closed Principle (OCP)
   Future<String> createBovine(BovineModel bovine) async {
+    // El bovino siempre pertenece al hato del usuario actual (scoping seguro).
+    final ownerId = await _farmAccess.currentFarmOwnerId();
+    bovine = bovine.copyWith(propietarioId: ownerId);
+
     // Validación usando servicio especializado
     _validateBovine(bovine);
-    
+
     // Creación usando repositorio
     final id = await _repository.create(bovine);
     
@@ -134,24 +149,38 @@ class SolidTreatmentService {
   final IBovineRepository _bovineRepository;
   final INotificationService _notificationService;
   final IValidationService _validationService;
+  final FarmAccessService _farmAccess;
 
   SolidTreatmentService({
     required ITreatmentRepository repository,
     required IBovineRepository bovineRepository,
     required INotificationService notificationService,
     required IValidationService validationService,
+    required FarmAccessService farmAccess,
   }) : _repository = repository,
        _bovineRepository = bovineRepository,
        _notificationService = notificationService,
-       _validationService = validationService;
+       _validationService = validationService,
+       _farmAccess = farmAccess;
+
+  /// Tratamientos visibles según el acceso por hato del usuario actual.
+  Future<List<TreatmentModel>> getAccessibleTreatments() async {
+    final ownerIds = await _farmAccess.accessibleOwnerIds();
+    return _repository.getByOwners(ownerIds);
+  }
 
   Future<String> createTreatment(TreatmentModel treatment) async {
     await _validateTreatment(treatment);
-    
-    final id = await _repository.create(treatment);
-    
-    // Notificar al propietario del bovino
+
+    // El tratamiento hereda el hato (propietarioId) del bovino al que aplica.
     final bovine = await _bovineRepository.getById(treatment.bovineId);
+    if (bovine != null) {
+      treatment = treatment.copyWith(propietarioId: bovine.propietarioId);
+    }
+
+    final id = await _repository.create(treatment);
+
+    // Notificar al propietario del bovino
     if (bovine != null) {
       await _notificationService.sendNotification(
         bovine.propietarioId,
@@ -161,7 +190,7 @@ class SolidTreatmentService {
         priority: 'alta',
       );
     }
-    
+
     return id;
   }
 
@@ -212,18 +241,31 @@ class SolidInventoryService {
   final IInventoryRepository _repository;
   final INotificationService _notificationService;
   final IValidationService _validationService;
+  final FarmAccessService _farmAccess;
 
   SolidInventoryService({
     required IInventoryRepository repository,
     required INotificationService notificationService,
     required IValidationService validationService,
+    required FarmAccessService farmAccess,
   }) : _repository = repository,
        _notificationService = notificationService,
-       _validationService = validationService;
+       _validationService = validationService,
+       _farmAccess = farmAccess;
+
+  /// Inventario visible según el acceso por hato del usuario actual.
+  Future<List<InventoryModel>> getAccessibleInventory() async {
+    final ownerIds = await _farmAccess.accessibleOwnerIds();
+    return _repository.getByOwners(ownerIds);
+  }
 
   Future<String> createInventoryItem(InventoryModel item) async {
+    // El ítem pertenece al hato del usuario actual (scoping seguro).
+    final ownerId = await _farmAccess.currentFarmOwnerId();
+    item = item.copyWith(propietarioId: ownerId);
+
     _validateInventoryItem(item);
-    
+
     final id = await _repository.create(item);
     
     // Verificar si está por debajo del stock mínimo

@@ -46,6 +46,12 @@ class _HomeScreenState extends State<HomeScreen> {
             backgroundColor: AppColors.primary,
             foregroundColor: AppColors.white,
             actions: [
+              // Miembros del hato / invitaciones
+              IconButton(
+                icon: const Icon(Icons.group, color: AppColors.white),
+                tooltip: 'Miembros del hato',
+                onPressed: () => Navigator.of(context).pushNamed('/farm-members'),
+              ),
               // Notification Icon
               IconButton(
                 icon: Stack(

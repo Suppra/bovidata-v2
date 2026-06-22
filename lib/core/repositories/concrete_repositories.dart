@@ -99,6 +99,20 @@ class BovineRepository implements IBovineRepository {
   }
 
   @override
+  Future<List<BovineModel>> getByOwners(List<String> ownerIds) async {
+    if (ownerIds.isEmpty) return [];
+    final snapshot = await _firestore
+        .collection(_collection)
+        .where('propietarioId', whereIn: ownerIds)
+        .get();
+    return snapshot.docs
+        .map((doc) => _modelFactory.createFromFirestore<BovineModel>(doc))
+        .where((bovine) => bovine.activo)
+        .toList()
+      ..sort((a, b) => b.fechaCreacion.compareTo(a.fechaCreacion));
+  }
+
+  @override
   Future<List<BovineModel>> getByStatus(String status) async {
     final snapshot = await _firestore
         .collection(_collection)
@@ -218,6 +232,19 @@ class TreatmentRepository implements ITreatmentRepository {
     return snapshot.docs
         .map((doc) => _modelFactory.createFromFirestore<TreatmentModel>(doc))
         .toList();
+  }
+
+  @override
+  Future<List<TreatmentModel>> getByOwners(List<String> ownerIds) async {
+    if (ownerIds.isEmpty) return [];
+    final snapshot = await _firestore
+        .collection(_collection)
+        .where('propietarioId', whereIn: ownerIds)
+        .get();
+    return snapshot.docs
+        .map((doc) => _modelFactory.createFromFirestore<TreatmentModel>(doc))
+        .toList()
+      ..sort((a, b) => b.fecha.compareTo(a.fecha));
   }
 
   @override
@@ -342,6 +369,20 @@ class InventoryRepository implements IInventoryRepository {
     return snapshot.docs
         .map((doc) => _modelFactory.createFromFirestore<InventoryModel>(doc))
         .toList();
+  }
+
+  @override
+  Future<List<InventoryModel>> getByOwners(List<String> ownerIds) async {
+    if (ownerIds.isEmpty) return [];
+    final snapshot = await _firestore
+        .collection(_collection)
+        .where('propietarioId', whereIn: ownerIds)
+        .get();
+    return snapshot.docs
+        .map((doc) => _modelFactory.createFromFirestore<InventoryModel>(doc))
+        .where((item) => item.activo)
+        .toList()
+      ..sort((a, b) => b.fechaCreacion.compareTo(a.fechaCreacion));
   }
 
   @override

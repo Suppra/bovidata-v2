@@ -1,6 +1,5 @@
 // Controllers modernos que implementan la arquitectura SOLID
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../locator/service_locator.dart';
 import '../services/solid_services.dart';
 import '../../models/bovine_model.dart';
@@ -43,25 +42,17 @@ class SolidBovineController extends ChangeNotifier {
     loadBovines();
   }
 
-  /// Cargar bovinos usando servicio SOLID.
+  /// Cargar bovinos visibles para el usuario actual.
   ///
-  /// Por seguridad (hallazgo C3 de la auditoría) los datos se acotan al
-  /// propietario autenticado. `viewAll: true` permite (en el futuro, para
-  /// roles Veterinario/Administrador) cargar todo el hato; el valor por
-  /// defecto es el comportamiento seguro acotado por dueño.
-  Future<void> loadBovines({String? ownerId, bool viewAll = false}) async {
+  /// El acceso está acotado por HATO (scoping seguro): el ganadero ve su propio
+  /// hato y los veterinarios/empleados solo ven los hatos a los que un ganadero
+  /// los invitó y cuya invitación aceptaron.
+  Future<void> loadBovines() async {
     _setLoading(true);
     _clearError();
 
     try {
-      if (viewAll) {
-        _bovines = await _bovineService.getAllBovines();
-      } else {
-        final uid = ownerId ?? FirebaseAuth.instance.currentUser?.uid;
-        _bovines = uid == null
-            ? <BovineModel>[]
-            : await _bovineService.getBovinesByOwner(uid);
-      }
+      _bovines = await _bovineService.getAccessibleBovines();
       _applyFilters();
     } catch (e) {
       _setError('Error al cargar bovinos: $e');

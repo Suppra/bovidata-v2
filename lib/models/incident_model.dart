@@ -15,6 +15,8 @@ class IncidentModel {
   final String? observaciones;
   final List<String>? imagenesUrl;
   final Map<String, dynamic>? datos;
+  // Dueño del hato (ganadero) al que pertenece la incidencia/mortalidad.
+  final String propietarioId;
 
   IncidentModel({
     required this.id,
@@ -31,6 +33,7 @@ class IncidentModel {
     this.observaciones,
     this.imagenesUrl,
     this.datos,
+    this.propietarioId = '',
   });
 
   // Convert from Firestore Document
@@ -49,10 +52,11 @@ class IncidentModel {
       fechaCreacion: (data['fechaCreacion'] as Timestamp?)?.toDate() ?? DateTime.now(),
       fechaResolucion: (data['fechaResolucion'] as Timestamp?)?.toDate(),
       observaciones: data['observaciones'],
-      imagenesUrl: data['imagenesUrl'] != null 
-          ? List<String>.from(data['imagenesUrl']) 
+      imagenesUrl: data['imagenesUrl'] != null
+          ? List<String>.from(data['imagenesUrl'])
           : null,
       datos: data['datos'],
+      propietarioId: data['propietarioId'] ?? '',
     );
   }
 
@@ -74,6 +78,7 @@ class IncidentModel {
       'observaciones': observaciones,
       'imagenesUrl': imagenesUrl,
       'datos': datos,
+      'propietarioId': propietarioId,
     };
   }
 
@@ -107,6 +112,7 @@ class IncidentModel {
     String? observaciones,
     List<String>? imagenesUrl,
     Map<String, dynamic>? datos,
+    String? propietarioId,
   }) {
     return IncidentModel(
       id: id ?? this.id,
@@ -123,6 +129,7 @@ class IncidentModel {
       observaciones: observaciones ?? this.observaciones,
       imagenesUrl: imagenesUrl ?? this.imagenesUrl,
       datos: datos ?? this.datos,
+      propietarioId: propietarioId ?? this.propietarioId,
     );
   }
 }

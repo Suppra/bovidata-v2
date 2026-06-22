@@ -6,6 +6,8 @@ import 'controllers/auth_controller.dart';
 import 'controllers/settings_controller.dart';
 import 'core/controllers/controllers.dart';
 import 'core/locator/service_locator.dart';
+import 'features/membership/presentation/controllers/membership_controller.dart';
+import 'features/membership/presentation/pages/farm_members_page.dart';
 import 'services/scheduler_service.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/profile_screen.dart';
@@ -43,6 +45,13 @@ class BoviDataApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => SolidTreatmentController()),
         ChangeNotifierProvider(create: (_) => SolidInventoryController()),
         ChangeNotifierProvider(create: (_) => SolidNotificationController()),
+        // Feature membership (hexagonal): invitaciones y acceso por hato
+        ChangeNotifierProvider(
+          create: (_) => MembershipController(
+            interactor: ServiceLocator.membershipInteractor,
+            repository: ServiceLocator.membershipRepository,
+          ),
+        ),
       ],
       child: Consumer<SettingsController>(
         builder: (context, settingsController, child) {
@@ -157,6 +166,7 @@ class BoviDataApp extends StatelessWidget {
             routes: {
               '/profile': (context) => const ProfileScreen(),
               '/settings': (context) => const SettingsScreen(),
+              '/farm-members': (context) => const FarmMembersPage(),
             },
             home: const AuthWrapper(),
           );
