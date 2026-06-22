@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import 'package:bovidata_new/features/authentication/presentation/controllers/auth_controller.dart';
 import 'package:bovidata_new/core/controllers/controllers.dart';
 
 import 'package:bovidata_new/constants/app_styles.dart';
@@ -130,22 +129,22 @@ class _HomeScreenState extends State<HomeScreen> {
                   }
                 },
                 itemBuilder: (context) => [
-                  PopupMenuItem(
+                  const PopupMenuItem(
                     value: 'profile',
                     child: Row(
                       children: [
-                        const Icon(Icons.person_outline),
-                        const SizedBox(width: AppDimensions.marginS),
+                        Icon(Icons.person_outline),
+                        SizedBox(width: AppDimensions.marginS),
                         Text('Perfil', style: AppTextStyles.body2),
                       ],
                     ),
                   ),
-                  PopupMenuItem(
+                  const PopupMenuItem(
                     value: 'settings',
                     child: Row(
                       children: [
-                        const Icon(Icons.settings_outlined),
-                        const SizedBox(width: AppDimensions.marginS),
+                        Icon(Icons.settings_outlined),
+                        SizedBox(width: AppDimensions.marginS),
                         Text('Configuración', style: AppTextStyles.body2),
                       ],
                     ),
@@ -275,7 +274,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           CircleAvatar(
                             radius: 30,
-                            backgroundColor: AppColors.primary.withOpacity(0.1),
+                            backgroundColor: AppColors.primary.withValues(alpha: 0.1),
                             child: Text(
                               authController.currentUser?.nombre.substring(0, 1).toUpperCase() ?? 'U',
                               style: AppTextStyles.h3.copyWith(color: AppColors.primary),
@@ -303,7 +302,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                       const SizedBox(height: AppDimensions.marginM),
-                      Text(
+                      const Text(
                         'Gestiona tu ganado de manera eficiente con ${AppConstants.appName}',
                         style: AppTextStyles.body2,
                       ),
@@ -314,7 +313,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: AppDimensions.marginL),
 
               // Statistics Cards
-              Text(
+              const Text(
                 'Resumen',
                 style: AppTextStyles.h5,
               ),
@@ -325,7 +324,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: AppDimensions.marginL),
 
               // Recent Activity
-              Text(
+              const Text(
                 'Actividad Reciente',
                 style: AppTextStyles.h5,
               ),
@@ -422,9 +421,9 @@ class _HomeScreenState extends State<HomeScreen> {
     final userId = authController.currentUser?.id;
 
     if (userId == null) {
-      return Card(
+      return const Card(
         child: Padding(
-          padding: const EdgeInsets.all(AppDimensions.paddingM),
+          padding: EdgeInsets.all(AppDimensions.paddingM),
           child: Text(
             'No hay actividad reciente',
             style: AppTextStyles.caption,
@@ -449,8 +448,8 @@ class _HomeScreenState extends State<HomeScreen> {
           }
 
           if (snapshot.hasError) {
-            return Padding(
-              padding: const EdgeInsets.all(AppDimensions.paddingM),
+            return const Padding(
+              padding: EdgeInsets.all(AppDimensions.paddingM),
               child: Text(
                 'Error al cargar actividades',
                 style: AppTextStyles.caption,
@@ -466,13 +465,13 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(AppDimensions.paddingM),
               child: Column(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.history,
                     size: 48,
                     color: AppColors.grey400,
                   ),
                   const SizedBox(height: AppDimensions.marginS),
-                  Text(
+                  const Text(
                     'No hay actividad reciente',
                     style: AppTextStyles.caption,
                     textAlign: TextAlign.center,
@@ -499,7 +498,7 @@ class _HomeScreenState extends State<HomeScreen> {
               final activity = activities[index];
               return ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: _getActivityColor(activity.tipo).withOpacity(0.1),
+                  backgroundColor: _getActivityColor(activity.tipo).withValues(alpha: 0.1),
                   child: Icon(
                     _getActivityIcon(activity.tipo),
                     color: _getActivityColor(activity.tipo),

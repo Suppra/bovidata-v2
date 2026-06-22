@@ -156,7 +156,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const Divider(),
                   ListTile(
                     title: const Text('Acerca de BoviData'),
-                    subtitle: Text('Versión ${AppConstants.appVersion}'),
+                    subtitle: const Text('Versión ${AppConstants.appVersion}'),
                     leading: const Icon(Icons.info_outline),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {

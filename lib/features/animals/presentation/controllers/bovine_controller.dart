@@ -141,13 +141,13 @@ class SolidBovineController extends ChangeNotifier {
   /// Aplicar filtros usando principios SOLID
   void _applyFilters() {
     _filteredBovines = _bovines.where((bovine) {
-      bool matchesSearch = _searchQuery.isEmpty ||
+      final bool matchesSearch = _searchQuery.isEmpty ||
           bovine.nombre.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           bovine.numeroIdentificacion.toLowerCase().contains(_searchQuery.toLowerCase());
 
-      bool matchesRace = _selectedRace.isEmpty || bovine.raza == _selectedRace;
+      final bool matchesRace = _selectedRace.isEmpty || bovine.raza == _selectedRace;
       
-      bool matchesStatus = _selectedStatus.isEmpty || bovine.estado == _selectedStatus;
+      final bool matchesStatus = _selectedStatus.isEmpty || bovine.estado == _selectedStatus;
 
       return matchesSearch && matchesRace && matchesStatus;
     }).toList();

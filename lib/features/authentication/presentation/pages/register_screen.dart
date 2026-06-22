@@ -111,13 +111,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const SizedBox(height: AppDimensions.marginL),
 
                     // Role Selection
-                    Text(
+                    const Text(
                       'Tipo de Usuario',
                       style: AppTextStyles.h6,
                     ),
                     const SizedBox(height: AppDimensions.marginS),
                     DropdownButtonFormField<String>(
-                      value: _selectedRole,
+                      initialValue: _selectedRole,
                       decoration: const InputDecoration(
                         prefixIcon: Icon(Icons.person_outline),
                       ),

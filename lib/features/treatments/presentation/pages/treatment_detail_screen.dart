@@ -732,7 +732,7 @@ class _TreatmentDetailScreenState extends State<TreatmentDetailScreen> {
             const SizedBox(width: 8),
             Text(
               label,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12,
                 color: AppColors.grey600,
                 fontWeight: FontWeight.w500,
@@ -795,7 +795,7 @@ class _TreatmentDetailScreenState extends State<TreatmentDetailScreen> {
             flex: 2,
             child: Text(
               label,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.grey700,
                 fontWeight: FontWeight.w500,
@@ -865,7 +865,7 @@ class _TreatmentDetailScreenState extends State<TreatmentDetailScreen> {
         };
       }
     } catch (e) {
-      print('Error obteniendo información del veterinario: $e');
+      debugPrint('Error obteniendo información del veterinario: $e');
       return {
         'nombre': 'Error al cargar información',
         'email': 'No disponible',

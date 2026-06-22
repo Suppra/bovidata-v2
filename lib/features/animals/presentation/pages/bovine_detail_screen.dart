@@ -78,7 +78,7 @@ class BovineDetailScreen extends StatelessWidget {
           children: [
             // Status Card
             Card(
-              color: _getStatusColor(bovine.estado).withOpacity(0.1),
+              color: _getStatusColor(bovine.estado).withValues(alpha: 0.1),
               child: Padding(
                 padding: const EdgeInsets.all(AppDimensions.paddingL),
                 child: Row(
@@ -369,7 +369,7 @@ class BovineDetailScreen extends StatelessWidget {
               final solidBovineController = context.read<SolidBovineController>();
               
               // Using SOLID controller for deletion
-              bool success = await solidBovineController.deleteBovine(bovine.id);
+              final bool success = await solidBovineController.deleteBovine(bovine.id);
               
               if (success && context.mounted) {
                 Navigator.of(context).pop();

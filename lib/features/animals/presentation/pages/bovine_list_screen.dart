@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:bovidata_new/features/authentication/presentation/controllers/auth_controller.dart';
 import 'package:bovidata_new/core/controllers/controllers.dart';
 import 'package:bovidata_new/models/bovine_model.dart';
 import 'package:bovidata_new/constants/app_styles.dart';
@@ -113,7 +112,7 @@ class _BovineListScreenState extends State<BovineListScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.error_outline,
                     size: 64,
                     color: AppColors.error,
@@ -271,7 +270,7 @@ class _BovineListScreenState extends State<BovineListScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
+          const Icon(
             Icons.pets_outlined,
             size: 80,
             color: AppColors.grey400,

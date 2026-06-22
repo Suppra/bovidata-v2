@@ -176,14 +176,14 @@ class SolidInventoryController extends ChangeNotifier {
   /// Aplicar filtros usando principios SOLID
   void _applyFilters() {
     _filteredInventory = _inventory.where((item) {
-      bool matchesSearch = _searchQuery.isEmpty ||
+      final bool matchesSearch = _searchQuery.isEmpty ||
           item.nombre.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           item.categoria.toLowerCase().contains(_searchQuery.toLowerCase());
 
-      bool matchesCategory = _selectedCategory.isEmpty || 
+      final bool matchesCategory = _selectedCategory.isEmpty || 
           item.categoria == _selectedCategory;
       
-      bool matchesStockFilter = !_showLowStock || 
+      final bool matchesStockFilter = !_showLowStock || 
           item.cantidadActual <= item.cantidadMinima;
 
       return matchesSearch && matchesCategory && matchesStockFilter;

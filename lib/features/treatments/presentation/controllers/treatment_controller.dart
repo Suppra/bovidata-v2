@@ -170,13 +170,13 @@ class SolidTreatmentController extends ChangeNotifier {
   /// Aplicar filtros usando principios SOLID
   void _applyFilters() {
     _filteredTreatments = _treatments.where((treatment) {
-      bool matchesSearch = _searchQuery.isEmpty ||
+      final bool matchesSearch = _searchQuery.isEmpty ||
           treatment.nombre.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           treatment.tipo.toLowerCase().contains(_searchQuery.toLowerCase());
 
-      bool matchesType = _selectedType.isEmpty || treatment.tipo == _selectedType;
+      final bool matchesType = _selectedType.isEmpty || treatment.tipo == _selectedType;
       
-      bool matchesStatus = (_showCompleted && treatment.completado) || 
+      final bool matchesStatus = (_showCompleted && treatment.completado) || 
                           (_showPending && !treatment.completado);
 
       return matchesSearch && matchesType && matchesStatus;

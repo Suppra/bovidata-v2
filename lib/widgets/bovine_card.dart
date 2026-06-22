@@ -157,10 +157,10 @@ class BovineCard extends StatelessWidget {
                   vertical: AppDimensions.paddingXS,
                 ),
                 decoration: BoxDecoration(
-                  color: _getStatusColor(bovine.estado).withOpacity(0.1),
+                  color: _getStatusColor(bovine.estado).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(AppDimensions.radiusS),
                   border: Border.all(
-                    color: _getStatusColor(bovine.estado).withOpacity(0.3),
+                    color: _getStatusColor(bovine.estado).withValues(alpha: 0.3),
                   ),
                 ),
                 child: Text(

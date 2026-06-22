@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
-import 'package:bovidata_new/features/authentication/presentation/controllers/auth_controller.dart';
 import 'package:bovidata_new/core/controllers/controllers.dart';
 import 'package:bovidata_new/models/treatment_model.dart';
 import 'package:bovidata_new/constants/app_styles.dart';
@@ -124,7 +123,7 @@ class _TreatmentListScreenState extends State<TreatmentListScreen> {
                     // Type Filter
                     Expanded(
                       child: DropdownButtonFormField<String>(
-                        value: _selectedFilter,
+                        initialValue: _selectedFilter,
                         decoration: const InputDecoration(
                           labelText: 'Tipo de Tratamiento',
                           border: OutlineInputBorder(),
@@ -252,7 +251,7 @@ class _TreatmentListScreenState extends State<TreatmentListScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.error,
                           size: 64,
                           color: AppColors.error,
@@ -285,7 +284,7 @@ class _TreatmentListScreenState extends State<TreatmentListScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.medical_services_outlined,
                           size: 64,
                           color: AppColors.grey400,
@@ -492,7 +491,7 @@ class TreatmentCard extends StatelessWidget {
                             vertical: AppDimensions.paddingXS,
                           ),
                           decoration: BoxDecoration(
-                            color: _getTypeColor(treatment.tipo).withOpacity(0.2),
+                            color: _getTypeColor(treatment.tipo).withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(
                               AppDimensions.radiusS,
                             ),
@@ -514,7 +513,7 @@ class TreatmentCard extends StatelessWidget {
                       vertical: AppDimensions.paddingXS,
                     ),
                     decoration: BoxDecoration(
-                      color: _getStatusColor().withOpacity(0.2),
+                      color: _getStatusColor().withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(AppDimensions.radiusS),
                     ),
                     child: Row(
@@ -555,7 +554,7 @@ class TreatmentCard extends StatelessWidget {
                 const SizedBox(height: AppDimensions.marginS),
                 Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.medication,
                       size: AppDimensions.iconS,
                       color: AppColors.textSecondary,
@@ -584,7 +583,7 @@ class TreatmentCard extends StatelessWidget {
               // Footer with date and actions
               Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.calendar_today,
                     size: AppDimensions.iconS,
                     color: AppColors.textSecondary,

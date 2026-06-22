@@ -581,7 +581,7 @@ class InventoryDetailScreen extends StatelessWidget {
               const SizedBox(height: AppDimensions.marginL),
               
               DropdownButtonFormField<String>(
-                value: adjustmentType,
+                initialValue: adjustmentType,
                 decoration: const InputDecoration(
                   labelText: 'Tipo de Ajuste',
                   border: OutlineInputBorder(),

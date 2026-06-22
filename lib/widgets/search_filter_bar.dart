@@ -100,7 +100,7 @@ class SearchFilterBar extends StatelessWidget {
         border: Border.all(color: AppColors.border),
       ),
       child: DropdownButtonFormField<String>(
-        value: value,
+        initialValue: value,
         decoration: InputDecoration(
           labelText: label,
           prefixIcon: Icon(icon, size: AppDimensions.iconS),

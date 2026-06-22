@@ -56,16 +56,16 @@ class _PdfGeneratorScreenState extends State<PdfGeneratorScreen> {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    AppColors.primary.withOpacity(0.1),
-                    AppColors.primary.withOpacity(0.05),
+                    AppColors.primary.withValues(alpha: 0.1),
+                    AppColors.primary.withValues(alpha: 0.05),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+                border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
               ),
               child: Column(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.picture_as_pdf,
                     size: 64,
                     color: AppColors.primary,
@@ -102,7 +102,7 @@ class _PdfGeneratorScreenState extends State<PdfGeneratorScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.pets, color: AppColors.primary),
+                        const Icon(Icons.pets, color: AppColors.primary),
                         const SizedBox(width: 8),
                         Text(
                           'Seleccionar Bovino',
@@ -126,15 +126,15 @@ class _PdfGeneratorScreenState extends State<PdfGeneratorScreen> {
                           return Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: AppColors.warning.withOpacity(0.1),
+                              color: AppColors.warning.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(color: AppColors.warning),
                             ),
-                            child: Row(
+                            child: const Row(
                               children: [
                                 Icon(Icons.warning, color: AppColors.warning),
-                                const SizedBox(width: 8),
-                                const Expanded(
+                                SizedBox(width: 8),
+                                Expanded(
                                   child: Text('No hay bovinos registrados'),
                                 ),
                               ],
@@ -148,7 +148,7 @@ class _PdfGeneratorScreenState extends State<PdfGeneratorScreen> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: DropdownButtonFormField<BovineModel>(
-                            value: _selectedBovine,
+                            initialValue: _selectedBovine,
                             decoration: const InputDecoration(
                               hintText: 'Selecciona un bovino',
                               border: InputBorder.none,
@@ -167,7 +167,7 @@ class _PdfGeneratorScreenState extends State<PdfGeneratorScreen> {
                                         color: _getStatusColor(bovine.estado),
                                         shape: BoxShape.circle,
                                       ),
-                                      child: Icon(
+                                      child: const Icon(
                                         Icons.pets,
                                         color: AppColors.white,
                                         size: 18,
@@ -191,7 +191,7 @@ class _PdfGeneratorScreenState extends State<PdfGeneratorScreen> {
                                           ),
                                           Text(
                                             'ID: ${bovine.numeroIdentificacion} • ${bovine.raza}',
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                               color: AppColors.textSecondary,
                                               fontSize: 7,
                                             ),
@@ -208,7 +208,7 @@ class _PdfGeneratorScreenState extends State<PdfGeneratorScreen> {
                                         vertical: 2,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: _getStatusColor(bovine.estado).withOpacity(0.1),
+                                        color: _getStatusColor(bovine.estado).withValues(alpha: 0.1),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Text(
@@ -250,7 +250,7 @@ class _PdfGeneratorScreenState extends State<PdfGeneratorScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.settings, color: AppColors.primary),
+                        const Icon(Icons.settings, color: AppColors.primary),
                         const SizedBox(width: 8),
                         Text(
                           'Opciones del Reporte',
@@ -276,7 +276,7 @@ class _PdfGeneratorScreenState extends State<PdfGeneratorScreen> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: DropdownButtonFormField<String>(
-                        value: _reportType,
+                        initialValue: _reportType,
                         decoration: const InputDecoration(
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -346,7 +346,7 @@ class _PdfGeneratorScreenState extends State<PdfGeneratorScreen> {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.preview, color: AppColors.primary),
+                          const Icon(Icons.preview, color: AppColors.primary),
                           const SizedBox(width: 8),
                           Text(
                             'Vista Previa',
@@ -456,7 +456,7 @@ class _PdfGeneratorScreenState extends State<PdfGeneratorScreen> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: color, size: 20),

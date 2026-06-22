@@ -151,7 +151,7 @@ class _InventoryFormScreenState extends State<InventoryFormScreen> {
 
                           // Categoría
                           DropdownButtonFormField<String>(
-                            value: _selectedCategoria.isEmpty ? null : _selectedCategoria,
+                            initialValue: _selectedCategoria.isEmpty ? null : _selectedCategoria,
                             decoration: const InputDecoration(
                               labelText: 'Categoría *',
                               border: OutlineInputBorder(),
@@ -180,7 +180,7 @@ class _InventoryFormScreenState extends State<InventoryFormScreen> {
 
                           // Tipo
                           DropdownButtonFormField<String>(
-                            value: _selectedTipo.isEmpty ? null : _selectedTipo,
+                            initialValue: _selectedTipo.isEmpty ? null : _selectedTipo,
                             decoration: const InputDecoration(
                               labelText: 'Tipo *',
                               border: OutlineInputBorder(),
@@ -294,7 +294,7 @@ class _InventoryFormScreenState extends State<InventoryFormScreen> {
 
                           // Unidad de Medida
                           DropdownButtonFormField<String>(
-                            value: _selectedUnidad.isEmpty ? null : _selectedUnidad,
+                            initialValue: _selectedUnidad.isEmpty ? null : _selectedUnidad,
                             decoration: const InputDecoration(
                               labelText: 'Unidad de Medida *',
                               border: OutlineInputBorder(),

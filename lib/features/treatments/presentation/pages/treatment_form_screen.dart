@@ -121,7 +121,7 @@ class _TreatmentFormScreenState extends State<TreatmentFormScreen> {
                           
                           // Selector de Bovino
                           DropdownButtonFormField<String>(
-                            value: _selectedBovineId.isEmpty ? null : _selectedBovineId,
+                            initialValue: _selectedBovineId.isEmpty ? null : _selectedBovineId,
                             decoration: const InputDecoration(
                               labelText: 'Bovino *',
                               border: OutlineInputBorder(),
@@ -177,7 +177,7 @@ class _TreatmentFormScreenState extends State<TreatmentFormScreen> {
                                   ),
                                   child: Row(
                                     children: [
-                                      Icon(
+                                      const Icon(
                                         Icons.pets,
                                         color: AppColors.primary,
                                       ),
@@ -232,7 +232,7 @@ class _TreatmentFormScreenState extends State<TreatmentFormScreen> {
 
                           // Tipo de Tratamiento
                           DropdownButtonFormField<String>(
-                            value: _selectedTipo.isEmpty ? null : _selectedTipo,
+                            initialValue: _selectedTipo.isEmpty ? null : _selectedTipo,
                             decoration: const InputDecoration(
                               labelText: 'Tipo de Tratamiento *',
                               border: OutlineInputBorder(),

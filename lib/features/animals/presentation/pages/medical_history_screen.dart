@@ -24,23 +24,12 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen>
   late TabController _tabController;
   String _selectedRecordType = 'Todos';
   String _selectedTreatmentType = 'Todos';
-  String _selectedIncidentType = 'Todos';
   String _selectedStatus = 'Todos';
   DateTimeRange? _selectedDateRange;
-  
-  List<dynamic> _allRecords = [];
-  List<TreatmentModel> _treatments = [];
+
   List<IncidentModel> _incidents = [];
   List<ActivityModel> _activities = [];
-  
-  final List<String> _recordTypes = [
-    'Todos',
-    'Tratamientos',
-    'Incidentes',
-    'Vacunas',
-    'Actividades Veterinarias'
-  ];
-  
+
   final List<String> _treatmentTypes = [
     'Todos',
     'Vacunación',
@@ -53,15 +42,6 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen>
     'Emergencia'
   ];
 
-  final List<String> _incidentTypes = [
-    'Todos',
-    'Enfermedad',
-    'Lesión',
-    'Accidente',
-    'Emergencia',
-    'Muerte',
-    'Otros'
-  ];
   
   final List<String> _statusOptions = [
     'Todos',
@@ -108,7 +88,7 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen>
           .map((doc) => IncidentModel.fromFirestore(doc))
           .toList();
     } catch (e) {
-      print('Error cargando incidentes: $e');
+      debugPrint('Error cargando incidentes: $e');
     }
   }
 
@@ -125,7 +105,7 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen>
           .map((doc) => ActivityModel.fromJson({...doc.data(), 'id': doc.id}))
           .toList();
     } catch (e) {
-      print('Error cargando actividades: $e');
+      debugPrint('Error cargando actividades: $e');
     }
   }
 
@@ -146,7 +126,7 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen>
           controller: _tabController,
           indicatorColor: AppColors.white,
           labelColor: AppColors.white,
-          unselectedLabelColor: AppColors.white.withOpacity(0.7),
+          unselectedLabelColor: AppColors.white.withValues(alpha: 0.7),
           tabs: const [
             Tab(icon: Icon(Icons.list_alt), text: 'Tratamientos'),
             Tab(icon: Icon(Icons.analytics), text: 'Estadísticas'),
@@ -179,7 +159,7 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen>
         color: AppColors.white,
         boxShadow: [
           BoxShadow(
-            color: AppColors.grey500.withOpacity(0.1),
+            color: AppColors.grey500.withValues(alpha: 0.1),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -244,11 +224,10 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen>
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: isAction ? AppColors.error : AppColors.primary.withOpacity(0.1),
+          color: isAction ? AppColors.error : AppColors.primary.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isAction ? AppColors.error : AppColors.primary,
-            width: 1,
           ),
         ),
         child: Row(
@@ -341,13 +320,13 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
+                const Icon(
                   Icons.medical_services_outlined,
                   size: 64,
                   color: AppColors.grey500,
                 ),
                 const SizedBox(height: 16),
-                Text(
+                const Text(
                   'No hay tratamientos registrados',
                   style: TextStyle(
                     fontSize: 16,
@@ -356,7 +335,7 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen>
                 ),
                 if (_hasActiveFilters()) ...[
                   const SizedBox(height: 8),
-                  Text(
+                  const Text(
                     'Intenta cambiar los filtros aplicados',
                     style: TextStyle(
                       fontSize: 14,
@@ -525,7 +504,7 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen>
                         Expanded(
                           child: Container(
                             width: 2,
-                            color: AppColors.grey500.withOpacity(0.3),
+                            color: AppColors.grey500.withValues(alpha: 0.3),
                           ),
                         ),
                     ],
@@ -555,20 +534,20 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen>
                                     treatment.tipo,
                                     style: const TextStyle(fontSize: 10),
                                   ),
-                                  backgroundColor: _getTreatmentStatusColor(treatment).withOpacity(0.2),
+                                  backgroundColor: _getTreatmentStatusColor(treatment).withValues(alpha: 0.2),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 8),
                             Text(
                               'Fecha: ${DateFormat('dd/MM/yyyy').format(treatment.fecha)}',
-                              style: TextStyle(color: AppColors.grey600),
+                              style: const TextStyle(color: AppColors.grey600),
                             ),
                             if (treatment.descripcion.isNotEmpty) ...[
                               const SizedBox(height: 4),
                               Text(
                                 treatment.descripcion,
-                                style: TextStyle(color: AppColors.grey600),
+                                style: const TextStyle(color: AppColors.grey600),
                               ),
                             ],
                             if (treatment.proximaAplicacion != null) ...[
@@ -818,13 +797,15 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen>
     allRecords.sort((a, b) {
       DateTime dateA, dateB;
       
-      if (a is TreatmentModel) dateA = a.fecha;
-      else if (a is IncidentModel) dateA = a.fecha;
+      if (a is TreatmentModel) {
+        dateA = a.fecha;
+      } else if (a is IncidentModel) dateA = a.fecha;
       else if (a is ActivityModel) dateA = a.fecha;
       else dateA = DateTime.now();
       
-      if (b is TreatmentModel) dateB = b.fecha;
-      else if (b is IncidentModel) dateB = b.fecha;
+      if (b is TreatmentModel) {
+        dateB = b.fecha;
+      } else if (b is IncidentModel) dateB = b.fecha;
       else if (b is ActivityModel) dateB = b.fecha;
       else dateB = DateTime.now();
       

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:bovidata_new/features/authentication/presentation/controllers/auth_controller.dart';
 import 'package:bovidata_new/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:bovidata_new/core/controllers/controllers.dart';
 import 'package:bovidata_new/core/di/injection.dart';

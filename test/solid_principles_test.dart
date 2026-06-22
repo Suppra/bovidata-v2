@@ -17,7 +17,7 @@ void main() {
     });
 
     test('edad en meses para animales jóvenes', () {
-      final nacimiento = DateTime(DateTime.now().year, DateTime.now().month - 5, 1);
+      final nacimiento = DateTime(DateTime.now().year, DateTime.now().month - 5);
       final bovine = BovineModel.empty().copyWith(fechaNacimiento: nacimiento);
       expect(bovine.edadMeses, greaterThanOrEqualTo(4));
     });

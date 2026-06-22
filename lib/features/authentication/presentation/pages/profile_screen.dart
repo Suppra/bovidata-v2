@@ -107,7 +107,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             vertical: AppDimensions.paddingS,
                           ),
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withOpacity(0.1),
+                            color: AppColors.primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(AppDimensions.radiusS),
                           ),
                           child: Text(

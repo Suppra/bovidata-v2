@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bovidata_new/models/activity_model.dart';
 
@@ -9,7 +10,7 @@ class ActivityService {
     try {
       await _firestore.collection('activities').add(activity.toJson());
     } catch (e) {
-      print('Error logging activity: $e');
+      debugPrint('Error logging activity: $e');
     }
   }
 
@@ -26,7 +27,7 @@ class ActivityService {
       }
 
       final snapshot = await query.get();
-      List<ActivityModel> activities = snapshot.docs
+      final List<ActivityModel> activities = snapshot.docs
           .map((doc) => ActivityModel.fromJson({
                 'id': doc.id,
                 ...doc.data() as Map<String, dynamic>,
@@ -39,7 +40,7 @@ class ActivityService {
       // Limitar en el cliente
       return activities.take(limit).toList();
     } catch (e) {
-      print('Error getting recent activities: $e');
+      debugPrint('Error getting recent activities: $e');
       return [];
     }
   }
@@ -69,7 +70,7 @@ class ActivityService {
               }))
           .toList();
     } catch (e) {
-      print('Error getting activities by type: $e');
+      debugPrint('Error getting activities by type: $e');
       return [];
     }
   }
@@ -88,7 +89,7 @@ class ActivityService {
       }
 
       return query.snapshots().map((snapshot) {
-        List<ActivityModel> activities = snapshot.docs
+        final List<ActivityModel> activities = snapshot.docs
             .map((doc) => ActivityModel.fromJson({
                   'id': doc.id,
                   ...doc.data() as Map<String, dynamic>,
@@ -102,7 +103,7 @@ class ActivityService {
         return activities.take(limit).toList();
       });
     } catch (e) {
-      print('Error getting activities stream: $e');
+      debugPrint('Error getting activities stream: $e');
       return Stream.value([]);
     }
   }
@@ -127,7 +128,7 @@ class ActivityService {
         await batch.commit();
       }
     } catch (e) {
-      print('Error cleaning old activities: $e');
+      debugPrint('Error cleaning old activities: $e');
     }
   }
 

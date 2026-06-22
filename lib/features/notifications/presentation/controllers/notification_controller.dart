@@ -173,7 +173,6 @@ class SolidNotificationController extends ChangeNotifier {
             titulo: 'Tratamiento Próximo',
             mensaje: 'El tratamiento ${treatment.nombre} debe aplicarse ${daysDiff == 0 ? 'hoy' : 'mañana'}',
             fechaCreacion: now,
-            leida: false,
             prioridad: daysDiff == 0 ? 'alta' : 'media',
             datos: {'treatmentId': treatment.id, 'bovineId': treatment.bovineId},
           ));
@@ -191,7 +190,6 @@ class SolidNotificationController extends ChangeNotifier {
           titulo: 'Stock Bajo',
           mensaje: 'El item ${item.nombre} tiene stock bajo (${item.cantidadActual}/${item.cantidadMinima})',
           fechaCreacion: now,
-          leida: false,
           prioridad: item.cantidadActual == 0 ? 'crítica' : 'media',
           datos: {'inventoryId': item.id},
         ));
@@ -209,7 +207,6 @@ class SolidNotificationController extends ChangeNotifier {
             titulo: 'Producto por Vencer',
             mensaje: 'El item ${item.nombre} vence ${daysDiff == 0 ? 'hoy' : 'en $daysDiff días'}',
             fechaCreacion: now,
-            leida: false,
             prioridad: daysDiff <= 2 ? 'alta' : 'media',
             datos: {'inventoryId': item.id},
           ));
@@ -227,7 +224,6 @@ class SolidNotificationController extends ChangeNotifier {
           titulo: 'Animal Enfermo',
           mensaje: 'El bovino ${bovine.nombre} (${bovine.numeroIdentificacion}) requiere atención médica',
           fechaCreacion: now,
-          leida: false,
           prioridad: 'alta',
           datos: {'bovineId': bovine.id},
         ));

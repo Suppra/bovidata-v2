@@ -72,7 +72,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
         bottom: TabBar(
           controller: _tabController,
           labelColor: AppColors.white,
-          unselectedLabelColor: AppColors.white.withOpacity(0.7),
+          unselectedLabelColor: AppColors.white.withValues(alpha: 0.7),
           indicatorColor: AppColors.white,
           tabs: const [
             Tab(icon: Icon(Icons.notifications), text: 'Alertas'),
@@ -211,13 +211,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.error_outline,
                       size: 64,
                       color: AppColors.error,
                     ),
                     const SizedBox(height: 16),
-                    Text(
+                    const Text(
                       'Error al cargar mensajes',
                       style: AppTextStyles.h6,
                     ),
@@ -239,7 +239,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.message_outlined,
                       size: 64,
                       color: AppColors.grey400,
@@ -252,7 +252,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(
+                    const Text(
                       'Aquí aparecerán las notificaciones del sistema',
                       style: AppTextStyles.caption,
                       textAlign: TextAlign.center,
@@ -451,7 +451,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
       subtitle: Text(subtitle),
       value: value,
       onChanged: onChanged,
-      activeColor: AppColors.primary,
+      activeThumbColor: AppColors.primary,
     );
   }
 
@@ -736,7 +736,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
               title: 'Tratamiento Vencido',
               message: 'El tratamiento "${treatment.tipo}" está vencido hace ${(-daysUntilNext)} días',
               timestamp: now,
-              isRead: false,
               actionable: true,
               relatedId: treatment.id,
             ));
@@ -751,7 +750,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
                   ? 'El tratamiento "${treatment.tipo}" vence hoy'
                   : 'El tratamiento "${treatment.tipo}" vence mañana',
               timestamp: now,
-              isRead: false,
               actionable: true,
               relatedId: treatment.id,
             ));
@@ -764,7 +762,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
               title: 'Recordatorio de Tratamiento',
               message: 'El tratamiento "${treatment.tipo}" vence en $daysUntilNext días',
               timestamp: now,
-              isRead: false,
               actionable: true,
               relatedId: treatment.id,
             ));
@@ -777,7 +774,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
     for (final item in inventory) {
       // Low stock alerts
       if (item.cantidadActual <= item.cantidadMinima) {
-        NotificationPriority priority = item.cantidadActual == 0 
+        final NotificationPriority priority = item.cantidadActual == 0 
             ? NotificationPriority.urgent 
             : NotificationPriority.high;
         
@@ -790,7 +787,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
               ? '${item.nombre} está agotado'
               : '${item.nombre} tiene stock bajo (${item.cantidadActual} ${item.unidad})',
           timestamp: now,
-          isRead: false,
           actionable: true,
           relatedId: item.id,
         ));
@@ -809,7 +805,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
             title: 'Producto Vencido',
             message: '${item.nombre} está vencido hace ${(-daysUntilExpiry)} días',
             timestamp: now,
-            isRead: false,
             actionable: true,
             relatedId: item.id,
           ));
@@ -824,7 +819,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
                 ? '${item.nombre} vence hoy'
                 : '${item.nombre} vence en $daysUntilExpiry días',
             timestamp: now,
-            isRead: false,
             actionable: true,
             relatedId: item.id,
           ));
@@ -842,7 +836,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
           title: 'Bovino Enfermo',
           message: '${bovine.nombre} está registrado como enfermo',
           timestamp: now,
-          isRead: false,
           actionable: true,
           relatedId: bovine.id,
         ));
@@ -851,7 +844,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
 
     // Sort by priority and timestamp
     notifications.sort((a, b) {
-      int priorityComparison = _getPriorityOrder(b.priority).compareTo(_getPriorityOrder(a.priority));
+      final int priorityComparison = _getPriorityOrder(b.priority).compareTo(_getPriorityOrder(a.priority));
       if (priorityComparison != 0) return priorityComparison;
       return b.timestamp.compareTo(a.timestamp);
     });

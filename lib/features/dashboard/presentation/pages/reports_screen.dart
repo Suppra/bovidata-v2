@@ -65,7 +65,7 @@ class _ReportsScreenState extends State<ReportsScreen> with TickerProviderStateM
         bottom: TabBar(
           controller: _tabController,
           labelColor: AppColors.white,
-          unselectedLabelColor: AppColors.white.withOpacity(0.7),
+          unselectedLabelColor: AppColors.white.withValues(alpha: 0.7),
           indicatorColor: AppColors.white,
           tabs: const [
             Tab(icon: Icon(Icons.dashboard), text: 'Resumen'),
@@ -672,7 +672,7 @@ class _ReportsScreenState extends State<ReportsScreen> with TickerProviderStateM
             if (lowStock.isNotEmpty) ...[
               Row(
                 children: [
-                  Icon(Icons.warning, color: AppColors.warning, size: 20),
+                  const Icon(Icons.warning, color: AppColors.warning, size: 20),
                   const SizedBox(width: AppDimensions.marginS),
                   Text(
                     'Stock Bajo (${lowStock.length} items)',
@@ -706,7 +706,7 @@ class _ReportsScreenState extends State<ReportsScreen> with TickerProviderStateM
             if (expiringSoon.isNotEmpty) ...[
               Row(
                 children: [
-                  Icon(Icons.schedule, color: AppColors.info, size: 20),
+                  const Icon(Icons.schedule, color: AppColors.info, size: 20),
                   const SizedBox(width: AppDimensions.marginS),
                   Text(
                     'Por Vencer (${expiringSoon.length} items)',
@@ -856,7 +856,7 @@ class _ReportsScreenState extends State<ReportsScreen> with TickerProviderStateM
                 LinearProgressIndicator(
                   value: percentage / 100,
                   backgroundColor: AppColors.primary.withValues(alpha: 0.2),
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                  valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
                 ),
               ],
             ),
@@ -897,7 +897,7 @@ class _ReportsScreenState extends State<ReportsScreen> with TickerProviderStateM
                 LinearProgressIndicator(
                   value: percentage / 100,
                   backgroundColor: AppColors.success.withValues(alpha: 0.2),
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.success),
+                  valueColor: const AlwaysStoppedAnimation<Color>(AppColors.success),
                 ),
               ],
             ),
@@ -938,7 +938,7 @@ class _ReportsScreenState extends State<ReportsScreen> with TickerProviderStateM
                 LinearProgressIndicator(
                   value: percentage / 100,
                   backgroundColor: AppColors.info.withValues(alpha: 0.2),
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.info),
+                  valueColor: const AlwaysStoppedAnimation<Color>(AppColors.info),
                 ),
               ],
             ),
@@ -979,7 +979,7 @@ class _ReportsScreenState extends State<ReportsScreen> with TickerProviderStateM
                 LinearProgressIndicator(
                   value: percentage / 100,
                   backgroundColor: AppColors.warning.withValues(alpha: 0.2),
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.warning),
+                  valueColor: const AlwaysStoppedAnimation<Color>(AppColors.warning),
                 ),
               ],
             ),
@@ -1038,7 +1038,7 @@ class _ReportsScreenState extends State<ReportsScreen> with TickerProviderStateM
                     LinearProgressIndicator(
                       value: percentage / 100,
                       backgroundColor: AppColors.success.withValues(alpha: 0.2),
-                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.success),
+                      valueColor: const AlwaysStoppedAnimation<Color>(AppColors.success),
                     ),
                   ],
                 ),
@@ -1224,7 +1224,7 @@ class _ReportsScreenState extends State<ReportsScreen> with TickerProviderStateM
               ),
               ...expired.map((item) => ListTile(
                 dense: true,
-                leading: Icon(Icons.dangerous, color: AppColors.error, size: 20),
+                leading: const Icon(Icons.dangerous, color: AppColors.error, size: 20),
                 title: Text(item.nombre),
                 trailing: Text(
                   DateFormat(AppConstants.dateFormat).format(item.fechaVencimiento!),
@@ -1244,7 +1244,7 @@ class _ReportsScreenState extends State<ReportsScreen> with TickerProviderStateM
               ),
               ...expiring.map((item) => ListTile(
                 dense: true,
-                leading: Icon(Icons.warning, color: AppColors.warning, size: 20),
+                leading: const Icon(Icons.warning, color: AppColors.warning, size: 20),
                 title: Text(item.nombre),
                 trailing: Text(
                   '${item.fechaVencimiento!.difference(DateTime.now()).inDays} días',
@@ -1297,7 +1297,7 @@ class _ReportsScreenState extends State<ReportsScreen> with TickerProviderStateM
               ),
               ...outOfStock.map((item) => ListTile(
                 dense: true,
-                leading: Icon(Icons.error, color: AppColors.error, size: 20),
+                leading: const Icon(Icons.error, color: AppColors.error, size: 20),
                 title: Text(item.nombre),
                 trailing: Text(
                   'Agotado',
@@ -1317,7 +1317,7 @@ class _ReportsScreenState extends State<ReportsScreen> with TickerProviderStateM
               ),
               ...lowStock.map((item) => ListTile(
                 dense: true,
-                leading: Icon(Icons.warning, color: AppColors.warning, size: 20),
+                leading: const Icon(Icons.warning, color: AppColors.warning, size: 20),
                 title: Text(item.nombre),
                 trailing: Text(
                   '${item.cantidadActual} ${item.unidad}',

@@ -290,7 +290,7 @@ class _BovineFormScreenState extends State<BovineFormScreen> {
                         children: [
                           Expanded(
                             child: DropdownButtonFormField<String>(
-                              value: _razasComunes.contains(_razaController.text) 
+                              initialValue: _razasComunes.contains(_razaController.text) 
                                   ? _razaController.text 
                                   : 'Otra',
                               decoration: const InputDecoration(
@@ -321,7 +321,7 @@ class _BovineFormScreenState extends State<BovineFormScreen> {
                           const SizedBox(width: AppDimensions.marginM),
                           Expanded(
                             child: DropdownButtonFormField<String>(
-                              value: _selectedSexo,
+                              initialValue: _selectedSexo,
                               decoration: const InputDecoration(
                                 labelText: 'Sexo',
                                 prefixIcon: Icon(Icons.male),
@@ -449,7 +449,7 @@ class _BovineFormScreenState extends State<BovineFormScreen> {
 
                       // Status
                       DropdownButtonFormField<String>(
-                        value: _selectedEstado,
+                        initialValue: _selectedEstado,
                         decoration: const InputDecoration(
                           labelText: 'Estado de Salud',
                           prefixIcon: Icon(Icons.health_and_safety),

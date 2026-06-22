@@ -510,13 +510,12 @@ class PdfService {
   static pw.Widget _buildFooter(pw.Font font) {
     return pw.Container(
       padding: const pw.EdgeInsets.all(15),
-      decoration: pw.BoxDecoration(
+      decoration: const pw.BoxDecoration(
         border: pw.Border(
-          top: pw.BorderSide(color: PdfColors.grey400, width: 1),
+          top: pw.BorderSide(color: PdfColors.grey400),
         ),
       ),
       child: pw.Column(
-        crossAxisAlignment: pw.CrossAxisAlignment.center,
         children: [
           pw.Text(
             'Este documento fue generado automáticamente por el Sistema BoviData',

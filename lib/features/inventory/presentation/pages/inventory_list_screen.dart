@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
-import 'package:bovidata_new/features/authentication/presentation/controllers/auth_controller.dart';
 import 'package:bovidata_new/core/controllers/controllers.dart';
 import 'package:bovidata_new/models/inventory_model.dart';
 import 'package:bovidata_new/constants/app_styles.dart';
@@ -116,7 +115,7 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
                     // Category Filter
                     Expanded(
                       child: DropdownButtonFormField<String>(
-                        value: _selectedCategory,
+                        initialValue: _selectedCategory,
                         decoration: const InputDecoration(
                           labelText: 'Categoría',
                           border: OutlineInputBorder(),
@@ -253,7 +252,7 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.error,
                           size: 64,
                           color: AppColors.error,
@@ -282,7 +281,7 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.inventory_2_outlined,
                           size: 64,
                           color: AppColors.grey400,
@@ -579,7 +578,7 @@ class InventoryCard extends StatelessWidget {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.warning,
                                 size: AppDimensions.iconXS,
                                 color: AppColors.warning,
@@ -608,7 +607,7 @@ class InventoryCard extends StatelessWidget {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.dangerous,
                                 size: AppDimensions.iconXS,
                                 color: AppColors.error,
@@ -690,7 +689,7 @@ class InventoryCard extends StatelessWidget {
                       ),
                     ),
                   ] else ...[
-                    Icon(
+                    const Icon(
                       Icons.schedule,
                       size: AppDimensions.iconS,
                       color: AppColors.textSecondary,

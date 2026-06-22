@@ -27,15 +27,15 @@ class FarmMembersPage extends StatelessWidget {
               padding: const EdgeInsets.all(AppDimensions.paddingM),
               children: [
                 // Invitaciones recibidas (cualquier rol puede tenerlas).
-                _SectionTitle('Invitaciones recibidas'),
+                const _SectionTitle('Invitaciones recibidas'),
                 _InvitationsList(memberId: user.id),
                 const SizedBox(height: AppDimensions.paddingL),
 
                 if (isGanadero) ...[
-                  _SectionTitle('Invitar a mi hato'),
+                  const _SectionTitle('Invitar a mi hato'),
                   _InviteForm(ganaderoId: user.id, ganaderoNombre: user.nombreCompleto),
                   const SizedBox(height: AppDimensions.paddingL),
-                  _SectionTitle('Miembros de mi hato'),
+                  const _SectionTitle('Miembros de mi hato'),
                   _MembersList(ganaderoId: user.id),
                 ],
               ],

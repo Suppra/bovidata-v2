@@ -13,7 +13,7 @@ void main() {
           memberNombre: 'Vet Uno',
           memberRol: 'Veterinario',
           estado: estado,
-          fechaCreacion: DateTime(2026, 1, 1),
+          fechaCreacion: DateTime(2026),
         );
 
     test('buildId genera un id determinista por par (ganadero, miembro)', () {
