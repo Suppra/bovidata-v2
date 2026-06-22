@@ -24,6 +24,9 @@ dependencies:
 
   # Dependency Injection - Contenedor de servicios (reemplaza ServiceLocator)
   get_it: ^8.0.0
+
+  # Entidades inmutables (value equality, copyWith) por codegen
+  freezed_annotation: ^2.4.4
   
   # Date & Time - Usado para formatear fechas
   intl: ^0.20.2
@@ -55,6 +58,10 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+
+  # Codegen para entidades freezed
+  build_runner: ^2.4.13
+  freezed: ^2.5.7
   
 
 

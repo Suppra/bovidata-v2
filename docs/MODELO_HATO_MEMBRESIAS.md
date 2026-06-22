@@ -148,7 +148,20 @@ de las features para los consumidores existentes.
 `core.dart`, `constants.dart`), `entity_builder` + factories sin uso, y `.md` de
 estados obsoletos.
 
-**Pendiente (siguiente etapa, ver [ROADMAP.md](ROADMAP.md)):** convertir los
-modelos en entidades puras por feature (hoy son shared kernel acoplado a
-Firestore), migrar `SchedulerService` a Cloud Functions, e introducir DI por
-constructor (`get_it`) en sustitución del `ServiceLocator` estático.
+### Mejoras de arquitectura aplicadas
+- ✅ **DI por constructor con `get_it`** (`core/di/injection.dart`) — reemplaza el
+  `ServiceLocator` estático; las dependencias son mockeables.
+- ✅ **`SchedulerService` → Cloud Functions** (`functions/index.js`): tareas
+  programadas (cron real) en el servidor; eliminado el `Timer` del cliente.
+- ✅ **Modelos con `freezed`** (bovine, treatment, inventory, user, notification,
+  incident): inmutabilidad, `copyWith`, igualdad por valor y `toString` generados
+  por codegen. Se conservan los factories `fromFirestore`/`toFirestore` para no
+  romper los consumidores.
+
+**Pendiente (opcional, ver [ROADMAP.md](ROADMAP.md)):** desacoplar al 100% las
+entidades de Firestore moviendo `fromFirestore`/`toFirestore` a DTOs de
+infraestructura (hoy conviven en el modelo freezed por pragmatismo), y refactorizar
+las 3 pantallas que leen Firestore directamente para que usen los repositorios.
+
+> Nota: los archivos `*.freezed.dart` están versionados. Si cambias un modelo,
+> regenera con: `dart run build_runner build --delete-conflicting-outputs`.

@@ -3,7 +3,6 @@
 
 export 'package:bovidata_new/models/activity_model.dart';
 export 'package:bovidata_new/models/bovine_model.dart';
-export 'package:bovidata_new/models/complaint_model.dart';
 export 'package:bovidata_new/models/incident_model.dart';
 export 'package:bovidata_new/models/inventory_model.dart';
 export 'package:bovidata_new/models/notification_model.dart';
