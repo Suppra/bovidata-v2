@@ -85,7 +85,14 @@ class SolidBovineController extends ChangeNotifier {
     
     try {
       await _bovineService.updateBovine(id, bovine);
-      await loadBovines(); // Recargar lista
+      // Muta el estado local en vez de recargar toda la colección.
+      final idx = _bovines.indexWhere((b) => b.id == id);
+      if (idx != -1) {
+        _bovines[idx] = bovine.copyWith(id: id);
+        _applyFilters();
+      } else {
+        await loadBovines();
+      }
       return true;
     } catch (e) {
       _setError('Error al actualizar bovino: $e');
@@ -99,10 +106,11 @@ class SolidBovineController extends ChangeNotifier {
   Future<bool> deleteBovine(String id) async {
     _setLoading(true);
     _clearError();
-    
+
     try {
       await _bovineService.deleteBovine(id);
-      await loadBovines(); // Recargar lista
+      _bovines.removeWhere((b) => b.id == id); // muta estado local
+      _applyFilters();
       return true;
     } catch (e) {
       _setError('Error al eliminar bovino: $e');

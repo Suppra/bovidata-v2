@@ -105,7 +105,13 @@ class SolidInventoryController extends ChangeNotifier {
     
     try {
       await _inventoryService.updateInventoryItem(item.id, item);
-      await loadInventory(); // Recargar lista
+      final idx = _inventory.indexWhere((i) => i.id == item.id);
+      if (idx != -1) {
+        _inventory[idx] = item;
+        _applyFilters();
+      } else {
+        await loadInventory();
+      }
       return true;
     } catch (e) {
       _setError('Error al actualizar item: $e');
@@ -119,10 +125,11 @@ class SolidInventoryController extends ChangeNotifier {
   Future<bool> deleteItem(String id) async {
     _setLoading(true);
     _clearError();
-    
+
     try {
       await _inventoryService.deleteInventoryItem(id);
-      await loadInventory(); // Recargar lista
+      _inventory.removeWhere((i) => i.id == id);
+      _applyFilters();
       return true;
     } catch (e) {
       _setError('Error al eliminar item: $e');
