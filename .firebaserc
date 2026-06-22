@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "bovidata-production"
+  },
+  "targets": {
+    "bovidata-production": {
+      "hosting": {
+        "bovidata-web": [
+          "bovidata-production"
+        ]
+      }
+    }
+  }
+}
