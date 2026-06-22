@@ -111,18 +111,44 @@ function hasFarmAccess(ownerId) {
 
 ## 7. Estado de la migración hexagonal
 
+**Migración COMPLETADA.** Todo el código de `lib/` está organizado por features
+hexagonales + un kernel compartido. Ya no existen `lib/screens`, `lib/services`
+ni `lib/controllers`.
+
 | Feature | Estado |
 |---------|--------|
-| **membership** | ✅ Migrada (referencia hexagonal completa) |
-| **authentication** | ✅ Migrada (`features/authentication/{domain,infrastructure,presentation}`, puerto `AuthRepository`) |
-| animals · treatments · inventory | 🟡 Capa de datos ya en capas (repos/servicios/controllers en `core/`); pendiente **dividir los archivos compartidos** (`concrete_repositories.dart`, `solid_services.dart`) por feature y mover controllers + pantallas a `features/*` |
-| notifications · mortality · users · dashboard | 🔴 Pendientes de migrar siguiendo el patrón |
+| membership | ✅ domain · application · infrastructure · presentation |
+| authentication | ✅ puerto `AuthRepository`, sin tipos Firebase en la firma |
+| animals | ✅ port + repo + service + controller + pantallas |
+| treatments | ✅ port + repo + service + controller + pantallas |
+| inventory | ✅ port + repo + service + controller + pantallas |
+| notifications | ✅ servicio + controller + pantalla |
+| dashboard | ✅ reports + pdf_generator + home + pdf/activity infra |
+| settings | ✅ controller + pantalla |
+| users | ✅ infraestructura (`user_service`) |
 
-**Convención adoptada:** imports de paquete (`package:bovidata_new/...`) en el código
-migrado, para que las reubicaciones sean robustas. Limpieza: eliminados servicios
-legacy muertos (`bovine_service`, `treatment_service`), `core/services/concrete_services`,
-barrel `screens/screens.dart` y `.md` de estados obsoletos.
+### Estructura final de `lib/`
+```
+lib/
+├── app/            # orquestación de arranque (scheduler de fondo)
+├── core/           # kernel compartido: interfaces base, DI (ServiceLocator),
+│                   # FarmAccessService, ModelFactory, ConcreteValidation/Notification
+├── constants/      # constantes y estilos (compartido)
+├── models/         # modelos de datos (shared kernel / DDD-lite)
+├── widgets/        # widgets reutilizables
+└── features/<x>/   # domain · application · infrastructure · presentation
+```
 
-El patrón a replicar por feature está descrito en
-[PLAN_MIGRACION_HEXAGONAL.md](PLAN_MIGRACION_HEXAGONAL.md). `membership` y
-`authentication` sirven como plantillas concretas y verificables.
+**Convenciones:** imports de paquete (`package:bovidata_new/...`) en todo el
+proyecto; el barrel `core/controllers/controllers.dart` re-exporta los controllers
+de las features para los consumidores existentes.
+
+**Limpieza realizada:** eliminados servicios legacy muertos (`bovine_service`,
+`treatment_service`), `concrete_services`, barrels muertos (`screens.dart`,
+`core.dart`, `constants.dart`), `entity_builder` + factories sin uso, y `.md` de
+estados obsoletos.
+
+**Pendiente (siguiente etapa, ver [ROADMAP.md](ROADMAP.md)):** convertir los
+modelos en entidades puras por feature (hoy son shared kernel acoplado a
+Firestore), migrar `SchedulerService` a Cloud Functions, e introducir DI por
+constructor (`get_it`) en sustitución del `ServiceLocator` estático.

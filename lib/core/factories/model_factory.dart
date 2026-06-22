@@ -62,26 +62,3 @@ class ConcreteModelFactory implements ModelFactory {
     }
   }
 }
-
-// Factory específico para cada modelo (Factory Method Pattern)
-abstract class BovineFactory {
-  BovineModel createBovine();
-}
-
-class StandardBovineFactory extends BovineFactory {
-  @override
-  BovineModel createBovine() {
-    return BovineModel.empty();
-  }
-}
-
-class BreedBovineFactory extends BovineFactory {
-  final String breed;
-  
-  BreedBovineFactory(this.breed);
-  
-  @override
-  BovineModel createBovine() {
-    return BovineModel.withBreed(breed);
-  }
-}
