@@ -1397,19 +1397,23 @@ class _ReportsScreenState extends State<ReportsScreen> with TickerProviderStateM
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Seleccionar Tipo de Reporte'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: _reportTypes.map((type) => RadioListTile<String>(
-            title: Text(_reportTypeNames[type]!),
-            value: type,
-            groupValue: _selectedReportType,
-            onChanged: (value) {
-              setState(() {
-                _selectedReportType = value!;
-              });
-              Navigator.of(context).pop();
-            },
-          )).toList(),
+        content: RadioGroup<String>(
+          groupValue: _selectedReportType,
+          onChanged: (value) {
+            setState(() {
+              _selectedReportType = value!;
+            });
+            Navigator.of(context).pop();
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: _reportTypes
+                .map((type) => RadioListTile<String>(
+                      title: Text(_reportTypeNames[type]!),
+                      value: type,
+                    ))
+                .toList(),
+          ),
         ),
         actions: [
           TextButton(

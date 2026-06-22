@@ -408,33 +408,25 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
             children: [
               Text('Stock actual: ${item.cantidadActual} ${item.unidad}'),
               const SizedBox(height: AppDimensions.marginM),
-              Row(
-                children: [
-                  Expanded(
-                    child: RadioListTile<String>(
-                      title: const Text('Agregar'),
-                      value: 'add',
-                      groupValue: operation,
-                      onChanged: (value) {
-                        setState(() {
-                          operation = value!;
-                        });
-                      },
+              RadioGroup<String>(
+                groupValue: operation,
+                onChanged: (value) => setState(() => operation = value!),
+                child: const Row(
+                  children: [
+                    Expanded(
+                      child: RadioListTile<String>(
+                        title: Text('Agregar'),
+                        value: 'add',
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: RadioListTile<String>(
-                      title: const Text('Quitar'),
-                      value: 'remove',
-                      groupValue: operation,
-                      onChanged: (value) {
-                        setState(() {
-                          operation = value!;
-                        });
-                      },
+                    Expanded(
+                      child: RadioListTile<String>(
+                        title: Text('Quitar'),
+                        value: 'remove',
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               TextField(
                 controller: quantityController,

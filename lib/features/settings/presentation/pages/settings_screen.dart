@@ -335,46 +335,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Seleccionar Tema'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            RadioListTile<ThemeMode>(
-              title: const Text('Claro'),
-              subtitle: const Text('Siempre usar tema claro'),
-              value: ThemeMode.light,
-              groupValue: settingsController.themeMode,
-              onChanged: (value) {
-                if (value != null) {
-                  settingsController.setThemeMode(value);
-                  Navigator.pop(context);
-                }
-              },
-            ),
-            RadioListTile<ThemeMode>(
-              title: const Text('Oscuro'),
-              subtitle: const Text('Siempre usar tema oscuro'),
-              value: ThemeMode.dark,
-              groupValue: settingsController.themeMode,
-              onChanged: (value) {
-                if (value != null) {
-                  settingsController.setThemeMode(value);
-                  Navigator.pop(context);
-                }
-              },
-            ),
-            RadioListTile<ThemeMode>(
-              title: const Text('Sistema'),
-              subtitle: const Text('Usar configuración del sistema'),
-              value: ThemeMode.system,
-              groupValue: settingsController.themeMode,
-              onChanged: (value) {
-                if (value != null) {
-                  settingsController.setThemeMode(value);
-                  Navigator.pop(context);
-                }
-              },
-            ),
-          ],
+        content: RadioGroup<ThemeMode>(
+          groupValue: settingsController.themeMode,
+          onChanged: (value) {
+            if (value != null) {
+              settingsController.setThemeMode(value);
+              Navigator.pop(context);
+            }
+          },
+          child: const Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              RadioListTile<ThemeMode>(
+                title: Text('Claro'),
+                subtitle: Text('Siempre usar tema claro'),
+                value: ThemeMode.light,
+              ),
+              RadioListTile<ThemeMode>(
+                title: Text('Oscuro'),
+                subtitle: Text('Siempre usar tema oscuro'),
+                value: ThemeMode.dark,
+              ),
+              RadioListTile<ThemeMode>(
+                title: Text('Sistema'),
+                subtitle: Text('Usar configuración del sistema'),
+                value: ThemeMode.system,
+              ),
+            ],
+          ),
         ),
       ),
     );

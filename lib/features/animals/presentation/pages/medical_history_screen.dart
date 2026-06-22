@@ -262,14 +262,23 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen>
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Tipo de Registro'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildDialogOption('Todos', 'todos'),
-            _buildDialogOption('Tratamientos', 'treatments'),
-            _buildDialogOption('Incidentes', 'incidents'),
-            _buildDialogOption('Actividades', 'activities'),
-          ],
+        content: RadioGroup<String>(
+          groupValue: _selectedRecordType,
+          onChanged: (value) {
+            setState(() {
+              _selectedRecordType = value!;
+            });
+            Navigator.pop(context);
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildDialogOption('Todos', 'todos'),
+              _buildDialogOption('Tratamientos', 'treatments'),
+              _buildDialogOption('Incidentes', 'incidents'),
+              _buildDialogOption('Actividades', 'activities'),
+            ],
+          ),
         ),
         actions: [
           TextButton(
@@ -285,13 +294,6 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen>
     return RadioListTile<String>(
       title: Text(displayName),
       value: value,
-      groupValue: _selectedRecordType,
-      onChanged: (value) {
-        setState(() {
-          _selectedRecordType = value!;
-        });
-        Navigator.pop(context);
-      },
     );
   }
 
@@ -682,19 +684,23 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen>
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Seleccionar Tipo de Tratamiento'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: _treatmentTypes.map((type) => RadioListTile(
-            title: Text(type),
-            value: type,
-            groupValue: _selectedTreatmentType,
-            onChanged: (value) {
-              setState(() {
-                _selectedTreatmentType = value!;
-              });
-              Navigator.of(context).pop();
-            },
-          )).toList(),
+        content: RadioGroup<String>(
+          groupValue: _selectedTreatmentType,
+          onChanged: (value) {
+            setState(() {
+              _selectedTreatmentType = value!;
+            });
+            Navigator.of(context).pop();
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: _treatmentTypes
+                .map((type) => RadioListTile<String>(
+                      title: Text(type),
+                      value: type,
+                    ))
+                .toList(),
+          ),
         ),
       ),
     );
@@ -705,19 +711,23 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen>
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Seleccionar Estado'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: _statusOptions.map((status) => RadioListTile(
-            title: Text(status),
-            value: status,
-            groupValue: _selectedStatus,
-            onChanged: (value) {
-              setState(() {
-                _selectedStatus = value!;
-              });
-              Navigator.of(context).pop();
-            },
-          )).toList(),
+        content: RadioGroup<String>(
+          groupValue: _selectedStatus,
+          onChanged: (value) {
+            setState(() {
+              _selectedStatus = value!;
+            });
+            Navigator.of(context).pop();
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: _statusOptions
+                .map((status) => RadioListTile<String>(
+                      title: Text(status),
+                      value: status,
+                    ))
+                .toList(),
+          ),
         ),
       ),
     );
